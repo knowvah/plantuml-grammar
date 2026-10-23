@@ -1,0 +1,245 @@
+# Line shapes and number grammars of the chart commands (T30, layer: shared), used by
+# misc-charts-chart. Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/chart/command/.
+#
+# All chart commands are SingleLineCommand2 with doTrim=false; their regexes admit any
+# text in the data slots, and executeArg parses it, returning an error on failure:
+# * CH_DOUBLE is a Java Double.parseDouble literal (sign, NaN, Infinity, decimal and hex
+#   forms, f/F/d/D suffix; case-sensitive), checked against the jar in the family test.
+# * CH_VALUES: bar/line/area/scatter `[...]` without `(` go through parseValues
+#   (CommandChartBar.java:123-137 and its copies): empty after trim() is fine, otherwise
+#   String.split(",") (trailing empty parts dropped) and every part trims to a double.
+# * CH_PAIRS: line/scatter data containing `(` goes through parseCoordinatePairs
+#   (CommandChartLine.java:162-191, CommandChartScatter.java:183-212): all whitespace is
+#   removed first, then split on `),(` (trailing empty parts dropped), brackets stripped
+#   at both ends of each pair, and the pair splits on `,` into exactly two doubles. Blanks
+#   may therefore sit between any two characters, so the regex is generated from the
+#   whitespace-free form (family test `chart_number_regexes`).
+# * CH_TICKS: `v-axis ... ticks [...]` (CommandChartVAxis.java:219-252): every part has a
+#   `:`, a double before it and a quoted label (two quotes at least) after it.
+# * CH_YPOS: the annotation Y position trims to a double (CommandChartAnnotation.java:
+#   110-115); a trailing no-break space is not trimmed and fails.
+# The four generated regexes come from the family test's generator; edit both together.
+schema_version: 1
+id: misc-charts-chart-values
+layer: shared
+include: [shared, common, misc-charts-colors]
+
+variables:
+  CH_DOUBLE: {regex: '[+-]?(?:0[xX](?:[0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)[pP][+-]?[0-9]+[fFdD]?|NaN|Infinity|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[fFdD]?)', ci: false, scope: constant.numeric}
+  CH_VALUES: {regex: '(?:,+|[\x00-\x09\x0B\x0C\x0E-\x20]*(?:[+-]?(?:0[xX](?:[0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)[pP][+-]?[0-9]+[fFdD]?|NaN|Infinity|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[fFdD]?)[\x00-\x09\x0B\x0C\x0E-\x20]*(?:,[\x00-\x09\x0B\x0C\x0E-\x20]*[+-]?(?:0[xX](?:[0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)[pP][+-]?[0-9]+[fFdD]?|NaN|Infinity|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[fFdD]?)[\x00-\x09\x0B\x0C\x0E-\x20]*)*,*)?)', ci: false, scope: constant.numeric}
+  CH_TICKS: {regex: '(?:,+|[\x00-\x09\x0B\x0C\x0E-\x20]*(?:[+-]?(?:0[xX](?:[0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)[pP][+-]?[0-9]+[fFdD]?|NaN|Infinity|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[fFdD]?)[\x00-\x09\x0B\x0C\x0E-\x20]*:[\x00-\x09\x0B\x0C\x0E-\x20]*"[^,]*"[\x00-\x09\x0B\x0C\x0E-\x20]*(?:,[\x00-\x09\x0B\x0C\x0E-\x20]*[+-]?(?:0[xX](?:[0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)[pP][+-]?[0-9]+[fFdD]?|NaN|Infinity|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[fFdD]?)[\x00-\x09\x0B\x0C\x0E-\x20]*:[\x00-\x09\x0B\x0C\x0E-\x20]*"[^,]*"[\x00-\x09\x0B\x0C\x0E-\x20]*)*,*)?)', ci: false, scope: constant.numeric}
+  CH_PAIRS: {regex: '[ \t\x0B\f]*(?:(?:[\[(][ \t\x0B\f]*)*(?:[+-][ \t\x0B\f]*)?(?:(?:0[ \t\x0B\f]*)(?:[xX][ \t\x0B\f]*)(?:(?:[0-9a-fA-F][ \t\x0B\f]*)+(?:(?:\.[ \t\x0B\f]*)(?:[0-9a-fA-F][ \t\x0B\f]*)*)?|(?:\.[ \t\x0B\f]*)(?:[0-9a-fA-F][ \t\x0B\f]*)+)(?:[pP][ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:[0-9][ \t\x0B\f]*)+(?:[fFdD][ \t\x0B\f]*)?|(?:N[ \t\x0B\f]*)(?:a[ \t\x0B\f]*)(?:N[ \t\x0B\f]*)|(?:I[ \t\x0B\f]*)(?:n[ \t\x0B\f]*)(?:f[ \t\x0B\f]*)(?:i[ \t\x0B\f]*)(?:n[ \t\x0B\f]*)(?:i[ \t\x0B\f]*)(?:t[ \t\x0B\f]*)(?:y[ \t\x0B\f]*)|(?:(?:[0-9][ \t\x0B\f]*)+(?:(?:\.[ \t\x0B\f]*)(?:[0-9][ \t\x0B\f]*)*)?|(?:\.[ \t\x0B\f]*)(?:[0-9][ \t\x0B\f]*)+)(?:(?:[eE][ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:[0-9][ \t\x0B\f]*)+)?(?:[fFdD][ \t\x0B\f]*)?)(?:,[ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:(?:0[ \t\x0B\f]*)(?:[xX][ \t\x0B\f]*)(?:(?:[0-9a-fA-F][ \t\x0B\f]*)+(?:(?:\.[ \t\x0B\f]*)(?:[0-9a-fA-F][ \t\x0B\f]*)*)?|(?:\.[ \t\x0B\f]*)(?:[0-9a-fA-F][ \t\x0B\f]*)+)(?:[pP][ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:[0-9][ \t\x0B\f]*)+(?:[fFdD][ \t\x0B\f]*)?|(?:N[ \t\x0B\f]*)(?:a[ \t\x0B\f]*)(?:N[ \t\x0B\f]*)|(?:I[ \t\x0B\f]*)(?:n[ \t\x0B\f]*)(?:f[ \t\x0B\f]*)(?:i[ \t\x0B\f]*)(?:n[ \t\x0B\f]*)(?:i[ \t\x0B\f]*)(?:t[ \t\x0B\f]*)(?:y[ \t\x0B\f]*)|(?:(?:[0-9][ \t\x0B\f]*)+(?:(?:\.[ \t\x0B\f]*)(?:[0-9][ \t\x0B\f]*)*)?|(?:\.[ \t\x0B\f]*)(?:[0-9][ \t\x0B\f]*)+)(?:(?:[eE][ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:[0-9][ \t\x0B\f]*)+)?(?:[fFdD][ \t\x0B\f]*)?)(?:,[ \t\x0B\f]*)*(?:\][ \t\x0B\f]*|\)(?![ \t\x0B\f]*,[ \t\x0B\f]*\()[ \t\x0B\f]*)*(?:(?:\)[ \t\x0B\f]*)(?:,[ \t\x0B\f]*)(?:\([ \t\x0B\f]*)(?:[\[(][ \t\x0B\f]*)*(?:[+-][ \t\x0B\f]*)?(?:(?:0[ \t\x0B\f]*)(?:[xX][ \t\x0B\f]*)(?:(?:[0-9a-fA-F][ \t\x0B\f]*)+(?:(?:\.[ \t\x0B\f]*)(?:[0-9a-fA-F][ \t\x0B\f]*)*)?|(?:\.[ \t\x0B\f]*)(?:[0-9a-fA-F][ \t\x0B\f]*)+)(?:[pP][ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:[0-9][ \t\x0B\f]*)+(?:[fFdD][ \t\x0B\f]*)?|(?:N[ \t\x0B\f]*)(?:a[ \t\x0B\f]*)(?:N[ \t\x0B\f]*)|(?:I[ \t\x0B\f]*)(?:n[ \t\x0B\f]*)(?:f[ \t\x0B\f]*)(?:i[ \t\x0B\f]*)(?:n[ \t\x0B\f]*)(?:i[ \t\x0B\f]*)(?:t[ \t\x0B\f]*)(?:y[ \t\x0B\f]*)|(?:(?:[0-9][ \t\x0B\f]*)+(?:(?:\.[ \t\x0B\f]*)(?:[0-9][ \t\x0B\f]*)*)?|(?:\.[ \t\x0B\f]*)(?:[0-9][ \t\x0B\f]*)+)(?:(?:[eE][ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:[0-9][ \t\x0B\f]*)+)?(?:[fFdD][ \t\x0B\f]*)?)(?:,[ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:(?:0[ \t\x0B\f]*)(?:[xX][ \t\x0B\f]*)(?:(?:[0-9a-fA-F][ \t\x0B\f]*)+(?:(?:\.[ \t\x0B\f]*)(?:[0-9a-fA-F][ \t\x0B\f]*)*)?|(?:\.[ \t\x0B\f]*)(?:[0-9a-fA-F][ \t\x0B\f]*)+)(?:[pP][ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:[0-9][ \t\x0B\f]*)+(?:[fFdD][ \t\x0B\f]*)?|(?:N[ \t\x0B\f]*)(?:a[ \t\x0B\f]*)(?:N[ \t\x0B\f]*)|(?:I[ \t\x0B\f]*)(?:n[ \t\x0B\f]*)(?:f[ \t\x0B\f]*)(?:i[ \t\x0B\f]*)(?:n[ \t\x0B\f]*)(?:i[ \t\x0B\f]*)(?:t[ \t\x0B\f]*)(?:y[ \t\x0B\f]*)|(?:(?:[0-9][ \t\x0B\f]*)+(?:(?:\.[ \t\x0B\f]*)(?:[0-9][ \t\x0B\f]*)*)?|(?:\.[ \t\x0B\f]*)(?:[0-9][ \t\x0B\f]*)+)(?:(?:[eE][ \t\x0B\f]*)(?:[+-][ \t\x0B\f]*)?(?:[0-9][ \t\x0B\f]*)+)?(?:[fFdD][ \t\x0B\f]*)?)(?:,[ \t\x0B\f]*)*(?:\][ \t\x0B\f]*|\)(?![ \t\x0B\f]*,[ \t\x0B\f]*\()[ \t\x0B\f]*)*)*)?(?:(?:\)[ \t\x0B\f]*)(?:,[ \t\x0B\f]*)(?:\([ \t\x0B\f]*))*', ci: false, scope: constant.numeric}
+  CH_YPOS: {regex: '[+-]?(?:0[xX](?:[0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?|\.[0-9a-fA-F]+)[pP][+-]?[0-9]+[fFdD]?|NaN|Infinity|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?[fFdD]?)[\x00-\x09\x0B\x0C\x0E-\x20]*(?=\))', ci: false, name: YPOS, scope: constant.numeric}
+  CH_WS: {regex: "[\\s ]*", ci: true}
+  CH_WS_SOME: {regex: "[\\s ]+", ci: true}
+  CH_TITLE:
+    opt: {regex: '"([^"]+)"', ci: true, name: TITLE, scope: string.quoted.double}
+  CH_RANGE_WIDE: {regex: '(-?[0-9.]+)\s*-?->\s*(-?[0-9.]+)', ci: true, name: RANGE, scope: constant.numeric}
+  # Double.parseDouble over `-?[0-9.]+` (CommandChartHAxis.java:125-133, VAxis :118-125).
+  CH_RANGE_OK:
+    seq:
+      - {regex: '-?', ci: true}
+      - {ref: JAVA_DOUBLE}
+      - {regex: '\s*-?->\s*', ci: true, scope: keyword.operator.range}
+      - {regex: '-?', ci: true}
+      - {ref: JAVA_DOUBLE}
+  CH_GRID:
+    seq:
+      - {ref: CH_WS}
+      - opt: {regex: (grid), ci: true, name: GRID, scope: keyword.other}
+      - {ref: CH_WS}
+
+  # --- h-axis (CommandChartHAxis.java:59-80) ------------------------------------------
+  CH_HAXIS_HEAD:
+    seq:
+      - {ref: CH_WS}
+      - {regex: '[hx]-axis', ci: true, scope: keyword.other.axis}
+      - {ref: CH_WS}
+      - {ref: CH_TITLE}
+      - {ref: CH_WS}
+  CH_HAXIS_DATA:
+    seq:
+      - {ref: CH_WS}
+      - opt: {regex: '\[(.*)\]', ci: true, name: DATA, scope: string.unquoted}
+      - {ref: CH_WS}
+  CH_HAXIS_END:
+    seq:
+      - {ref: CH_WS}
+      - opt: {regex: (label-right), ci: true, name: LABELRIGHT, scope: keyword.other}
+      - {ref: CH_GRID}
+  CH_HAXIS_WIDE:
+    seq:
+      - {ref: CH_HAXIS_HEAD}
+      - opt: {ref: CH_RANGE_WIDE}
+      - {ref: CH_HAXIS_DATA}
+      - opt:
+          seq: [{literal: spacing, ci: true}, {ref: CH_WS_SOME}, {regex: '([0-9]+)', ci: true, name: SPACING}]
+      - {ref: CH_HAXIS_END}
+  # Integer.parseInt and `spacing > 0` (:102-112), then the range doubles (:125-133).
+  CH_HAXIS_SPACING_OK:
+    opt:
+      seq: [{literal: spacing, ci: true}, {ref: CH_WS_SOME}, {ref: JAVA_INT_POSITIVE}]
+  CH_HAXIS_OK:
+    seq:
+      - {ref: CH_HAXIS_HEAD}
+      - opt: {ref: CH_RANGE_OK}
+      - {ref: CH_HAXIS_DATA}
+      - {ref: CH_HAXIS_SPACING_OK}
+      - {ref: CH_HAXIS_END}
+  # An h-axis that sets the numeric range (ChartDiagram.java:151-159 clears autoScale).
+  CH_HAXIS_RANGE_OK:
+    seq:
+      - {ref: CH_HAXIS_HEAD}
+      - {ref: CH_RANGE_OK}
+      - {ref: CH_HAXIS_DATA}
+      - {ref: CH_HAXIS_SPACING_OK}
+      - {ref: CH_HAXIS_END}
+
+  # --- v-axis (CommandChartVAxis.java:61-87) ------------------------------------------
+  CH_VAXIS_HEAD:
+    seq:
+      - {ref: CH_WS}
+      - {regex: '([vy]2?-axis)', ci: true, name: AXIS, scope: keyword.other.axis}
+      - {ref: CH_WS}
+      - {ref: CH_TITLE}
+      - {ref: CH_WS}
+  CH_VAXIS_LABELS: {regex: '\[([^\]]+)\]', ci: true, name: LABELS, scope: string.unquoted}
+  CH_VAXIS_TICKS_WIDE:
+    seq: [{literal: ticks, ci: true}, {ref: CH_WS_SOME}, {regex: '\[(.*)\]', ci: true, name: TICKS}]
+  CH_VAXIS_SPACING_WIDE:
+    seq: [{literal: spacing, ci: true}, {ref: CH_WS_SOME}, {regex: '([0-9.]+)', ci: true, name: SPACING}]
+  CH_VAXIS_END:
+    seq:
+      - {ref: CH_WS}
+      - opt: {regex: (label-top), ci: true, name: LABELTOP, scope: keyword.other}
+      - {ref: CH_GRID}
+  CH_VAXIS_WIDE:
+    seq:
+      - {ref: CH_VAXIS_HEAD}
+      - opt: {ref: CH_RANGE_WIDE}
+      - {ref: CH_WS}
+      - opt: {ref: CH_VAXIS_LABELS}
+      - {ref: CH_WS}
+      - opt: {ref: CH_VAXIS_TICKS_WIDE}
+      - {ref: CH_WS}
+      - opt: {ref: CH_VAXIS_SPACING_WIDE}
+      - {ref: CH_VAXIS_END}
+  # With `[labels]` the command returns before parsing anything else (:110-113); without,
+  # the range, ticks and spacing (> 0) must parse (:118-147).
+  CH_VAXIS_OK:
+    seq:
+      - {ref: CH_VAXIS_HEAD}
+      - alt:
+          - seq:
+              - opt: {ref: CH_RANGE_WIDE}
+              - {ref: CH_WS}
+              - {ref: CH_VAXIS_LABELS}
+              - {ref: CH_WS}
+              - opt: {ref: CH_VAXIS_TICKS_WIDE}
+              - {ref: CH_WS}
+              - opt: {ref: CH_VAXIS_SPACING_WIDE}
+              - {ref: CH_VAXIS_END}
+          - seq:
+              - opt: {ref: CH_RANGE_OK}
+              - {ref: CH_WS}
+              - opt:
+                  seq: [{literal: ticks, ci: true}, {ref: CH_WS_SOME}, {literal: '[', ci: true}, {ref: CH_TICKS}, {literal: ']', ci: true}]
+              - {ref: CH_WS}
+              - opt:
+                  seq: [{literal: spacing, ci: true}, {ref: CH_WS_SOME}, {ref: JAVA_DOUBLE_NONZERO}]
+              - {ref: CH_VAXIS_END}
+
+  # --- series (CommandChartBar/Line/Area/Scatter.java:62-88) --------------------------
+  CH_SERIES_LABEL:
+    seq:
+      - {ref: CH_WS}
+      - opt: {regex: '(\<\<.+?\>\>)', ci: true, name: STEREO, scope: entity.other.stereotype}
+      - {ref: CH_WS}
+      - opt: {regex: '"([^"]+)"', ci: true, name: NAME, scope: string.quoted.double}
+      - {ref: CH_WS}
+  CH_BAR_HEAD:
+    seq: [{ref: CH_WS}, {literal: bar, ci: true, scope: keyword.other.series}, {ref: CH_SERIES_LABEL}]
+  CH_LINE_HEAD:
+    seq: [{ref: CH_WS}, {literal: line, ci: true, scope: keyword.other.series}, {ref: CH_SERIES_LABEL}]
+  CH_AREA_HEAD:
+    seq: [{ref: CH_WS}, {literal: area, ci: true, scope: keyword.other.series}, {ref: CH_SERIES_LABEL}]
+  CH_SCATTER_HEAD:
+    seq: [{ref: CH_WS}, {literal: scatter, ci: true, scope: keyword.other.series}, {ref: CH_SERIES_LABEL}]
+  CH_DATA_WIDE: {regex: '\[(.*)\]', ci: true, name: DATA, scope: string.unquoted}
+  CH_DATA_VALUES:
+    seq: [{literal: '[', ci: true}, {ref: CH_VALUES}, {literal: ']', ci: true}]
+  # The tail after `]` never holds `(`, so "data contains (" is a lookahead at its start.
+  CH_DATA_PAIRS:
+    seq: [{literal: '[', ci: true}, {regex: '(?=.*\()', ci: true}, {ref: CH_PAIRS}, {literal: ']', ci: true}]
+  CH_DATA_OK:
+    alt: [{ref: CH_DATA_VALUES}, {ref: CH_DATA_PAIRS}]
+  CH_DATA_WITH_PAREN:
+    seq: [{literal: '[', ci: true}, {regex: '(?=.*\()', ci: true}, {regex: '(.*)', ci: true, name: DATA}, {literal: ']', ci: true}]
+  CH_DATA_WITHOUT_PAREN:
+    seq: [{literal: '[', ci: true}, {regex: '(?!.*\()', ci: true}, {regex: '(.*)', ci: true, name: DATA}, {literal: ']', ci: true}]
+  CH_COLOR_WIDE:
+    opt: {regex: '#([0-9a-fA-F]{6}|[0-9a-fA-F]{3}|\w+)', ci: true, name: COLOR, scope: constant.other.color}
+  CH_COLOR_OK:
+    opt: {ref: MC_HASH_COLOR_OK}
+  CH_V2:
+    opt:
+      seq: [{ref: CH_WS_SOME}, {regex: '([vy]2)', ci: true, name: V2, scope: keyword.other}]
+  CH_LABELS:
+    opt:
+      seq: [{ref: CH_WS_SOME}, {regex: (labels), ci: true, name: LABELS, scope: keyword.other}]
+  CH_MARKER:
+    opt:
+      seq: [{ref: CH_WS_SOME}, {regex: <<(circle|square|triangle)>>, ci: true, name: MARKER, scope: keyword.other}]
+  CH_BAR_TAIL_WIDE: {seq: [{ref: CH_WS}, {ref: CH_COLOR_WIDE}, {ref: CH_LABELS}, {ref: CH_WS}]}
+  CH_BAR_TAIL_OK: {seq: [{ref: CH_WS}, {ref: CH_COLOR_OK}, {ref: CH_LABELS}, {ref: CH_WS}]}
+  CH_LINE_TAIL_WIDE: {seq: [{ref: CH_WS}, {ref: CH_COLOR_WIDE}, {ref: CH_V2}, {ref: CH_LABELS}, {ref: CH_WS}]}
+  CH_LINE_TAIL_OK: {seq: [{ref: CH_WS}, {ref: CH_COLOR_OK}, {ref: CH_V2}, {ref: CH_LABELS}, {ref: CH_WS}]}
+  CH_SCATTER_TAIL_WIDE:
+    seq: [{ref: CH_WS}, {ref: CH_COLOR_WIDE}, {ref: CH_V2}, {ref: CH_LABELS}, {ref: CH_MARKER}, {ref: CH_WS}]
+  CH_SCATTER_TAIL_OK:
+    seq: [{ref: CH_WS}, {ref: CH_COLOR_OK}, {ref: CH_V2}, {ref: CH_LABELS}, {ref: CH_MARKER}, {ref: CH_WS}]
+  CH_BAR_WIDE: {seq: [{ref: CH_BAR_HEAD}, {ref: CH_DATA_WIDE}, {ref: CH_BAR_TAIL_WIDE}]}
+  CH_BAR_OK: {seq: [{ref: CH_BAR_HEAD}, {ref: CH_DATA_VALUES}, {ref: CH_BAR_TAIL_OK}]}
+  CH_AREA_WIDE: {seq: [{ref: CH_AREA_HEAD}, {ref: CH_DATA_WIDE}, {ref: CH_LINE_TAIL_WIDE}]}
+  CH_AREA_OK: {seq: [{ref: CH_AREA_HEAD}, {ref: CH_DATA_VALUES}, {ref: CH_LINE_TAIL_OK}]}
+  CH_LINE_WIDE: {seq: [{ref: CH_LINE_HEAD}, {ref: CH_DATA_WIDE}, {ref: CH_LINE_TAIL_WIDE}]}
+  CH_LINE_OK: {seq: [{ref: CH_LINE_HEAD}, {ref: CH_DATA_OK}, {ref: CH_LINE_TAIL_OK}]}
+  CH_LINE_INDEX_OK: {seq: [{ref: CH_LINE_HEAD}, {ref: CH_DATA_VALUES}, {ref: CH_LINE_TAIL_OK}]}
+  CH_LINE_COORD_OK: {seq: [{ref: CH_LINE_HEAD}, {ref: CH_DATA_PAIRS}, {ref: CH_LINE_TAIL_OK}]}
+  CH_LINE_INDEX_WIDE: {seq: [{ref: CH_LINE_HEAD}, {ref: CH_DATA_WITHOUT_PAREN}, {ref: CH_LINE_TAIL_WIDE}]}
+  CH_LINE_COORD_WIDE: {seq: [{ref: CH_LINE_HEAD}, {ref: CH_DATA_WITH_PAREN}, {ref: CH_LINE_TAIL_WIDE}]}
+  CH_SCATTER_WIDE: {seq: [{ref: CH_SCATTER_HEAD}, {ref: CH_DATA_WIDE}, {ref: CH_SCATTER_TAIL_WIDE}]}
+  CH_SCATTER_OK: {seq: [{ref: CH_SCATTER_HEAD}, {ref: CH_DATA_OK}, {ref: CH_SCATTER_TAIL_OK}]}
+  CH_SCATTER_INDEX_OK: {seq: [{ref: CH_SCATTER_HEAD}, {ref: CH_DATA_VALUES}, {ref: CH_SCATTER_TAIL_OK}]}
+  CH_SCATTER_COORD_OK: {seq: [{ref: CH_SCATTER_HEAD}, {ref: CH_DATA_PAIRS}, {ref: CH_SCATTER_TAIL_OK}]}
+  CH_SCATTER_INDEX_WIDE: {seq: [{ref: CH_SCATTER_HEAD}, {ref: CH_DATA_WITHOUT_PAREN}, {ref: CH_SCATTER_TAIL_WIDE}]}
+  CH_SCATTER_COORD_WIDE: {seq: [{ref: CH_SCATTER_HEAD}, {ref: CH_DATA_WITH_PAREN}, {ref: CH_SCATTER_TAIL_WIDE}]}
+
+  # --- annotation (CommandChartAnnotation.java:61-83) ---------------------------------
+  CH_ANNOTATION_HEAD:
+    seq:
+      - {ref: CH_WS}
+      - {literal: annotation, ci: true, scope: keyword.other}
+      - {ref: CH_WS_SOME}
+      - {regex: '"([^"]+)"', ci: true, name: TEXT, scope: string.quoted.double}
+      - {ref: CH_WS_SOME}
+      - {literal: at, ci: true, scope: keyword.other}
+      - {ref: CH_WS}
+      - {literal: (, ci: true}
+      - {ref: CH_WS}
+      - {regex: '([^,]+)', ci: true, name: XPOS}
+      - {ref: CH_WS}
+      - {literal: ',', ci: true}
+      - {ref: CH_WS}
+  CH_ANNOTATION_END:
+    seq:
+      - {ref: CH_WS}
+      - {literal: ), ci: true}
+      - {ref: CH_WS}
+      - opt: {regex: <<(arrow)>>, ci: true, name: ARROW, scope: keyword.other}
+      - {ref: CH_WS}
+  CH_ANNOTATION_WIDE:
+    seq: [{ref: CH_ANNOTATION_HEAD}, {regex: '([^)]+)', ci: true, name: YPOS}, {ref: CH_ANNOTATION_END}]
+  CH_ANNOTATION_OK:
+    seq: [{ref: CH_ANNOTATION_HEAD}, {ref: CH_YPOS}, {ref: CH_ANNOTATION_END}]

@@ -1,0 +1,10 @@
+' description: CommandPackageWithUSymbol, CommandCreateElementFull, CommandLinkElement
+@startuml
+node "Web Server" as web {
+  artifact "app.war" as war
+}
+database "DB" as db
+cloud Internet
+Internet --> web
+web --> db : JDBC
+@enduml

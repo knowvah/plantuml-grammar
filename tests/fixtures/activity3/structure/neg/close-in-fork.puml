@@ -1,0 +1,9 @@
+' activity3: CommandPartition3, CommandCloseGroup3, CommandFork3
+@startuml
+start
+partition Conductor {
+ :Climbs on Platform;
+ fork
+	:Bows;
+}
+@enduml

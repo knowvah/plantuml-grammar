@@ -1,0 +1,5 @@
+' timing: CommandFootboxIgnored
+@startuml
+robust "R" as R
+hide footbox now
+@enduml

@@ -1,0 +1,23 @@
+' state: CommandCreateState, CommandAddField
+@startuml
+state Idle
+state Busy as "Busy worker"
+state "Waiting for input" as Waiting
+state "Quoted only"
+state Colored #pink ##[dashed]blue
+state Linked [[http://example.com]] : with a link
+state Tagged $tag1 $tag2
+state Described : first line
+Described : second line
+"Quoted only" : a field
+state C1 <<choice>>
+state F1 <<fork>>
+state J1 <<join>>
+state S1 <<start>>
+state E1 <<end>>
+state H1 <<history>>
+state H2 <<history*>>
+state R1 <<sdlreceive>>
+state P1 <<portin>>
+state P2 <<portout>>
+@enduml

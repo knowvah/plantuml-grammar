@@ -1,0 +1,22 @@
+' misc-charts: WireComponentAtLevel0, WireComponentAtLevel1, WireComponentAtLevel2, CommandComponent, CommandSpot, CommandGoto, CommandMove, CommandWLink, CommandNewColumn, CommandPrint
+@startwire
+goto(0, 40)
+*DDR3L [70x50] #red
+*SoC [200x800]
+	*ARM [60x60]
+	--
+	*signals
+		*display [85x20] #00FF00
+		print("lanes")
+    *    PXP
+    move(0,90)
+--
+move(40, 480)
+* EEPROM #automatic
+
+spot DDR3L(-5, -5)
+spot SoC.signals.display(100%, 50%-5) #green
+DDR3L(100%,50%-10) => SoC.ARM
+SoC.signals <-> EEPROM #blue : bus
+DDR3L -- EEPROM
+@endwire

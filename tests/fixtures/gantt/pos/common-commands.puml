@@ -1,0 +1,7 @@
+' gantt: CommandTitle, CommandSkinParam, CommandScale
+@startgantt
+title Gantt
+skinparam backgroundColor #eee
+scale 2
+[A] -> [B]
+@endgantt

@@ -1,0 +1,4 @@
+' meta: PSystemDefinitionFactory
+' gap: UmlSource.isStartDef is case-sensitive (core/UmlSource.java:288-290); the start line is not visible to model rules
+@startDef
+@endDef

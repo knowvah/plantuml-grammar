@@ -1,0 +1,6 @@
+' gantt: NaturalGanttDayAsDateInvalid
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+2021-02-29 is closed
+@endgantt

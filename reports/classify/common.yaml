@@ -1,0 +1,41 @@
+# Classifications for the `common` overlay slice (T16). The slice holds every block of a
+# corpus, so its FR/FA are the union of the diagram families' cases; none of the vega
+# cases below involves a common command (with the common refinements included through
+# probe diagram models the FR/FA sets are identical; see T16 report). Each note names the
+# family that owns the case. Upstream pin 97a5992.
+cases:
+  # Gantt sentences (NaturalGanttCommand) are not walked by the extractor yet
+  # (.agent-notes/T03.md, T07.md); owned by T24/T25.
+  xgantt/gantt0.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt1.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt3.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt4.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt5.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt6.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt7.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt8.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt9.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt10.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/gantt11.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/hms0.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/hms1.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/hms2.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  xgantt/hms3.puml#0: {class: bug, note: "gantt sentence grammar missing (T24/T25), not a common command"}
+  # Deliberate crashes of the crash diagram (owned by T34 single-line).
+  crash/crash-when-finalizing.puml#0:
+    class: semantic
+    note: "CrashDiagram throws while finalizing; not a common command (T34)"
+    cite: src/main/java/net/sourceforge/plantuml/crash/CrashDiagram.java:100
+  crash/crash-when-parsing.puml#0:
+    class: semantic
+    note: "CommandSelectCrash throws while parsing; not a common command (T34)"
+    cite: src/main/java/net/sourceforge/plantuml/crash/CommandSelectCrash.java:89
+  # Packet layout checked when the diagram is finalized (owned by T27 nwdiag-packet).
+  packet/R07.02-Range_Error2.puml#0:
+    class: semantic
+    note: "bit range rejected by PacketDiagram.build() in checkFinalError; not a common command (T27)"
+    cite: src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java:226-228
+  packet/R11.01-len_0.puml#0:
+    class: semantic
+    note: "`len = 0` (end before start) rejected by PacketDiagram.build() in checkFinalError; not a common command (T27)"
+    cite: src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java:226-228

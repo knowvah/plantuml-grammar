@@ -1,0 +1,5 @@
+' timing: CommandConstraint
+@startuml
+robust "R" as R
+@0 <-> @5:0:99999999999 : x
+@enduml

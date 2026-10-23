@@ -1,0 +1,5 @@
+' activity-legacy: ActivityIfFirst
+@startuml
+(*) --> if x then
+--> A
+@enduml

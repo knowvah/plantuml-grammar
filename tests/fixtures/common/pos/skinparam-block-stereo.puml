@@ -1,0 +1,8 @@
+' common: CommandSkinParamMultilines
+' factory: SequenceDiagramFactory
+@startuml
+skinparam participant<<Foo>> {
+  BackgroundColor red
+}
+Alice -> Bob : hello
+@enduml

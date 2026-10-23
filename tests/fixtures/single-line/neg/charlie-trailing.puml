@@ -1,0 +1,4 @@
+' single-line: single-line-charlie
+@startuml
+charlie 
+@enduml

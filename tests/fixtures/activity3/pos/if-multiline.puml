@@ -1,0 +1,8 @@
+' activity3: CommandDecoratorMultine_55, CommandActivity3, CommandEndif3
+@startuml
+if (multi
+line
+condition) then (yes)
+:x;
+endif
+@enduml

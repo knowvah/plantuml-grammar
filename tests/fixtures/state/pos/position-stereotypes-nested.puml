@@ -1,0 +1,16 @@
+' state: CommandCreateState, CommandCreatePackageState, CommandCreatePackage2
+@startuml
+state Outer {
+  state In1 <<entryPoint>>
+  state Out1 <<exitPoint>>
+  state Pin1 <<inputPin>>
+  state Pin2 <<outputPin>>
+  state Exp1 <<expansionInput>>
+  state Exp2 <<expansionOutput>>
+  state Port1 <<port>>
+  state Inner
+}
+frame F {
+  state In2 <<ENTRYPOINT>> #red
+}
+@enduml

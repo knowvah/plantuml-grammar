@@ -1,0 +1,11 @@
+' mindmap-wbs: CommandStyleMultilinesCSS, CommandSkinParam
+@startmindmap
+<style>
+node {
+  BackgroundColor lightblue
+}
+</style>
+skinparam backgroundColor white
+* root
+** a
+@endmindmap

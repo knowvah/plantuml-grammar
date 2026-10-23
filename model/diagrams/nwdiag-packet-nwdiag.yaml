@@ -1,0 +1,199 @@
+# nwdiag (T27). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/nwdiag/ unless stated.
+#
+# Upstream. NwDiagramFactory.initCommandsList (NwDiagramFactory.java:63-74) registers the
+# common block (CommonCommands.addCommonCommands1), then eight nwdiag commands and
+# CommandFootboxIgnored, all single lines. The generated model carries them in that order.
+# `nwdiag {` (CommandNwDiagInit) is a no-op that pushes nothing (CommandNwDiagInit.java:61-63).
+#
+# Structure. NwDiagram keeps one stack of open networks and groups (NwDiagram.java:85).
+# `network X {` pushes a network (:144-145), `group X {` a group (:127-128), and `}` pops
+# whatever is on top, or nothing when the stack is empty (:161-166), so the closing brace
+# of `nwdiag {` usually pops nothing. The checks keep the stack to at most one network
+# with at most one group above it:
+# * `group {` fails when any group is open, "Cannot nest group" (:122-125);
+# * `network {` fails when a group is on top, "Cannot open network in a group" (:134-135),
+#   or when any network is open, "Cannot nest network" (:137-139);
+# * `description = x` (CommandProperty) dereferences the current network unless a group
+#   is on top (:447-451), so on an empty stack the NullPointerException becomes an
+#   execution error (command/ProtectedCommand.java:65-76).
+#
+# Model. Three contexts mirror the reachable stacks: `main` (empty), `nw_network` (a
+# network) and `nw_group` (a group, at the root or inside a network: no check tells the
+# two apart). An opener's action depends on the state, so the generated CommandGroup and
+# CommandNetwork are removed and each context starts with its own head entries: openers
+# that push where upstream accepts them, rejects where it fails (coverage exclusions in
+# reports/classify/nwdiag-packet.yaml). The generated CommandEndSomething pops; in `main`
+# the head entry NwCloseNothing takes `}` as a plain line instead (:162 pops nothing, and
+# emitters reject a pop in the bottom frame, tools/emit/flow.py). Emitters drop the
+# rejects, so they also refuse a nested opener (no rule takes it).
+#
+# A head entry runs before the whole generated list, so it must not take a line an
+# earlier upstream command takes. CommandElement (registered before CommandGroup and
+# CommandNetwork) needs the line to end after an optional `[...]` and `;`, so it never
+# matches an opener ending in `{`, `description = x` (no `[` after the name) or `}`;
+# CommandNwDiagInit matches none of them; no common command starts with `group`,
+# `network`, `description` or `}`.
+#
+# No final check: NwDiagram overrides neither checkFinalError nor isIncomplete, so a block
+# that ends inside a network or group is accepted (no `require_pop`).
+#
+# Gaps (name tables, tests/fixtures/nwdiag-packet/gap): an element already in some group,
+# "Element already in another group." (:240-242); a link whose first server is unknown
+# once a network exists, "what about X" (:174-180).
+schema_version: 1
+id: nwdiag-packet-nwdiag
+layer: diagram
+diagram: NWDIAG
+factory: NwDiagramFactory
+include: [gen-nw-diagram, common]
+
+variables:
+  NW_SPACE: {regex: "[\\s\_]*", ci: true}
+  # CommandGroup.java:53-61.
+  NW_GROUP_OPEN:
+    seq:
+      - {ref: NW_SPACE}
+      - {literal: group, ci: true, scope: keyword.other.group}
+      - {ref: NW_SPACE}
+      - {regex: "([\\p{L}\\p{N}_]+)?", ci: true, name: NAME, scope: entity.name.group}
+      - {ref: NW_SPACE}
+      - {literal: "{", ci: true, scope: punctuation.section.block.begin}
+  # CommandNetwork.java:53-61.
+  NW_NETWORK_OPEN:
+    seq:
+      - {ref: NW_SPACE}
+      - {literal: network, ci: true, scope: keyword.other.network}
+      - {ref: NW_SPACE}
+      - {regex: "([-.\\p{L}\\p{N}_]+)?", ci: true, name: NAME, scope: entity.name.network}
+      - {ref: NW_SPACE}
+      - {literal: "{", ci: true, scope: punctuation.section.block.begin}
+  # CommandProperty.java:54-67 with NAME narrowed to `description`.
+  NW_DESCRIPTION:
+    seq:
+      - {ref: NW_SPACE}
+      - {regex: (description), ci: true, name: NAME, scope: variable.other.property}
+      - {ref: NW_SPACE}
+      - {literal: "=", ci: true}
+      - {ref: NW_SPACE}
+      - {regex: '"?', ci: true}
+      - {regex: '([^"]*)', ci: true, name: VALUE, scope: string.unquoted.property}
+      - {regex: '"?', ci: true}
+      - {ref: NW_SPACE}
+      - {regex: ";?", ci: true}
+  # CommandEndSomething.java:53-58.
+  NW_CLOSE:
+    seq:
+      - {ref: NW_SPACE}
+      - {literal: "}", ci: true, scope: punctuation.section.block.end}
+      - {ref: NW_SPACE}
+
+overrides:
+  # Replaced by the per-state head openers below.
+  CommandGroup: {remove: true}
+  CommandNetwork: {remove: true}
+  # NwDiagram.java:161-166 (closeSomething pops the top frame).
+  CommandEndSomething: {pop: true}
+
+contexts:
+  main:
+    - command: NwDescriptionWithoutOwner
+      provenance:
+        class: net.sourceforge.plantuml.nwdiag.NwDiagram
+        file: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java
+        line: 449
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java:97-109
+          - src/main/java/net/sourceforge/plantuml/nwdiag/CommandProperty.java:54-72
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      reject: true
+      parts: {ref: NW_DESCRIPTION}
+    - command: NwCloseNothing
+      provenance:
+        class: net.sourceforge.plantuml.nwdiag.NwDiagram
+        file: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java
+        line: 162
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/nwdiag/CommandEndSomething.java:53-63
+      kind: single
+      parts: {ref: NW_CLOSE}
+    - command: NwGroupOpenAtRoot
+      provenance:
+        class: net.sourceforge.plantuml.nwdiag.NwDiagram
+        file: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java
+        line: 128
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/nwdiag/CommandGroup.java:53-66
+          - src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagramFactory.java:68
+      kind: single
+      parts: {ref: NW_GROUP_OPEN}
+      push: nw_group
+    - command: NwNetworkOpenAtRoot
+      provenance:
+        class: net.sourceforge.plantuml.nwdiag.NwDiagram
+        file: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java
+        line: 145
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/nwdiag/CommandNetwork.java:53-66
+          - src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagramFactory.java:69
+      kind: single
+      parts: {ref: NW_NETWORK_OPEN}
+      push: nw_network
+    - include: gen-nw-diagram#main
+  nw_network:
+    - command: NwNetworkInNetwork
+      provenance:
+        class: net.sourceforge.plantuml.nwdiag.NwDiagram
+        file: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java
+        line: 139
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java:137-138
+          - src/main/java/net/sourceforge/plantuml/nwdiag/CommandNetwork.java:53-66
+      kind: single
+      reject: true
+      parts: {ref: NW_NETWORK_OPEN}
+    - command: NwGroupOpenInNetwork
+      provenance:
+        class: net.sourceforge.plantuml.nwdiag.NwDiagram
+        file: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java
+        line: 128
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/nwdiag/CommandGroup.java:53-66
+          - src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagramFactory.java:68
+      kind: single
+      parts: {ref: NW_GROUP_OPEN}
+      push: nw_group
+    - include: gen-nw-diagram#main
+  nw_group:
+    - command: NwGroupInGroup
+      provenance:
+        class: net.sourceforge.plantuml.nwdiag.NwDiagram
+        file: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java
+        line: 125
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java:123-124
+          - src/main/java/net/sourceforge/plantuml/nwdiag/CommandGroup.java:53-66
+      kind: single
+      reject: true
+      parts: {ref: NW_GROUP_OPEN}
+    - command: NwNetworkInGroup
+      provenance:
+        class: net.sourceforge.plantuml.nwdiag.NwDiagram
+        file: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java
+        line: 135
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java:105-109
+          - src/main/java/net/sourceforge/plantuml/nwdiag/CommandNetwork.java:53-66
+      kind: single
+      reject: true
+      parts: {ref: NW_NETWORK_OPEN}
+    - include: gen-nw-diagram#main

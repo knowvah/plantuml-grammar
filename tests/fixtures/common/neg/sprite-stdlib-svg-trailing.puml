@@ -1,0 +1,6 @@
+' common: CommandSpriteStdlibSvg
+' factory: SequenceDiagramFactory
+@startuml
+sprite foo :tupadr3:<x> y
+Alice -> Bob : hello
+@enduml

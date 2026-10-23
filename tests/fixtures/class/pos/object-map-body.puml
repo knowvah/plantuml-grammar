@@ -1,0 +1,15 @@
+' class: CommandCreateEntityObjectMultilines, CommandCreateMap, MapBodyEntry, MapBodyLink
+@startuml
+object user {
+  name = "Dummy"
+  id = 123
+}
+map CapitalCity {
+ UK => London
+ USA => Washington
+}
+map Links {
+ user *-> user
+ x => y
+}
+@enduml

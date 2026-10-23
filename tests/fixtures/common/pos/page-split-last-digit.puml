@@ -1,0 +1,6 @@
+' common: CommandPage
+' factory: SequenceDiagramFactory
+@startuml
+page 101
+Alice -> Bob : hello
+@enduml

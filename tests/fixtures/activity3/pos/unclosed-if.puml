@@ -1,0 +1,6 @@
+' activity3: CommandStart3, CommandIf2, CommandActivity3
+@startuml
+start
+if (a) then (yes)
+:x;
+@enduml

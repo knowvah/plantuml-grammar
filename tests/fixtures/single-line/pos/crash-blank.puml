@@ -1,0 +1,6 @@
+' single-line: single-line-crash
+@startcrash
+hello
+
+world
+@endcrash

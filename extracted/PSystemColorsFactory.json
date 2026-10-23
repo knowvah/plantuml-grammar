@@ -1,0 +1,17 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "PSystemColorsFactory",
+  "factoryOrder": 1,
+  "diagramType": "SEQUENCE",
+  "commands": [
+    {
+      "order": 0,
+      "class": "net.sourceforge.plantuml.eggs.PSystemColorsFactory",
+      "kind": "opaque",
+      "engine": "IRegex",
+      "start": {"t": "leaf", "name": "pattern", "pattern": "^colors?\\s*(#?\\w+)?\\s*$", "children": []},
+      "end": null
+    }
+  ],
+  "unreachable": []
+}

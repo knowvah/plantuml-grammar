@@ -1,0 +1,17 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+# String.equalsIgnoreCase (:48).
+schema_version: 1
+id: single-line-charlie
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemCharlieFactory
+include: [embedded-charlie, single-line-base]
+overrides:
+  PSystemCharlieFactory:
+    provenance: {class: net.sourceforge.plantuml.eggs.PSystemCharlieFactory, file: src/main/java/net/sourceforge/plantuml/eggs/PSystemCharlieFactory.java, line: 48, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "(?:[cC][hH][aA][rR][lL][iI\u0131\u0130][eE]|[jJ][eE][sS\u017F][uU][iI\u0131\u0130][sS\u017F][cC][hH][aA][rR][lL][iI\u0131\u0130][eE])"}
+    set: sl_done
+    gives: single_line

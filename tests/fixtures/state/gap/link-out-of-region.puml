@@ -1,0 +1,10 @@
+' state: CommandLinkState
+' gap: a transition from inside a concurrent region to a state outside it fails the final check (StateDiagram.checkFinalError, StateDiagram.java:232-242)
+@startuml
+state A {
+  state B
+  --
+  state C
+}
+C --> D
+@enduml

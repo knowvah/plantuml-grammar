@@ -1,0 +1,18 @@
+public private
+protected,package
+public, ,private
+package entities.mindmap {
+hide public member
+package moc_varnish {
+package ddf.content.operation <<Node>> {
+package P {
+package wfp2_real_webservice {
+Processing -> Shipped : warehouse marks package as dispatched with tracking number
+package package2{
+package Order {
+() HTTPS as APIGHTTP <<Protected>>
+package "good-enough?" as goodenough {
+package Kurierfahrt{
+Rel_Neighbor(spa, webApp, "Uses", "JSON, HTTPS")
+package wfp2_real_bk {
+scale 400 x 800

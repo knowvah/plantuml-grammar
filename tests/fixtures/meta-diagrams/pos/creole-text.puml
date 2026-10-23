@@ -1,0 +1,8 @@
+' meta: CreoleText, CreoleLine
+@startcreole
+**bold** <color:red>red</color> and //italic//
+|= a |= b |
+| 1 | 2 |
+* item
+----
+@endcreole

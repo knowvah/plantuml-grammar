@@ -1,0 +1,5 @@
+' activity-legacy: CommandLinkActivity
+@startuml
+(*) --> A
+else --> B
+@enduml

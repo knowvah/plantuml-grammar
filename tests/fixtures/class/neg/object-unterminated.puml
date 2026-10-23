@@ -1,0 +1,6 @@
+' class: CommandCreateEntityObjectMultilines
+@startuml
+class X
+object o {
+  a = 1
+@enduml

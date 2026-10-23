@@ -1,0 +1,6 @@
+' common: CommandHideShowByGender
+' factory: ClassDiagramFactory
+@startuml
+hide <<Foo>> circle
+class A
+@enduml

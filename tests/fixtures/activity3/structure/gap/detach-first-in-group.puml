@@ -1,0 +1,7 @@
+' activity3: CommandPartition3, CommandKill3
+' gap: kill/detach on an empty group list fails (InstructionGroup.java:115-117, InstructionList.java:169-174); needs the last-instruction state (T21a gap kill-first)
+@startuml
+partition P {
+detach
+}
+@enduml

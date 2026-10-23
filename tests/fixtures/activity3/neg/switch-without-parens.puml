@@ -1,0 +1,6 @@
+' activity3: CommandSwitch
+@startuml
+switch x
+case (a)
+endswitch
+@enduml

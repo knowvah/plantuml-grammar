@@ -1,0 +1,10 @@
+' description: RootEnd, CommandTitle, CommandHideShow2, CommandUrl
+@startuml
+[c]
+}
+title x
+hide c
+skinparam linetype ortho
+scale 2
+url of c is [[http://x]]
+@enduml

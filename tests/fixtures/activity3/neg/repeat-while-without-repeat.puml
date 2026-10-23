@@ -1,0 +1,5 @@
+' activity3: CommandRepeatWhile3
+@startuml
+:x;
+repeat while (a)
+@enduml

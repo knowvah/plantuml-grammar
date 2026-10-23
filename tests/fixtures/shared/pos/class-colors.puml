@@ -1,0 +1,9 @@
+' refines: color-spec | #pink;line:red;line.bold;text:red
+' refines: color-spec | #red|blue
+' refines: color-gradient | #red|blue
+' refines: color-spec | #back:lightblue;header:white
+@startuml
+class A #pink;line:red;line.bold;text:red
+class B #red|blue
+class C #back:lightblue;header:white
+@enduml

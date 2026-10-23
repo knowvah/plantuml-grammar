@@ -1,0 +1,14 @@
+' description: CommandRankDir, CommandLinkElement
+@startuml
+top to bottom direction
+[A] -[#red,dashed]-> [B]
+[A] -[thickness=3]-> [B]
+[A] .> [B]
+[A] ~~> [B]
+[A] ==> [B]
+[A] "1" --> "many" [B] : uses
+[A] --> [B] #blue
+[A] --> [B] <<stereo>> : label
+[A] -[hidden]- [B]
+[A] -[#red]left-> [B]
+@enduml

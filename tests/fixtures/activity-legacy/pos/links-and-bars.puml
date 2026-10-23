@@ -1,0 +1,10 @@
+' activity-legacy: ActivityLinkFirst, CommandLinkActivity
+@startuml
+(*) --> "First Activity"
+"First Activity" --> ===B1===
+===B1=== -->[left] "Parallel 1"
+===B1=== --> "Parallel 2"
+"Parallel 1" --> ===B2===
+"Parallel 2" --> ===B2===
+===B2=== --> (*)
+@enduml

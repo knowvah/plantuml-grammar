@@ -1,0 +1,8 @@
+' activity3: CommandSwimlane, CommandFork3, CommandForkEnd3
+' gap: the swimlane strategy is tracked in the top-level frame only: the first deciding command is an opener (fork)
+@startuml
+fork
+:a;
+end fork
+|A|
+@enduml

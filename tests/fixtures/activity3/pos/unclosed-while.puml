@@ -1,0 +1,5 @@
+' activity3: CommandWhile3, CommandActivity3
+@startuml
+while (a)
+:x;
+@enduml

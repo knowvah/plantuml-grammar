@@ -1,0 +1,6 @@
+' common: CommandPragma
+' factory: SequenceDiagramFactory
+@startuml
+!pragma teoz true
+Alice -> Bob : hello
+@enduml

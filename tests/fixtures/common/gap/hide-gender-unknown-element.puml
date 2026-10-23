@@ -1,0 +1,7 @@
+' common: CommandHideShowByGender
+' factory: ClassDiagramFactory
+' gap: semantic: entity lookup (CommandHideShowByGender.java:206)
+@startuml
+hide NoSuchClass members
+class A
+@enduml

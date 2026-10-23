@@ -1,0 +1,6 @@
+' activity-legacy: ActivityEndGroupOrphan, ActivityEndifWithoutIf
+@startuml
+(*) --> A
+}
+endif
+@enduml

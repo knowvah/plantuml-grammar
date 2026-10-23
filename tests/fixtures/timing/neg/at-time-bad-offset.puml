@@ -1,0 +1,6 @@
+' timing: CommandAtTime
+@startuml
+robust "R" as R
+@0 as :a
+@:a+1.2.3
+@enduml

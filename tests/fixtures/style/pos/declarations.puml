@@ -1,0 +1,98 @@
+' style: property forms
+@startuml
+<style>
+root {
+LineColor red
+FontSize: 12;
+LineColor :: red
+HyperLinkColor a:b
+Foo a,,b
+NotAProperty 12
+LineColor #FF0000
+}
+</style>
+class Foo
+@enduml
+
+' style: value on the next line
+@startuml
+<style>
+root {
+LineColor
+red
+LineColor
+: blue
+}
+</style>
+class Foo
+@enduml
+
+' style: several statements on a line
+@startuml
+<style>
+root { LineColor red; FontSize 12 } foo { } ; ;
+</style>
+class Foo
+@enduml
+
+' style: quoted values
+@startuml
+<style>
+root {
+FontName "Courier New"
+FontName "Courier
+New"
+}
+</style>
+class Foo
+@enduml
+
+' style: unterminated quote at the end
+@startuml
+<style>
+root {
+FontName "Courier
+</style>
+class Foo
+@enduml
+
+' style: line comment continues a value
+@startuml
+<style>
+root {
+LineColor red // comment
+FontSize 12
+}
+</style>
+class Foo
+@enduml
+
+' style: line comment after a colon
+@startuml
+<style>
+root {
+LineColor: // comment
+red
+}
+</style>
+class Foo
+@enduml
+
+' style: slashes inside strings
+@startuml
+<style>
+root {
+Foo a/b c/*d
+}
+</style>
+class Foo
+@enduml
+
+' style: free text is a declaration
+@startuml
+<style>
+this is not css at all
+A -> B : hi
+</style>
+class Foo
+@enduml

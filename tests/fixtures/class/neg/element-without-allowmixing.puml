@@ -1,0 +1,6 @@
+' class: ElementNeedsAllowMixing
+@startuml
+class A {
+}
+state S <<exitpoint>>
+@enduml

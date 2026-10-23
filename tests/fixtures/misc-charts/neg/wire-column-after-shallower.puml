@@ -1,0 +1,7 @@
+' misc-charts: WireTooDeep1
+@startwire
+* a
+	* b
+* c
+		--
+@endwire

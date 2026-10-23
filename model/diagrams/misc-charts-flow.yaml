@@ -1,0 +1,45 @@
+# Flow diagrams (T30, `@startflow`, FlowDiagramFactory). Upstream pin 97a5992; paths are
+# relative to src/main/java/net/sourceforge/plantuml/.
+#
+# flowdiagram/FlowDiagramFactory.java:60-64 registers CommandLineSimple and CommandLink and
+# no common block. FlowDiagram overrides no final check (core/AbstractDiagram.java:161-171
+# defaults).
+#
+# A link (`[nsew] id`) resolves its target among the boxes created so far
+# (flowdiagram/FlowDiagram.java:108-120): an unknown id throws IllegalArgumentException,
+# which ProtectedCommand turns into an execution error (command/ProtectedCommand.java:
+# 65-76). Before the first box there is nothing to find, so every link fails. Model:
+# `main` is "no box yet" (the link is a reject there), the first box `set`s `flow_boxes`,
+# whose head entry accepts links. Not modelled (name and geometry state, gap fixtures):
+# a link to an id that was never declared, and a path the tile field refuses
+# (golem/TilesField.addPath).
+schema_version: 1
+id: misc-charts-flow
+layer: diagram
+diagram: FLOW
+factory: FlowDiagramFactory
+include: [gen-flow-diagram]
+
+overrides:
+  CommandLineSimple: {set: flow_boxes}
+  CommandLink: {reject: true}
+
+contexts:
+  flow_boxes:
+    - command: FlowLinkToBox
+      provenance:
+        class: net.sourceforge.plantuml.flowdiagram.FlowDiagram
+        file: src/main/java/net/sourceforge/plantuml/flowdiagram/FlowDiagram.java
+        line: 108
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/flowdiagram/CommandLink.java:56-64
+      kind: single
+      parts:
+        seq:
+          - opt:
+              seq:
+                - {regex: '([nsew])', ci: true, name: ORIENTATION, scope: keyword.other.direction}
+                - {regex: "[\\s ]+", ci: true}
+          - {regex: '(\w+)', ci: true, name: ID_DEST, scope: entity.name.tag}
+    - include: gen-flow-diagram#main

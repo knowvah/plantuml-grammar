@@ -1,0 +1,24 @@
+# Activity (new syntax), T21a: refinements of single action commands. Upstream pin
+# 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# CommandKill3 (activitydiagram3/command/CommandKill3.java:55-60) concatenates
+# `RegexLeaf.start()`, `new RegexLeaf("kill|detach")`, `";?"` and `RegexLeaf.end()`. The
+# leaf is not grouped, so the pattern is `^kill|detach;?$`: alternation binds loosest,
+# and RegexComposed.match uses `find()` (regex/RegexComposed.java:112-118). The command
+# therefore takes every line that STARTS with `kill` (`killer`, `kill now`) and every
+# line that ENDS with `detach` or `detach;` (`foo detach`), not just `kill`/`detach`
+# (the generated rule groups the alternation). Jar-verified by
+# tests/fixtures/activity3/pos/kill-detach-precedence.puml. Lines an earlier command
+# takes (`:x detach;`, `title detach`) keep going there; later commands (CommandNote3,
+# CommandActivityList, ... ActivityDiagramFactory3.java:155-164) lose such lines to it,
+# as upstream.
+schema_version: 1
+id: activity3-core-actions
+layer: shared
+
+overrides:
+  CommandKill3:
+    parts:
+      alt:
+        - {regex: "kill.*", ci: true, scope: keyword.control.flow}
+        - {regex: ".*detach;?", ci: true, scope: keyword.control.flow}

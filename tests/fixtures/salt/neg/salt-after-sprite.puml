@@ -1,0 +1,8 @@
+' salt: SaltNotNeeded
+@startsalt
+sprite $a [2x2/16] {
+FF
+FF
+}
+salt
+@endsalt

@@ -1,0 +1,8 @@
+' common: CommandHeader, CommandScale
+' factory: WBSDiagramFactory
+@startwbs
+header top
+scale 2
+* root
+** child
+@endwbs

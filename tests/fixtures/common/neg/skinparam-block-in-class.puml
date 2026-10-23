@@ -1,0 +1,8 @@
+' common: CommandSkinParamMultilines
+' factory: ClassDiagramFactory
+@startuml
+class A
+skinparam class {
+  BackgroundColor=red
+}
+@enduml

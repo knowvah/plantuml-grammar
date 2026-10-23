@@ -1,0 +1,17 @@
+' style: extra closing brackets
+@startuml
+<style>
+}
+}
+</style>
+class Foo
+@enduml
+
+' style: unclosed bracket
+@startuml
+<style>
+root {
+LineColor red
+</style>
+class Foo
+@enduml

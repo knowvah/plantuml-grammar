@@ -1,0 +1,9 @@
+' style: } is the last token
+@startuml
+<style>
+root {
+LineColor red
+} // end
+</style>
+class Foo
+@enduml

@@ -1,0 +1,5 @@
+' misc-charts: CommandLink
+@startflow
+s 10
+10 "A"
+@endflow

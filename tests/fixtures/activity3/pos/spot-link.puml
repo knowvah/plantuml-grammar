@@ -1,0 +1,8 @@
+' activity3: CommandCircleSpot3, CommandActivity3, CommandLink3
+@startuml
+(A)
+#red:(B)
+:a;
+link #red
+:b;
+@enduml

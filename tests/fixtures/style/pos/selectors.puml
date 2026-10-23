@@ -1,0 +1,118 @@
+' style: diagram, element and stereotype selectors
+@startuml
+<style>
+classDiagram {
+class {
+.foo {
+LineColor red
+}
+}
+}
+</style>
+class Foo
+@enduml
+
+' style: stereotype selector keeps spaces
+@startuml
+<style>
+.foo bar {
+LineColor red
+}
+</style>
+class Foo
+@enduml
+
+' style: depth pseudo selector
+@startuml
+<style>
+node {
+:depth(1) {
+BackgroundColor red
+}
+:depth(2)*{
+}
+}
+</style>
+class Foo
+@enduml
+
+' style: wildcard
+@startuml
+<style>
+element * {
+LineColor red
+}
+element*{
+}
+</style>
+class Foo
+@enduml
+
+' style: selector list
+@startuml
+<style>
+a, b {
+LineColor red
+}
+a, b
+{
+}
+</style>
+class Foo
+@enduml
+
+' style: selector then { on a later line
+@startuml
+<style>
+root
+
+{
+}
+root
+// comment
+{
+}
+</style>
+class Foo
+@enduml
+
+' style: comment swallows the newline in a list
+@startuml
+<style>
+a, // comment
+b {
+}
+</style>
+class Foo
+@enduml
+
+' style: any token before a comma
+@startuml
+<style>
+root {
+}, a {
+}
+*, b {
+}
+</style>
+class Foo
+@enduml
+
+' style: stereotype string runs into a comment
+@startuml
+<style>
+.foo // comment
+{
+}
+</style>
+class Foo
+@enduml
+
+' style: <style> token is skipped
+@startuml
+<style>
+<style> root {
+}
+</style>
+class Foo
+@enduml

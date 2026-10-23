@@ -1,0 +1,4 @@
+' nwdiag-packet: PacketZeroWidthOnly
+@startpacketdiag
+4-3: error - ArithmeticException: / by zero
+@endpacketdiag

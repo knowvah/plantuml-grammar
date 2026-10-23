@@ -1,0 +1,7 @@
+' gantt: NaturalGanttTask
+@startgantt
+[A] lasts 5 days
+[A] is colored in Lavender/LightBlue
+[A] is colored for completion from red to green
+[A] is coloured in #f00
+@endgantt

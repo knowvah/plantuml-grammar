@@ -1,0 +1,5 @@
+' description: CommandLinkElement
+' gap: an unknown color throws NoSuchColorException (klimt/color/HColorSet.java:69-73); colors are not validated
+@startuml
+[a] --> [b] #zzzz
+@enduml

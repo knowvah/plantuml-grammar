@@ -1,0 +1,6 @@
+' gantt: NaturalGanttTask
+@startgantt
+[A] lasts 2 days
+[A] starts D+3 and ends 3 days after start
+[B] happens 2 days after [A]'s end
+@endgantt

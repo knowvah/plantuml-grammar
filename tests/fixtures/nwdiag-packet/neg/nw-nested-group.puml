@@ -1,0 +1,10 @@
+' nwdiag-packet: NwGroupInGroup
+@startnwdiag
+nwdiag {
+  group {
+    peter
+    group {
+    }
+  }
+}
+@endnwdiag

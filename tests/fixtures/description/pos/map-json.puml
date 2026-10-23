@@ -1,0 +1,10 @@
+' description: CommandCreateMap, CommandCreateJsonBlock
+@startuml
+[A]
+map M {
+  a => b
+}
+json J {
+  "x": [1, 2]
+}
+@enduml

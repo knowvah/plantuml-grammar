@@ -1,0 +1,6 @@
+' common: CommandSkin
+' factory: SequenceDiagramFactory
+@startuml
+skin rose
+Alice -> Bob : hello
+@enduml

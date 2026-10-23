@@ -1,0 +1,14 @@
+' description: CommandArchimate, CommandArchimatePackage, CommandArchimateMultilines, GroupEnd
+@startuml
+archimate #Business "Customer" as cust <<business-actor>>
+archimate #Technology "Server" as srv <<technology-device>>
+archimate #Application "App" as app {
+  archimate #Application "Comp" as comp <<application-component>>
+  port p
+}
+archimate #Business proc [
+Order
+process
+]
+cust --> srv
+@enduml

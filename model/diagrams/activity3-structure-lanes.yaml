@@ -1,0 +1,360 @@
+# Activity (new syntax), T21b: the swimlane strategy. Upstream pin 97a5992; paths are
+# relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Upstream. ActivityDiagram3 keeps a diagram-wide `swimlaneStrategy`, null at the start
+# (activitydiagram3/ActivityDiagram3.java:68-72). `swimlane()` (:86-95, reached by
+# CommandSwimlane `|lane|` and CommandSwimlane2 `swimlane lane`) sets it to ALLOWED when
+# still null and fails with "This swimlane must be defined at the start of the diagram"
+# when it is FORBIDDEN. `manageSwimlaneStrategy()` (:80-84) sets FORBIDDEN when still
+# null; it is called by addActivity (:114; CommandActivity3, CommandActivityLong3,
+# CommandActivityList), addSpot (:136; CommandCircleSpot3), start/stop/end (:154, :160,
+# :169), breakInstruction (:195), fork (:217), startSwitch (:276), startIf (:308),
+# startRepeat (:352), repeatWhile (:363), backward (:379), doWhile (:396) and startGroup
+# (:422; CommandPartition3). split, goto, label, kill, notes, arrows, links and the common
+# commands leave it alone. So a swimlane is an error once one of those "deciding"
+# commands ran before any swimlane, at any nesting depth.
+#
+# Model. Three top-level contexts track the strategy:
+#   a3_main          undecided (shadows activity3-core-flow's a3_main through include
+#                    order, see activity3.yaml); heads in a3_lanes_decide
+#   a3_lanes_main    ALLOWED: a swimlane came first; T21a's top level, unchanged
+#   a3_nolanes_main  FORBIDDEN: swimlanes are rejected (a3_reject_lanes), then T21a's top
+# a3_lanes_decide copies the generated parts of the swimlane commands (-> a3_lanes_main)
+# and of the single-statement deciding commands (-> a3_nolanes_main) with a `set`; the
+# copies cite ActivityDiagram3, so no override key of a generated class touches them,
+# and tests/families/test_activity3_structure.py checks that each copy equals its
+# generated entry (plus the stated guard). They sit at the HEAD of a3_main, before the
+# whole generated list: each copy only takes lines that no command registered before its
+# original (ActivityDiagramFactory3.java:105-164) takes; the guards exclude the earlier
+# arrows (CommandArrow3/CommandArrowLong3 `->`, `-[style]->`) and CommandKill3's
+# `.*detach;?` arm (activity3-core-actions.yaml). A guard excludes MORE than needed where
+# the exact set is long: an excluded deciding line then leaves the model undecided, which
+# can only accept more (FA), never reject a valid block.
+#
+# Gaps (FA only; tests/fixtures/activity3/structure/gap/). The strategy is global but the
+# model tracks it in the top-level frame only:
+# * The first deciding command is a flow opener (if, while, repeat, switch, fork,
+#   partition/group): the opener pushes its body and the frame below stays undecided.
+# * Inside bodies the strategy is not checked: a3_nolanes_main's openers push T21a's
+#   bodies, where a swimlane is accepted (lane-in-if-after-activity).
+# * `split` (no strategy change upstream) at the undecided top level is treated as
+#   ALLOWED from there on (a3_split_top): tracking the strategy through the split's
+#   frames would need the openers above as well.
+# * A colored multiline activity (`#red:x` ... `;`) as the first deciding line: the copy
+#   leaves out the color prefix, which earlier commands also take (`#red:repeat`,
+#   `#red:if (x) then`, ...; CommandActivityLong3 is registered after them).
+# Never FR: the model is undecided or ALLOWED wherever upstream may be ALLOWED.
+#
+# Emitters. Every head with a `set` here is `emit: false` (interpreter-only): its generated
+# twin already accepts the same lines. Emitters therefore see T21a's top level plus the
+# swimlane rejects they drop anyway.
+schema_version: 1
+id: activity3-structure-lanes
+layer: shared
+include: [gen-shared, activity3-core-flow, activity3-core-reject]
+
+contexts:
+  # Undecided top level: the strategy is still null.
+  a3_main:
+    - include: a3_lanes_decide
+    - include: a3_reject_flow
+    - include: a3_statements
+  # ALLOWED (a swimlane came first): T21a's top level.
+  a3_lanes_main:
+    - include: a3_reject_flow
+    - include: a3_statements
+  # FORBIDDEN (a deciding command came first).
+  a3_nolanes_main:
+    - include: a3_reject_lanes
+    - include: a3_reject_flow
+    - include: a3_statements
+  # A top-level `split` while undecided: ALLOWED from here on. `end split` returns to
+  # a3_lanes_main instead of popping (the split replaced the top-level frame).
+  a3_split_top:
+    - command: Activity3SplitEndTop
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 265
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandSplitEnd3.java:56
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:146
+      kind: single
+      parts:
+        seq:
+          - alt:
+              - seq:
+                  - {literal: end, ci: true}
+                  - {regex: "[\\s\_]*", ci: true}
+                  - {literal: split, ci: true}
+              - seq:
+                  - {literal: split, ci: true}
+                  - {regex: "[\\s\_]*", ci: true}
+                  - {literal: end, ci: true}
+          - {regex: ";?", ci: true}
+      set: a3_lanes_main
+      emit: false
+    - include: a3_split_body
+
+  # The heads of the undecided top level, in upstream order.
+  a3_lanes_decide:
+    # CommandSwimlane.java:59 -> swimlane() :86-88 sets ALLOWED.
+    - command: Activity3LaneFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 88
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandSwimlane.java:59
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:108
+      kind: single
+      parts: {ref: A3_SWIMLANE}
+      set: a3_lanes_main
+      emit: false
+    # CommandSwimlane2.java:60.
+    - command: Activity3Lane2First
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 88
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandSwimlane2.java:60
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:109
+      kind: single
+      parts: {ref: A3_SWIMLANE2}
+      set: a3_lanes_main
+      emit: false
+    # CommandActivity3.java:66 -> addActivity :114.
+    - command: Activity3ActivityDecides
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 114
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandActivity3.java:66
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:117
+      kind: single
+      parts:
+        seq:
+          - seq:
+              - {regex: "[\\s\_]*", ci: true}
+              - opt: {regex: "(\\<\\<.+?\\>\\>)", ci: true, name: IGNORED}
+              - {regex: "[\\s\_]*", ci: true}
+          - {literal: ":", ci: true}
+          - {regex: "(.*?)", ci: true, name: LABEL}
+          - {literal: ;, ci: true}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: A3_STEREOGROUP}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: URL}
+      set: a3_nolanes_main
+      emit: false
+    # CommandSplit3.java:55 -> split() :248-254 leaves the strategy alone (see header).
+    - command: Activity3SplitUndecided
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 248
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandSplit3.java:55
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:144
+      kind: single
+      parts:
+        seq:
+          - {literal: split, ci: true}
+          - {regex: ";?", ci: true}
+      set: a3_split_top
+      emit: false
+    # CommandStart3.java:58 -> start() :154.
+    - command: Activity3StartDecides
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 154
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandStart3.java:58
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:149
+      kind: single
+      parts:
+        seq:
+          - {literal: start, ci: true}
+          - {regex: ";?", ci: true}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: A3_STEREOGROUP}
+      set: a3_nolanes_main
+      emit: false
+    # CommandStop3.java:58 -> stop() :160.
+    - command: Activity3StopDecides
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 160
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandStop3.java:58
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:150
+      kind: single
+      parts:
+        seq:
+          - {literal: stop, ci: true}
+          - {regex: ";?", ci: true}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: A3_STEREOGROUP}
+      set: a3_nolanes_main
+      emit: false
+    # CommandCircleSpot3.java:58 -> addSpot() :136.
+    - command: Activity3SpotDecides
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 136
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandCircleSpot3.java:58
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:151
+      kind: single
+      parts:
+        seq:
+          - {regex: "(?:(#\\w+[-\\\\|/]?\\w+):)?", ci: true, name: COLOR}
+          - {regex: "\\((\\S)\\)", ci: true, name: SPOT}
+          - {regex: ";?", ci: true}
+      set: a3_nolanes_main
+      emit: false
+    # CommandBreak.java:55 -> breakInstruction() :195.
+    - command: Activity3BreakDecides
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 195
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandBreak.java:55
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:152
+      kind: single
+      parts:
+        seq:
+          - {literal: break, ci: true}
+          - {regex: ";?", ci: true}
+      set: a3_nolanes_main
+      emit: false
+    # CommandEnd3.java:58 -> end() :169.
+    - command: Activity3EndDecides
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 169
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandEnd3.java:58
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:153
+      kind: single
+      parts:
+        seq:
+          - {literal: end, ci: true}
+          - {regex: ";?", ci: true}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: A3_STEREOGROUP}
+      set: a3_nolanes_main
+      emit: false
+    # CommandActivityLong3.java:78 -> addActivity :114. Uncolored first line only (see
+    # header); the trailing guard leaves CommandKill3's `.*detach;?` lines alone.
+    - command: Activity3ActivityLongDecides
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 114
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandActivityLong3.java:78
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:159
+      kind: multiline
+      parts:
+        seq:
+          - {literal: ":", ci: true}
+          - {regex: "(.*)", ci: true, name: DATA}
+          - {ref: A3_NOT_DETACH}
+      end:
+        seq:
+          - {regex: "(.*)", ci: true, name: TEXT}
+          - {literal: ;, ci: true}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: A3_STEREOGROUP}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: URL}
+      set: a3_nolanes_main
+      emit: false
+    # CommandActivityList.java:62 -> addActivity :114. The leading guard leaves the arrows
+    # (CommandArrow3/CommandArrowLong3, registered earlier) alone, the trailing one
+    # CommandKill3's `.*detach;?` lines.
+    - command: Activity3ActivityListDecides
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 114
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandActivityList.java:62
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:160
+      kind: single
+      parts:
+        seq:
+          - {ref: A3_NOT_ARROW}
+          - {regex: "[-*]", ci: true}
+          - opt: {regex: "[\\s\_]", ci: true}
+          - {regex: "(.*?)", ci: true, name: LABEL}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: A3_STEREOGROUP}
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {ref: URL}
+          - {ref: A3_NOT_DETACH}
+      set: a3_nolanes_main
+      emit: false
+
+  # FORBIDDEN: swimlane() fails (ActivityDiagram3.java:90-91).
+  a3_reject_lanes:
+    - command: Activity3LaneAfterActivity
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 91
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandSwimlane.java:59
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:108
+      kind: single
+      reject: true
+      parts: {ref: A3_SWIMLANE}
+    - command: Activity3Lane2AfterActivity
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 91
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandSwimlane2.java:60
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:109
+      kind: single
+      reject: true
+      parts: {ref: A3_SWIMLANE2}
+
+variables:
+  # CommandSwimlane.java:59-66 (generated parts of CommandSwimlane).
+  A3_SWIMLANE:
+    seq:
+      - {literal: "|", ci: true}
+      - {regex: "(?:(#\\w+[-\\\\|/]?\\w+)\\|)?", ci: true, name: COLOR}
+      - {regex: "([^|]+)", ci: true, name: SWIMLANE}
+      - {literal: "|", ci: true}
+      - {regex: "([^|]+)?", ci: true, name: LABEL}
+  # CommandSwimlane2.java:60-74 (generated parts of CommandSwimlane2).
+  A3_SWIMLANE2:
+    seq:
+      - {literal: swimlane, ci: true}
+      - {regex: "[\\s\_]+", ci: true}
+      - {regex: "(?:(#\\w+[-\\\\|/]?\\w+))?", ci: true, name: COLOR}
+      - {regex: "[\\s\_]*", ci: true}
+      - {regex: "([^|]+?)", ci: true, name: SWIMLANE}
+      - opt:
+          seq:
+            - {regex: "[\\s\_]+", ci: true}
+            - {literal: as, ci: true}
+            - {regex: "[\\s\_]+", ci: true}
+            - {regex: "([^|]+)", ci: true, name: LABEL}
+  # Stereotype.getStereogroupRegex as generated (`<<a>> <<b>>` after a statement).
+  A3_STEREOGROUP: {regex: "(<<[^<>]+>>(?:[\\s\_]*<<[^<>]+>>)*)", ci: true, name: STEREOGROUP}
+  # Not a line CommandArrow3/CommandArrowLong3 may take (`->`, `-[`).
+  A3_NOT_ARROW: {regex: "(?!->)(?!-\\[)", ci: true}
+  # Not a line CommandKill3 takes through its `.*detach;?` arm (line end).
+  A3_NOT_DETACH: {regex: "(?<!detach)(?<!detach;)", ci: true}

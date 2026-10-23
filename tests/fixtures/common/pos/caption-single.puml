@@ -1,0 +1,6 @@
+' common: CommandCaption
+' factory: SequenceDiagramFactory
+@startuml
+caption figure 1
+Alice -> Bob : hello
+@enduml

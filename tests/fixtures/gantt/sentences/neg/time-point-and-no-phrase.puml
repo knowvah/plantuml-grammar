@@ -1,0 +1,5 @@
+' gantt: NaturalGanttTaskUnmatched
+@startgantt
+Project starts 2020-01-01
+[A] starts 2020-01-03 10:00 and foo
+@endgantt

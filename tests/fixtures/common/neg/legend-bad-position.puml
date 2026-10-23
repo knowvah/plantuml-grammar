@@ -1,0 +1,8 @@
+' common: CommandMultilinesLegend
+' factory: SequenceDiagramFactory
+@startuml
+legend middle
+x
+endlegend
+Alice -> Bob : hello
+@enduml

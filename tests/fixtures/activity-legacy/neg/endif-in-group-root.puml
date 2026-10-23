@@ -1,0 +1,7 @@
+' activity-legacy: ActivityPartitionFirst, ActivityEndifWithoutIf
+@startuml
+partition P {
+(*) --> A
+endif
+}
+@enduml

@@ -1,0 +1,6 @@
+' activity3: CommandRepeatWhile3Multilines
+@startuml
+:x;
+repeat while (a
+b)
+@enduml

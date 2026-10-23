@@ -1,0 +1,5 @@
+' sequence: CommandBoxEnd
+@startuml
+Alice -> Bob : x
+endbox
+@enduml

@@ -1,0 +1,5 @@
+' mindmap-wbs: CommandMindMapPlus
+@startmindmap
+* a
+  ++ b
+@endmindmap

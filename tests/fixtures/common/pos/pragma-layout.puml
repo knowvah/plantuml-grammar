@@ -1,0 +1,6 @@
+' common: CommandPragma
+' factory: ClassDiagramFactory
+@startuml
+!pragma layout smetana
+class A
+@enduml

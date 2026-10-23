@@ -1,0 +1,7 @@
+' mindmap-wbs: WBSLinkUnknownColor
+@startwbs
+* root
+**(a) A
+**(b) B
+a -> b #zzzz
+@endwbs

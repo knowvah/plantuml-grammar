@@ -1,0 +1,17 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "PSystemSudokuFactory",
+  "factoryOrder": 25,
+  "diagramType": "SEQUENCE",
+  "commands": [
+    {
+      "order": 0,
+      "class": "net.sourceforge.plantuml.sudoku.PSystemSudokuFactory",
+      "kind": "opaque",
+      "engine": "IRegex",
+      "start": {"t": "leaf", "name": "p", "pattern": "^sudoku(?:[%s]+([0-9a-zA-Z]+))?[%s]*$", "children": []},
+      "end": null
+    }
+  ],
+  "unreachable": []
+}

@@ -1,0 +1,15 @@
+' salt: CommandAnything
+@startsalt
+{
+a
+..
+b
+==
+c
+~~
+d
+--
+e
+-- x --
+}
+@endsalt

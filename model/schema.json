@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/knowvah/plantuml-grammar/model/schema.json",
+  "title": "PlantUML command model (contract I2)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "layer"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"$ref": "#/$defs/model_id"},
+    "layer": {"enum": ["document", "preproc", "diagram", "shared"]},
+    "diagram": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "factory": {"$ref": "#/$defs/factory_name"},
+    "empty_needs_end": {"type": "boolean"},
+    "start_map": {
+      "type": "object",
+      "propertyNames": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+      "additionalProperties": {
+        "type": "array", "minItems": 1, "uniqueItems": true,
+        "items": {"$ref": "#/$defs/factory_name"}
+      }
+    },
+    "include": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/model_id"}
+    },
+    "variables": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/variable_name"},
+      "additionalProperties": {"$ref": "#/$defs/part"}
+    },
+    "contexts": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/context_name"},
+      "additionalProperties": {
+        "type": "array",
+        "items": {"$ref": "#/$defs/entry"}
+      }
+    },
+    "overrides": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/patch_key"},
+      "additionalProperties": {"$ref": "#/$defs/command_patch"}
+    },
+    "insert_before": {"$ref": "#/$defs/inserts"},
+    "insert_after": {"$ref": "#/$defs/inserts"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"layer": {"const": "diagram"}}, "required": ["layer"]},
+      "then": {"required": ["diagram"]},
+      "else": {"not": {"anyOf": [
+        {"required": ["diagram"]}, {"required": ["factory"]}, {"required": ["empty_needs_end"]}
+      ]}}
+    },
+    {
+      "if": {"properties": {"layer": {"const": "document"}}, "required": ["layer"]},
+      "else": {"not": {"required": ["start_map"]}}
+    },
+    {
+      "if": {"properties": {"layer": {"enum": ["diagram", "shared"]}}, "required": ["layer"]},
+      "else": {"not": {"anyOf": [
+        {"required": ["overrides"]}, {"required": ["insert_before"]},
+        {"required": ["insert_after"]}
+      ]}}
+    }
+  ],
+  "$defs": {
+    "factory_name": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+    "model_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"},
+    "patch_key": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+    "inserts": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/patch_key"},
+      "additionalProperties": {
+        "type": "array", "minItems": 1, "items": {"$ref": "#/$defs/command"}
+      }
+    },
+    "command_patch": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "remove": {"const": true},
+        "command": {"type": "string", "minLength": 1},
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "kind": {"enum": ["single", "multiline", "multiline-bracket", "opaque"]},
+        "parts": {"$ref": "#/$defs/part"},
+        "push": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/context_name"}]},
+        "pop": {"oneOf": [{"type": "null"}, {"const": true}]},
+        "set": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/context_name"}]},
+        "end": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/part"}]},
+        "join": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/join"}]},
+        "require_pop": {"oneOf": [{"type": "null"}, {"const": true}]},
+        "reject": {"oneOf": [{"type": "null"}, {"const": true}]},
+        "emit": {"oneOf": [{"type": "null"}, {"const": false}]},
+        "gives": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/flag_name"}]},
+        "needs": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/flag_name"}]},
+        "trim": {"oneOf": [{"type": "null"}, {"const": false}]}
+      },
+      "if": {"required": ["remove"]},
+      "then": {"maxProperties": 1}
+    },
+    "join": {
+      "type": "object", "additionalProperties": false, "required": ["max_lines"],
+      "properties": {"max_lines": {"type": "integer", "minimum": 1}}
+    },
+    "variable_name": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"},
+    "context_name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "flag_name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "part": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false, "required": ["seq"],
+          "properties": {"seq": {"type": "array", "items": {"$ref": "#/$defs/part"}}}
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["alt"],
+          "properties": {"alt": {"type": "array", "items": {"$ref": "#/$defs/part"}}}
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["opt"],
+          "properties": {"opt": {"$ref": "#/$defs/part"}}
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["star"],
+          "properties": {"star": {"$ref": "#/$defs/part"}}
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["plus"],
+          "properties": {"plus": {"$ref": "#/$defs/part"}}
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["ref"],
+          "properties": {"ref": {"$ref": "#/$defs/variable_name"}}
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["regex"],
+          "properties": {
+            "regex": {"type": "string"},
+            "ci": {"type": "boolean"},
+            "name": {"type": "string"},
+            "scope": {"type": "string"}
+          }
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["literal", "ci"],
+          "properties": {
+            "literal": {"type": "string"},
+            "ci": {"type": "boolean"},
+            "scope": {"type": "string"}
+          }
+        }
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class"],
+      "properties": {
+        "class": {"type": "string"},
+        "file": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "engine": {"enum": ["IRegex", "UBrex"]},
+        "also": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^src/main/java/.+\\.java:\\d+(-\\d+)?$"}
+        }
+      }
+    },
+    "entry": {
+      "oneOf": [
+        {
+          "type": "object", "additionalProperties": false, "required": ["include"],
+          "properties": {"include": {"type": "string", "minLength": 1}}
+        },
+        {"$ref": "#/$defs/command"}
+      ]
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command", "provenance", "kind", "parts"],
+      "properties": {
+        "command": {"type": "string", "minLength": 1},
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "kind": {"enum": ["single", "multiline", "multiline-bracket", "opaque"]},
+        "parts": {"$ref": "#/$defs/part"},
+        "push": {"$ref": "#/$defs/context_name"},
+        "pop": {"const": true},
+        "set": {"$ref": "#/$defs/context_name"},
+        "end": {"$ref": "#/$defs/part"},
+        "join": {"$ref": "#/$defs/join"},
+        "require_pop": {"const": true},
+        "reject": {"const": true},
+        "emit": {"const": false},
+        "gives": {"$ref": "#/$defs/flag_name"},
+        "needs": {"$ref": "#/$defs/flag_name"},
+        "trim": {"const": false},
+        "refined_by": {"$ref": "#/$defs/model_id"}
+      },
+      "allOf": [
+        {"not": {"required": ["push", "pop"]}},
+        {"not": {"required": ["push", "set"]}},
+        {"not": {"required": ["pop", "set"]}},
+        {"if": {"required": ["require_pop"]}, "then": {"required": ["push"]}},
+        {
+          "if": {"required": ["trim"]},
+          "then": {"properties": {"kind": {"const": "single"}}}
+        },
+        {
+          "if": {"required": ["reject"]},
+          "then": {
+            "properties": {"kind": {"const": "single"}},
+            "allOf": [
+              {"not": {"required": ["push"]}},
+              {"not": {"required": ["set"]}},
+              {"not": {"required": ["pop"]}}
+            ]
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"enum": ["single", "opaque", "multiline-bracket"]}},
+                 "required": ["kind"]},
+          "then": {"allOf": [{"not": {"required": ["end"]}}, {"not": {"required": ["join"]}}]}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "multiline"}}, "required": ["kind"]},
+          "then": {"oneOf": [{"required": ["end"]}, {"required": ["join"]}]}
+        }
+      ]
+    }
+  }
+}

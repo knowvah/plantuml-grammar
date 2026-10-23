@@ -1,0 +1,9 @@
+' sequence: CommandGrouping
+' gap: a group closer inside a box is accepted leniently: the box context cannot see whether a group is open below
+@startuml
+box
+participant Alice
+end
+end box
+Alice -> Bob : x
+@enduml

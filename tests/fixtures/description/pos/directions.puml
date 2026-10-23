@@ -1,0 +1,15 @@
+' description: CommandRankDir, CommandLinkElement
+@startuml
+left to right direction
+[A] -left-> [B]
+[A] -right-> [B]
+[A] -up-> [B]
+[A] -down-> [B]
+[A] -l-> [B]
+[A] -r-> [B]
+[A] -u-> [B]
+[A] -d-> [B]
+[A] -le-> [B]
+[A] -ri-> [B]
+[A] -do-> [B]
+@enduml

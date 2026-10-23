@@ -1,0 +1,6 @@
+' sequence: CommandReturn
+' gap: unknown color is a NoSuchColorException at execution (CommandReturn.java:123, klimt/color/HColorSet.java:69-73)
+@startuml
+Alice -> Bob : x
+return #zzzz x
+@enduml

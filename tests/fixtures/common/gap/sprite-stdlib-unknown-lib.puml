@@ -1,0 +1,7 @@
+' common: CommandSpriteStdlib
+' factory: SequenceDiagramFactory
+' gap: semantic: stdlib resource lookup (CommandSpriteStdlib.java:72-79)
+@startuml
+sprite $adn #nosuchlib#x
+Alice -> Bob : hello
+@enduml

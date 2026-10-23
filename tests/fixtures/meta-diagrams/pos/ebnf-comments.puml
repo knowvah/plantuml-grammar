@@ -1,0 +1,9 @@
+' meta: UBrexCommandComment, CommandCommentMultilines, CommandCommentMultilines2, CommandEBnfSingleLine
+@startebnf
+(* a note *)
+(* a comment
+on two lines *)
+(** a documentation
+comment **)
+(* above *) rule (* below *) = b ;
+@endebnf

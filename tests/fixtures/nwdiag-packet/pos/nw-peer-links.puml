@@ -1,0 +1,6 @@
+' nwdiag-packet: CommandLink, CommandElement
+@startnwdiag
+inet [shape = cloud];
+inet -- router;
+router -- switch
+@endnwdiag

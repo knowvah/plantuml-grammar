@@ -1,0 +1,27 @@
+# `@startsprites` (T32, family meta-diagrams). Upstream pin 97a5992; paths are relative
+# to src/main/java/net/sourceforge/plantuml/ unless stated.
+#
+# ListSpriteDiagramFactory (klimt/sprite/ListSpriteDiagramFactory.java:55-61) registers
+# the common commands (CommonCommands.addCommonCommands1, which also adds commands2, so
+# the generated list holds that block twice), the scale commands and CommandListSprite
+# `listsprites?` (klimt/sprite/CommandListSprite.java:55-60, executeArg always OK at
+# :69-71). Nothing else is checked, so `common` plus the generated list is exact;
+# CommandListSprite only gets a scope.
+#
+# Diagram type: the factory is SPRITES (:51-53), but the diagram it builds is
+# ListSpriteDiagram with DiagramType.HELP (ListSpriteDiagram.java:59-61). The oracle
+# reports the built diagram's type, so an accepted block reads HELP there and SPRITES
+# here: a diagram-type mismatch, not an FR/FA. `@startuml` also reaches this factory
+# (core/DiagramType.java:197-200, PSystemBuilder.java:170); such blocks are HELP in the
+# oracle and therefore fall in the single-line family's parity slice
+# (tools/report/families.py), not this one.
+schema_version: 1
+id: meta-diagrams-sprites
+layer: diagram
+diagram: SPRITES
+factory: ListSpriteDiagramFactory
+include: [gen-list-sprite-diagram, common]
+
+overrides:
+  CommandListSprite:
+    parts: {regex: 'listsprites?', ci: true, scope: keyword.other.listsprites}

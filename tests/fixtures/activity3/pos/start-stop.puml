@@ -1,0 +1,6 @@
+' activity3: CommandStart3, CommandActivity3, CommandStop3
+@startuml
+start
+:Hello world;
+stop
+@enduml

@@ -1,0 +1,5 @@
+' activity3: CommandCase
+@startuml
+:x;
+case (a)
+@enduml

@@ -1,0 +1,28 @@
+# `@startdef` (T32, family meta-diagrams). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/ unless stated.
+#
+# PSystemDefinitionFactory is a PSystemBasicFactory (definition/PSystemDefinitionFactory.
+# java:43-64): every body line is stored and never refused (:57-62,
+# PSystemDefinition.java:91-93); only the start line is drawn (:84-89). The empty-body
+# error of PSystemBasicFactory (command/PSystemBasicFactory.java:88-90) is skipped when
+# the source starts with `@startdef` (core/UmlSource.java:288-290, case-sensitive), so
+# `@startdef` / `@startdefinition` accept any body, an empty one included. The model is
+# embedded-definition (T13: `main` and `empty` accept every line) with its opaque entry
+# turned into one `single` entry per stored line, citing executeLine (same verdicts:
+# `.*` matches every line), with a scope.
+#
+# Gap (FA only, model accepts, jar rejects): the start line is not visible to model
+# rules, so `\startdef` or `@startDef` with an empty or noise-only body (blank lines,
+# `skinparam ` / `!pragma ` lines; UmlSource.java:79-106) cannot be told apart from
+# `@startdef` (tests/fixtures/meta-diagrams/gap/def-*).
+schema_version: 1
+id: meta-diagrams-def
+layer: diagram
+diagram: DEFINITION
+factory: PSystemDefinitionFactory
+include: [embedded-definition]
+
+overrides:
+  PSystemDefinitionFactory:
+    kind: single
+    parts: {regex: '.*', scope: string.unquoted.definition}

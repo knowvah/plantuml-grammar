@@ -1,0 +1,6 @@
+' meta: RegexLineBalanced
+' gap: the operand stack is unbounded; after one tile the model accepts any balanced line, but `|` alone needs two (PSystemRegex.java:307-322)
+@startregex
+a
+|
+@endregex

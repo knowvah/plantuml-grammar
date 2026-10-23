@@ -1,0 +1,6 @@
+' activity3: CommandSwitch, CommandEndSwitch
+@startuml
+:a;
+switch (x)
+endswitch
+@enduml

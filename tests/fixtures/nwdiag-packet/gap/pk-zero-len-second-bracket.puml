@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandNumRange
+' gap: the attribute spans both brackets; only a clean toSet list is checked for a zero len
+@startpacketdiag
+1 A [len=1] [len=0]
+@endpacketdiag

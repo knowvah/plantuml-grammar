@@ -1,0 +1,11 @@
+' activity3: CommandActivity3, CommandKill3
+@startuml
+:a;
+kill
+:b;
+detach
+:c;
+kill;
+:d;
+DETACH;
+@enduml

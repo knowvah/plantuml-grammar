@@ -1,0 +1,6 @@
+' sequence: CommandArrow
+@startuml
+autonumber
+Alice -> Bob : x
+Alice -- Bob : dashes only
+@enduml

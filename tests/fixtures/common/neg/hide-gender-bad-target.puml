@@ -1,0 +1,6 @@
+' common: CommandHideShowByGender
+' factory: ClassDiagramFactory
+@startuml
+hide class fishes
+class A
+@enduml

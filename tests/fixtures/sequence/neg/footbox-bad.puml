@@ -1,0 +1,5 @@
+' sequence: CommandFootbox
+@startuml
+Alice -> Bob : x
+hide footbox now
+@enduml

@@ -1,0 +1,7 @@
+' state: StateEndConcurrentRoot
+@startuml
+state A
+--
+state B
+}
+@enduml

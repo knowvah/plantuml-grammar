@@ -1,0 +1,21 @@
+' salt: CommandAnything
+@startsalt
+title T
+header H
+footer F
+caption C
+legend
+L
+end legend
+scale 2
+skinparam {
+ArrowColor red
+}
+sprite $s [2x2/16] {
+FF
+FF
+}
+{
+<$s> [OK]
+}
+@endsalt

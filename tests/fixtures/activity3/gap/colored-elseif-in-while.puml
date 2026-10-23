@@ -1,0 +1,9 @@
+' activity3: CommandWhile3, CommandElseIf2, CommandWhileEnd3
+' gap: a `#color:` elseif outside an if fails (ActivityDiagram3.java:325); the else reject shape omits the color prefix because CommandActivityLong3 takes other `#color:` lines
+@startuml
+while (a)
+:x;
+#red:elseif (b) then
+:y;
+endwhile
+@enduml

@@ -1,0 +1,9 @@
+' gantt: NaturalGanttDayAsDate
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+2020-01-06 is closed
+2020-01-07 is colored in red
+d+3 is closed
+T+1 is opened
+@endgantt

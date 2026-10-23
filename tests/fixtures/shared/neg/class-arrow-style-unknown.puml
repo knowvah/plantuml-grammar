@@ -1,0 +1,6 @@
+' refines: arrow-style | [#red,wavy]
+@startuml
+class A
+class B
+A -[#red,wavy]-> B
+@enduml

@@ -1,0 +1,12 @@
+' board-files-git: CommandBoardPlus, BoardRelease
+@startboard
+Activity 1
++User Task 1a
++++red
++User Task 2a
+
+Activity 2
++User Task 2
+++blue1
+++blue2
+@endboard

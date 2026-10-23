@@ -1,0 +1,4 @@
+' nwdiag-packet: CommandNumRange
+@startpacketdiag
+12345678: A
+@endpacketdiag

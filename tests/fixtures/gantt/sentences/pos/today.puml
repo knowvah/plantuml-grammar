@@ -1,0 +1,7 @@
+' gantt: NaturalGanttToday
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+today is 2020-01-05
+today is colored in #AAF
+@endgantt

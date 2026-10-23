@@ -1,0 +1,6 @@
+' common: CommandSkinParam
+' factory: SequenceDiagramFactory
+@startuml
+skinparam
+Alice -> Bob : hello
+@enduml

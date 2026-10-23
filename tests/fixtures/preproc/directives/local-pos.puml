@@ -1,0 +1,7 @@
+@startuml
+!procedure $p()
+!local $x = 1
+$x -> b
+!endprocedure
+a -> b
+@enduml

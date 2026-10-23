@@ -1,0 +1,5 @@
+' gantt: CommandLabelOnColumn
+@startgantt
+[A] -> [B]
+labels on middle column
+@endgantt

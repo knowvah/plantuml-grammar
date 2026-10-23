@@ -1,0 +1,9 @@
+' json: JsonStyle, JsonText
+' Only a trimmed '</style>' ends the region (StyleExtractor.java:109-111).
+@startjson
+<style>
+<style>
+jsonDiagram { node { BackGroundColor red } }
+</style>
+[1]
+@endjson

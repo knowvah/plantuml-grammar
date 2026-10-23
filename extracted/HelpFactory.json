@@ -1,0 +1,114 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "HelpFactory",
+  "factoryOrder": 40,
+  "diagramType": "HELP",
+  "commands": [
+    {
+      "order": 0,
+      "class": "net.sourceforge.plantuml.help.CommandHelpColor",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "help", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "colors?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 1,
+      "class": "net.sourceforge.plantuml.help.CommandHelpFont",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "help", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "fonts?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 2,
+      "class": "net.sourceforge.plantuml.help.CommandHelpKeyword",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "help", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "keywords?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 3,
+      "class": "net.sourceforge.plantuml.help.CommandHelpType",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "help", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "types?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 4,
+      "class": "net.sourceforge.plantuml.help.CommandHelpTheme",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "help", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "themes?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    }
+  ],
+  "unreachable": []
+}

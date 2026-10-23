@@ -1,0 +1,9 @@
+' creole: CREOLE_BLOCK_DELIMITER | <code>
+' creole: CREOLE_LATEX | <latex>\frac{</latex>
+@startuml
+note as N
+  <latex>\frac{</latex>
+  <code>
+  never closed
+end note
+@enduml

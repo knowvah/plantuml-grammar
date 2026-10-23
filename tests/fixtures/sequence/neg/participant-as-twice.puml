@@ -1,0 +1,6 @@
+' sequence: CommandParticipantA3
+@startuml
+participant Alice
+Alice -> Bob : x
+participant B as C as D
+@enduml

@@ -1,0 +1,14 @@
+' nwdiag-packet: NwNetworkOpenAtRoot, NwGroupOpenInNetwork, CommandProperty, CommandElement, CommandEndSomething
+@startnwdiag
+nwdiag {
+  network office {
+    group web {
+      color = "#FFAAAA";
+      description = "Web servers";
+      web01;
+      web02;
+    }
+    db01;
+  }
+}
+@endnwdiag

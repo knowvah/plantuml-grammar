@@ -1,0 +1,12 @@
+' gantt: NaturalGanttTask
+@startgantt
+[A] lasts 5 days
+[H] lasts 1 day and displays on same row as [A]
+[I] lasts 2 days and is 40% complete
+[J] lasts 1 day and is deleted
+[L] lasts 2 days and links to [[http://x.org]]
+[L] is displayed as Label text
+then [N] lasts 3 days
+it is colored in red
+[P] <<milestone>> lasts 1 day
+@endgantt

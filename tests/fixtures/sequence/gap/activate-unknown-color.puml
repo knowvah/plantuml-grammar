@@ -1,0 +1,6 @@
+' sequence: CommandActivate
+' gap: unknown color names are NoSuchColorException at execution
+@startuml
+Alice -> Bob : x
+activate Bob #zzzz
+@enduml

@@ -1,0 +1,10 @@
+' mindmap-wbs: CommandMindMapDirection, CommandRankDir
+@startmindmap
+* root
+left side
+** a
+right side
+** b
+top to bottom direction
+foo bottom side
+@endmindmap

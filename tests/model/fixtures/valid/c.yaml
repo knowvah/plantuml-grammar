@@ -1,0 +1,8 @@
+schema_version: 1
+id: c
+layer: shared
+variables:
+  COLOR:
+    regex: "#\\w+"
+  SPACE:
+    regex: "\\s+"

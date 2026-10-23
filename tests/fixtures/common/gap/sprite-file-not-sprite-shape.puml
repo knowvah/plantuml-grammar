@@ -1,0 +1,7 @@
+' common: CommandSpriteFile
+' factory: SequenceDiagramFactory
+' gap: semantic: the line falls to CommandSpriteFile, whose file does not exist
+@startuml
+sprite $foo [4x4/16] ABCDEF0123
+Alice -> Bob : hello
+@enduml

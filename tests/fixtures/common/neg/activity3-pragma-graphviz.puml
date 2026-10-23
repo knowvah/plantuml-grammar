@@ -1,0 +1,8 @@
+' common: CommandPragma
+' factory: ActivityDiagramFactory3
+@startuml
+!pragma graphviz_dot dot
+start
+:step;
+stop
+@enduml

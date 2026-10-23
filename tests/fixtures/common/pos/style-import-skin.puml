@@ -1,0 +1,6 @@
+' common: CommandStyleImport
+' factory: SequenceDiagramFactory
+@startuml
+<style src=strictuml.skin>
+Alice -> Bob : hello
+@enduml

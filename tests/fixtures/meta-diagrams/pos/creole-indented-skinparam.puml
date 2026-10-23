@@ -1,0 +1,4 @@
+' meta: CreoleText
+@startcreole
+ skinparam a b
+@endcreole

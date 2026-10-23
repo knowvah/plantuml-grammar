@@ -1,0 +1,7 @@
+' gantt: NaturalGanttDayOfWeek
+@startgantt
+[A] lasts 5 days
+saturday are closed
+Sundays are closed and are colored in salmon
+monday are opened
+@endgantt

@@ -1,0 +1,7 @@
+' gantt: NaturalGanttTask
+@startgantt
+[A] lasts 5 days garbage
+[B] lasts 2 days and
+[C] starts D+5 10:00
+[D] lasts 1 day.and foo
+@endgantt

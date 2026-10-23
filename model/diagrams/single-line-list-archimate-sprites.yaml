@@ -1,0 +1,16 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+schema_version: 1
+id: single-line-list-archimate-sprites
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemListArchimateSpritesFactory
+include: [embedded-list-archimate-sprites, single-line-base]
+overrides:
+  PSystemListArchimateSpritesFactory:
+    provenance: {class: net.sourceforge.plantuml.klimt.sprite.PSystemListArchimateSpritesFactory, file: src/main/java/net/sourceforge/plantuml/klimt/sprite/PSystemListArchimateSpritesFactory.java, line: 50, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "[lL][iI][sS][tT][sS][pP][rR][iI][tT][eE][\\s\\S]*"}
+    set: sl_done
+    gives: single_line

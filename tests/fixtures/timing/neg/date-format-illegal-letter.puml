@@ -1,0 +1,5 @@
+' timing: CommandUseDateFormat
+@startuml
+use date format "yyyy-bb"
+robust "R" as R
+@enduml

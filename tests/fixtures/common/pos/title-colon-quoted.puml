@@ -1,0 +1,6 @@
+' common: CommandTitle
+' factory: SequenceDiagramFactory
+@startuml
+title: "Quoted title"
+Alice -> Bob : hello
+@enduml

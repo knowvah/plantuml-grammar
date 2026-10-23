@@ -1,0 +1,20 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# FilesDiagramFactory.createSystem is not a command factory: FilesDiagram ignores lines it does not understand (FilesDiagram.java:80-88).
+# Any body, including an empty one, is accepted without parsing (D4).
+
+schema_version: 1
+id: embedded-files
+layer: diagram
+diagram: FILES
+factory: FilesDiagramFactory
+contexts:
+  main:
+    - command: FilesDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.filesdiagram.FilesDiagramFactory, file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagramFactory.java, line: 58}
+      kind: opaque
+      parts: {regex: ".*"}
+  empty:
+    - command: FilesDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.filesdiagram.FilesDiagramFactory, file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagramFactory.java, line: 58}
+      kind: opaque
+      parts: {regex: ".*"}

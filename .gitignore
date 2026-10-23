@@ -1,0 +1,10 @@
+.serena/cache/
+plans/
+.claude/
+build/
+.venv/
+node_modules/
+reports/oracle-cache/
+__pycache__/
+.pytest_cache/
+.coverage

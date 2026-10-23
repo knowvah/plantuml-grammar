@@ -1,0 +1,7 @@
+' common: CommandSpriteFile
+' factory: SequenceDiagramFactory
+' gap: semantic: internal sprite lookup (CommandSpriteFile.java:107-112)
+@startuml
+sprite $x jar:archimate/nosuch
+Alice -> Bob : hello
+@enduml

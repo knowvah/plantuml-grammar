@@ -1,0 +1,10 @@
+' gantt: NaturalGanttDaysAsDates
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+2020-01-01 to 2020-01-03 are closed
+2020-01-04 to 2020-01-05 are colored in salmon
+2020/01/08 and 3 days are named [Holidays]
+then 2 days are closed
+D+1 to D+2 are open
+@endgantt

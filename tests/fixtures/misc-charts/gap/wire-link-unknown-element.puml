@@ -1,0 +1,6 @@
+' misc-charts: CommandWLink
+' gap: link ends are looked up by (dotted) name (WireDiagram.java:142-176); the model keeps no name table
+@startwire
+* a
+a -> b
+@endwire

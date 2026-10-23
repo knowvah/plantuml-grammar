@@ -1,0 +1,4 @@
+' nwdiag-packet: PacketFirstField, CommandNumRange
+@startpacketdiag
+5-3: backwards
+@endpacketdiag

@@ -1,0 +1,8 @@
+' misc-charts: ChenAssociateFails
+@startchen
+entity A {
+}
+entity B {
+}
+A -N- B #ff
+@endchen

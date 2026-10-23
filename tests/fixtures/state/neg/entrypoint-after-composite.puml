@@ -1,0 +1,9 @@
+' state: StatePositionStereotypeAtRoot, StateEnd
+@startuml
+state A {
+  state B
+  --
+  state C
+}
+state .X <<entryPoint>>
+@enduml

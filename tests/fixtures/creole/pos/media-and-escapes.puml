@@ -1,0 +1,25 @@
+' creole: CREOLE_IMG | <img:logo.png{scale=0.5}>
+' creole: CREOLE_QRCODE | <qrcode:hello>
+' creole: CREOLE_OPENICON | <&account-login>
+' creole: CREOLE_EMOJI | <:sunny:>
+' creole: CREOLE_SPRITE | <$foo>
+' creole: CREOLE_SPACE | <space:10>
+' creole: CREOLE_URL | [[http://plantuml.com label]]
+' creole: CREOLE_UNICODE | <U+00E9>
+' creole: CREOLE_ENTITY | &#233;
+' creole: CREOLE_BACKSLASH_ESCAPE | \n
+' creole: CREOLE_TILDE_ESCAPE | ~*
+@startuml
+sprite $foo [4x4/16] {
+FFFF
+F00F
+F00F
+FFFF
+}
+note as N
+  <img:logo.png{scale=0.5}> <qrcode:hello> <&account-login> <:sunny:> <$foo> <space:10>
+  [[http://plantuml.com label]] caf<U+00E9> caf&#233; ~*not bold~*
+end note
+class A
+note right of A : first\nsecond
+@enduml

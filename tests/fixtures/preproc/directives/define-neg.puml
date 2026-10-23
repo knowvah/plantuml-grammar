@@ -1,0 +1,4 @@
+@startuml
+!define
+a -> b
+@enduml

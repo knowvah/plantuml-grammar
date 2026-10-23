@@ -1,0 +1,7 @@
+' sequence: CommandLinkAnchor
+@startuml
+!pragma teoz true
+{start} Alice -> Bob : x
+Bob -> Alice : y {end}
+{start} <-> {end
+@enduml

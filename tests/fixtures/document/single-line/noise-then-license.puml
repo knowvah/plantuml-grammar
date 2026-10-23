@@ -1,0 +1,5 @@
+@startuml
+skinparam x y
+!pragma foo bar
+license
+@enduml

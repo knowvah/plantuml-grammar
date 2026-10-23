@@ -1,0 +1,5 @@
+' sequence: CommandAutonumberStop
+@startuml
+Alice -> Bob : x
+autonumber stop now
+@enduml

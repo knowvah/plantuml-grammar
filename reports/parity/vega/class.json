@@ -1,0 +1,42 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SEQUENCE",
+      "kind": "diagram_mismatch",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "CLASS",
+      "path": "preproc/eval.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SEQUENCE",
+      "kind": "diagram_mismatch",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "CLASS",
+      "path": "preproc/upper.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "vega",
+  "family": "class",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 28,
+    "diagram_mismatch": 2,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 28,
+    "raw_fr": 0,
+    "timeout": 0
+  }
+}

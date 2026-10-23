@@ -1,0 +1,20 @@
+<|--
+o--
+}o--
+*--
+<<--
+_0gsdw7ao3zOjd_jk7FlFzqm8YQa_QagJll1TEH9V_SU0xD_UDhla2UVrfyGEuolVjlV3PZzeVtscwYkVb_50zf-J_ZjcYCw-TF-KGjLB_-Wfu-neqxu0_Fu
+7ae5f851_1719_4863_abca_7f3e4d72f0d2::C4 <-d- 093813e0_2029_43fe_9bf2_34239fb8bbfd::C4
+BackgroundColor  #ffff00
+**Fail Case**
+* Calculate training rate" as iftrue <<iftrue>>
+shadowing<<with>> true
+<circle cx="16" cy="16" r="12" fill="#FF6666"/>
+CurrentKeypoints )-left- OrbExtractor
+WorkDocs(desktopAlias, "Label", "Technology", "Optional Description")
+this is an insertText2 where is the rest of the text?
+service -right-> replicaset_100
+Config2: CAP ID = 0x30
+$MyComponent_at_ITEM_MR -- UI: Item
+skinparam activityBarColor green
+map "Arrows legend " as arrows {

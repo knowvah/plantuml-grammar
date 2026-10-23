@@ -1,0 +1,6 @@
+' common: CommandHideShowByGender
+' factory: ClassDiagramFactory
+@startuml
+hide interface fields
+class A
+@enduml

@@ -1,0 +1,285 @@
+# Parts of the legacy activity diagram model (T22, included by `activity-legacy`).
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Structured copies of generated rules of ActivityDiagramFactory, split where the
+# diagram state decides between accepting, failing and switching context:
+# * links (activitydiagram/command/CommandLinkActivity.java:79-119) and long links
+#   (CommandLinkLongActivity.java:81-114): with or without a source (FIRST), and the
+#   inner-activity target `{` (OPENBRACKET2);
+# * `if` (UBrexCommandIf.java:69-99): with or without a source (the first UBrexOr
+#   alternative `simple` has none);
+# * partition (UBrexCommandPartition.java:68-85) and the four note commands
+#   (command/note/CommandFactoryNoteActivity.java:102, :151;
+#   command/note/CommandFactoryNoteOnLink.java:114, :157).
+# Each copy keeps the generated leaves verbatim (capture names included);
+# tests/families/test_activity_legacy.py asserts that the copies, recombined, equal the
+# generated parts. Closers (`else`, `endif`, `}` / `end partition`) are new variables
+# with scopes; the generated closers are removed by `activity-legacy`.
+schema_version: 1
+id: activity-legacy-parts
+layer: shared
+include: [gen-shared]
+
+variables:
+  # --- links: CommandLinkActivity / CommandLinkLongActivity -------------------------
+  # FIRST (CommandLinkActivity.java:81-86, CommandLinkLongActivity.java:89-94).
+  AL_SOURCE:
+    alt:
+      - {regex: '(\(\*(top)?\))', ci: true, name: STAR}
+      - {regex: '([\p{L}\p{N}][\p{L}\p{N}_.]*)', ci: true, name: CODE}
+      - {regex: "(?:==+)[\\s\_]*([\\p{L}\\p{N}_.]+)[\\s\_]*(?:==+)", ci: true, name: BAR}
+      - {regex: "[\"“”]([^\"“”]+)[\"“”](?:[\\s\_]+as[\\s\_]+([\\p{L}\\p{N}_.]+))?", ci: true, name: QUOTED}
+  # StereotypePattern.optional("STEREOTYPE").
+  AL_STEREO:
+    seq:
+      - {regex: "[\\s\_]*", ci: true}
+      - opt: {regex: '(\<\<.+?\>\>)', ci: true, name: STEREOTYPE}
+      - {regex: "[\\s\_]*", ci: true}
+  # ColorParser.exp2() (CommandLinkActivity.java:88) and BACKCOLOR of the long link
+  # (CommandLinkLongActivity.java:96).
+  AL_LINK_BACKCOLOR: {regex: '(#\w+[-\\|/]?\w+)?', ci: true, name: BACKCOLOR}
+  AL_LONG_BACKCOLOR: {regex: '(#\w+)?', ci: true, name: BACKCOLOR}
+  # From the URL to the label (CommandLinkActivity.java:89-101).
+  AL_ARROW:
+    seq:
+      - {regex: "[\\s\_]*", ci: true}
+      - opt: {ref: URL}
+      - {regex: '([-.]+)', ci: true, name: ARROW_BODY1}
+      - {ref: ARROW_STYLE1}
+      - {regex: '(\*|left|right|up|down|le?|ri?|up?|do?)?', ci: true, name: ARROW_DIRECTION}
+      - {ref: ARROW_STYLE2}
+      - {regex: '([-.]*)', ci: true, name: ARROW_BODY2}
+      - {literal: '>', ci: true}
+      - {regex: "[\\s\_]*", ci: true}
+      - opt: {regex: '\[([^\]*]+[^\]]*)\]', ci: true, name: BRACKET}
+      - {regex: "[\\s\_]*", ci: true}
+  # FIRST2 (CommandLinkActivity.java:102-108).
+  AL_TARGET:
+    alt:
+      - {regex: '(\(\*(top|\d+)?\))', ci: true, name: STAR2}
+      - {ref: AL_TARGET_BLOCK}
+      - {regex: '([\p{L}\p{N}][\p{L}\p{N}_.]*)', ci: true, name: CODE2}
+      - {regex: "(?:==+)[\\s\_]*([\\p{L}\\p{N}_.]+)[\\s\_]*(?:==+)", ci: true, name: BAR2}
+      - {regex: "[\"“”]([^\"“”]+)[\"“”](?:[\\s\_]+as[\\s\_]+([\\p{L}\\p{N}][\\p{L}\\p{N}_.]*))?", ci: true, name: QUOTED2}
+      - {regex: '(\w.*?)', ci: true, name: QUOTED_INVISIBLE2}
+  # OPENBRACKET2: the target `{` opens an inner activity (ActivityDiagram.java:143-155).
+  AL_TARGET_BLOCK: {regex: '(\{)', ci: true, name: OPENBRACKET2}
+  # CommandLinkActivity.java:109-117.
+  AL_TARGET_TAIL:
+    seq:
+      - seq:
+          - {regex: "[\\s\_]*", ci: true}
+          - opt: {regex: '(\<\<.+?\>\>)', ci: true, name: STEREOTYPE2}
+          - {regex: "[\\s\_]*", ci: true}
+      - opt:
+          seq:
+            - {literal: in, ci: true}
+            - {regex: "[\\s\_]+", ci: true}
+            - {regex: "([\"“”][^\"“”]+[\"“”]|\\S+)", ci: true, name: PARTITION2}
+      - {regex: "[\\s\_]*", ci: true}
+      - {regex: '(#\w+[-\\|/]?\w+)?', ci: true, name: BACKCOLOR2}
+  # A link without FIRST: the source is the last activity (CommandLinkActivity.java:398-400).
+  AL_LINK_NO_SOURCE:
+    seq: [{ref: AL_STEREO}, {ref: AL_LINK_BACKCOLOR}, {ref: AL_ARROW}, {ref: AL_TARGET}, {ref: AL_TARGET_TAIL}]
+  AL_LINK_WITH_SOURCE:
+    seq: [{ref: AL_SOURCE}, {ref: AL_LINK_NO_SOURCE}]
+  AL_LINK_TO_BLOCK:
+    seq:
+      - opt: {ref: AL_SOURCE}
+      - {ref: AL_STEREO}
+      - {ref: AL_LINK_BACKCOLOR}
+      - {ref: AL_ARROW}
+      - {ref: AL_TARGET_BLOCK}
+      - {ref: AL_TARGET_TAIL}
+  AL_LINK_WITH_SOURCE_TO_BLOCK:
+    seq: [{ref: AL_SOURCE}, {ref: AL_STEREO}, {ref: AL_LINK_BACKCOLOR}, {ref: AL_ARROW}, {ref: AL_TARGET_BLOCK}, {ref: AL_TARGET_TAIL}]
+  # CommandLinkLongActivity.java:95-113 (after FIRST) and END (:81).
+  AL_LONG_NO_SOURCE:
+    seq:
+      - {ref: AL_STEREO}
+      - {ref: AL_LONG_BACKCOLOR}
+      - {ref: AL_ARROW}
+      - {regex: "[\"“”]", ci: true}
+      - {regex: "([^\"“”]*?)", ci: true, name: DESC}
+      - {regex: "[\\s\_]*", ci: true}
+  AL_LONG_WITH_SOURCE:
+    seq: [{ref: AL_SOURCE}, {ref: AL_LONG_NO_SOURCE}]
+  AL_LONG_END: {regex: "^[\\s\_]*([^\"“”]*)[\"“”](?:[\\s\_]+as[\\s\_]+([\\p{L}\\p{N}][\\p{L}\\p{N}_.]*))?[\\s\_]*(\\<\\<.*\\>\\>)?[\\s\_]*(?:in[\\s\_]+([\"“”][^\"“”]+[\"“”]|\\S+))?[\\s\_]*(#\\w+)?$", ci: true}
+
+  # --- if: UBrexCommandIf ------------------------------------------------------------
+  # UBrexLeaf("〇?〘 [ 〶$ARROW_STYLE=〘...〙] 〙") of UBrexCommandIf.java:74, :77.
+  AL_IF_ARROW_STYLE1:
+    opt:
+      seq:
+        - {literal: '[', ci: true}
+        - {regex: '(?:#[a-zA-Z0-9_]+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=[0-9_]+)(?:(?:,#[a-zA-Z0-9_]+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=[0-9_]+))*', ci: true, name: ARROW_STYLE1}
+        - {literal: ']', ci: true}
+  AL_IF_ARROW_STYLE2:
+    opt:
+      seq:
+        - {literal: '[', ci: true}
+        - {regex: '(?:#[a-zA-Z0-9_]+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=[0-9_]+)(?:(?:,#[a-zA-Z0-9_]+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=[0-9_]+))*', ci: true, name: ARROW_STYLE2}
+        - {literal: ']', ci: true}
+  # ASIF1 (`as code`) of UBrexCommandIf.java:84, :86.
+  AL_IF_AS:
+    opt:
+      seq:
+        - {literal: as, ci: true}
+        - plus: {regex: '[ ]'}
+        - {regex: '[._\p{L}\p{Nd}]+', ci: true, name: ASIF1}
+        - plus: {regex: '[ ]'}
+  # `simple` (UBrexCommandIf.java:70-88): no source, the last activity is used.
+  AL_IF_NO_SOURCE:
+    seq:
+      - star: {regex: '[ ]'}
+      - opt:
+          seq:
+            - {regex: '[\-.]+', ci: true, name: ARROW_BODY1}
+            - {ref: AL_IF_ARROW_STYLE1}
+            - {regex: '(?:(?:\*|left|right|up|down|le?|ri?|up?|do?))?', ci: true, name: ARROW_DIRECTION}
+            - {ref: AL_IF_ARROW_STYLE2}
+            - {regex: '[\-.]*', ci: true, name: ARROW_BODY2}
+            - {literal: '>', ci: true}
+      - star: {regex: '[ ]'}
+      - opt:
+          seq:
+            - {literal: '[', ci: true}
+            - {regex: '[^*\]]+[^\]]*', ci: true, name: BRACKET}
+            - {literal: ']', ci: true}
+      - star: {regex: '[ ]'}
+      - alt:
+          - seq:
+              - {literal: if, ci: true}
+              - star: {regex: '[ ]'}
+              - {regex: "[\"“”]"}
+              - {regex: "[^\"“”]*", name: IF1}
+              - {regex: "[\"“”]"}
+              - star: {regex: '[ ]'}
+              - {ref: AL_IF_AS}
+              - {literal: then, ci: true}
+          - seq:
+              - {literal: if, ci: true}
+              - plus: {regex: '[ ]'}
+              - {regex: '[\s\S](?:(?!then)[\s\S])*(?=then)', ci: true, name: IF2}
+              - {literal: then, ci: true}
+          - seq:
+              - {literal: if, ci: true}
+              - star: {regex: '[ ]'}
+              - {regex: "[\"“”]"}
+              - {regex: "[^\"“”]*", name: IF1}
+              - {regex: "[\"“”]"}
+              - star: {regex: '[ ]'}
+              - {ref: AL_IF_AS}
+          - seq:
+              - {literal: if, ci: true}
+              - plus: {regex: '[ ]'}
+              - {regex: '[\s\S]+', name: IF2}
+  # The four sourced alternatives (UBrexCommandIf.java:92-96), each followed by `simple`.
+  AL_IF_SOURCE:
+    alt:
+      - {regex: '\(\*(?:top)?\)', ci: true, name: STAR}
+      - {regex: '==+[ ]*[._\p{L}\p{Nd}]+[ ]*==+', ci: true, name: BAR}
+      - seq:
+          - {regex: "[\"“”]"}
+          - {regex: "[^\"“”]*", name: QUOTED1}
+          - {regex: "[\"“”]"}
+          - opt:
+              seq:
+                - plus: {regex: '[ ]'}
+                - {literal: as, ci: true}
+                - plus: {regex: '[ ]'}
+                - {regex: '[._\p{L}\p{Nd}]+', ci: true, name: QUOTED2}
+      - {regex: '[._\p{L}\p{Nd}]+', ci: true, name: CODE}
+  AL_IF_WITH_SOURCE:
+    seq: [{ref: AL_IF_SOURCE}, {ref: AL_IF_NO_SOURCE}]
+
+  # --- partition and notes -------------------------------------------------------------
+  AL_PARTITION:
+    seq:
+      - {literal: partition, ci: true}
+      - plus: {regex: '[ ]'}
+      - alt:
+          - seq:
+              - {literal: '"', ci: true}
+              - {regex: '[^"]+', ci: true, name: NAME}
+              - {literal: '"', ci: true}
+          - {regex: '[^ ]+', name: NAME}
+      - star: {regex: '[ ]'}
+      - alt:
+          - {regex: '#[a-zA-Z0-9_]+(?:[\-/\\\|][a-zA-Z0-9_]+)?', ci: true, name: COLOR}
+          - opt:
+              alt:
+                - seq:
+                    - {literal: '#', ci: true}
+                    - {regex: '(?:[0-9a-f]){6}(?![0-9a-f])', ci: true}
+                - seq:
+                    - opt: {literal: '#', ci: true}
+                    - plus: {regex: '[a-zA-Z0-9_]'}
+      - opt: {regex: '<<[\s\S](?:(?!>>)[\s\S])*(?=>>)>>', ci: true, name: STEREOTYPE}
+      - star: {regex: '[ ]'}
+      - opt: {literal: '{', ci: true}
+  # CommandFactoryNoteActivity.java:151-163 (single) and :102-112 (multiline).
+  AL_NOTE_HEAD:
+    seq:
+      - {literal: note, ci: true}
+      - {regex: "[\\s\_]+", ci: true}
+      - {regex: (right|left|top|bottom), ci: true, name: POSITION}
+      - {regex: "[\\s\_]*", ci: true}
+      - {ref: COLOR}
+      - {regex: "[\\s\_]*", ci: true}
+  AL_NOTE:
+    seq:
+      - {ref: AL_NOTE_HEAD}
+      - {literal: ':', ci: true}
+      - {regex: "[\\s\_]*", ci: true}
+      - {regex: (.*), ci: true, name: NOTE}
+  AL_NOTE_END: {regex: "^[\\s\_]*end[\\s\_]?note$", ci: true}
+  # CommandFactoryNoteOnLink.java:157-172 (single) and :114-126 (multiline).
+  AL_NOTE_ON_LINK_HEAD:
+    seq:
+      - {literal: note, ci: true}
+      - {regex: "[\\s\_]+", ci: true}
+      - {regex: '(right|left|top|bottom)?', ci: true, name: POSITION}
+      - {regex: "[\\s\_]*", ci: true}
+      - alt:
+          - {literal: 'on', ci: true}
+          - {literal: of, ci: true}
+      - {regex: "[\\s\_]+", ci: true}
+      - {literal: link, ci: true}
+      - {regex: "[\\s\_]*", ci: true}
+      - {ref: COLOR}
+  AL_NOTE_ON_LINK:
+    seq:
+      - {ref: AL_NOTE_ON_LINK_HEAD}
+      - {regex: "[\\s\_]*", ci: true}
+      - {literal: ':', ci: true}
+      - {regex: "[\\s\_]*", ci: true}
+      - {regex: (.*), ci: true, name: NOTE}
+
+  # --- closers -------------------------------------------------------------------------
+  # UBrexCommandElse.java:57-59, UBrexCommandEndif.java:57-63.
+  AL_ELSE: {literal: else, ci: true, scope: keyword.control.conditional.else}
+  AL_ENDIF:
+    seq:
+      - {literal: end, ci: true, scope: keyword.control.conditional.end}
+      - star: {regex: '[ ]'}
+      - {literal: if, ci: true, scope: keyword.control.conditional.end}
+  # UBrexCommandEndPartition.java:58-65. Its third alternative (end of text) only
+  # matches an empty line, which CommandNope takes first (command/CommonCommands.java:63).
+  AL_END_GROUP:
+    alt:
+      - seq:
+          - {literal: end, ci: true, scope: keyword.control.partition.end}
+          - star: {regex: '[ ]'}
+          - {literal: partition, ci: true, scope: keyword.control.partition.end}
+      - {literal: '}', ci: true, scope: punctuation.section.block.end}
+  # After a `}` that popped the root group, every command that needs the current group
+  # throws (net/atmp/CucaDiagram.java:177-186): links, `if`, partitions, closers of
+  # partitions and activity notes. Checked one by one against the jar; these survive:
+  # titles, header/footer/caption/legend/mainframe, skin/skinparam, scale, minwidth,
+  # page, rotate, sprites, styles, `set namespaceSeparator`, pragma, assume, rank
+  # direction, every hide/show, notes on links, and `else` / `endif` (which only use
+  # the if stack, ActivityDiagram.java:78-80).
+  AL_ORPHAN_UNSAFE:
+    regex: "(?!(?:title|header|footer|caption|legend|mainframe|skinparamlocked|skinparam|skin|scale|minwidth|page|rotate|sprite|set|hide|show)(?![\\p{L}\\p{N}_])|(?:left|right|center)[\\s\_]*(?:header|footer)(?![\\p{L}\\p{N}_])|(?:left|top)[\\s\_]+to[\\s\_]|!pragma|!assume|<style|note[\\s\_]+(?:(?:right|left|top|bottom)[\\s\_]*)?(?:on|of)[\\s\_]+link|(?:else|end[ ]*if)$)\\S.*"
+    ci: true

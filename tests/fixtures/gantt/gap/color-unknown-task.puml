@@ -1,0 +1,6 @@
+' gantt: CommandColorTask
+' gap: task lookup by name: getExistingTask returns null for an undeclared task
+@startgantt
+[A] -> [B]
+[C] #red
+@endgantt

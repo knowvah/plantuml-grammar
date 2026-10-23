@@ -1,0 +1,80 @@
+# Timing diagrams (T23). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/timingdiagram/ unless stated.
+#
+# Upstream. TimingDiagramFactory.initCommandsList (TimingDiagramFactory.java:84-109)
+# registers the common block, CommandFootboxIgnored and 21 timing commands, all single
+# lines except CommandNoteLong (`note top|bottom of X` ... `end note`, a CommandMultilines2
+# that the generated model already carries as `multiline` + `end`). `@name` per-player
+# blocks are not nested structure: CommandAtPlayer only switches the current player
+# (command/CommandAtPlayer.java:79) and nothing closes them.
+#
+# Current player. TimingDiagram.lastPlayer (TimingDiagram.java:86) starts empty; robust,
+# concise and rectangle players set it when created (:291-315), `@X` sets it to any
+# existing player (CommandAtPlayer.java:79); clock, binary and analog players do not.
+# Two commands fail while it is empty:
+# * a state change by time, `0 is X` (CommandChangeStateByTime.java:102-104, "Missing @
+#   line before this");
+# * a constraint without a player, `@0 <-> @5` (CommandConstraint.java:112-115).
+# Model: `main` is the "no current player" state, `timing_player` the state after the
+# first CommandRobustConcise or CommandAtPlayer (both `set: timing_player`). Patches apply
+# to every splice alike, so `main` holds the two failures as HEAD rejects before the
+# spliced generated list. A head entry runs before the whole list, so it must not see a
+# line an earlier upstream command takes. None can: a state change by time starts with a
+# time (`:`, a digit, `+`, `-`, or a clock `name*N`), every earlier command starts with a
+# keyword followed by a blank (`%s` is `[\s\u00A0]`, so `_` is not a blank) or needs
+# `has`/`is` right after a name that cannot contain `*` (CommandDefineStateShort/Long,
+# CommandChangeStateByPlayerCode); and nothing before CommandConstraint matches a line
+# that starts with `@` and has `<-`.
+#
+# Line-local execution errors (time literals, scale, pixel height, date format) are in
+# `timing-errors`. Gaps, pinned by tests/fixtures/timing/gap: lookups of players, time
+# labels and clocks (`No such participant`, `Unknown time label`, `What time?`), player
+# kinds that refuse states or constraints (clock: PlayerClock.java:69-81), unknown colors
+# (klimt/color/HColorSet.java:69-73) and a wrapped `scale` product.
+schema_version: 1
+id: timing
+layer: diagram
+diagram: TIMING
+factory: TimingDiagramFactory
+include: [gen-timing-diagram, common, timing-errors]
+
+overrides:
+  # TimingDiagramFactory.java:87, TimingDiagram.java:291-315.
+  CommandRobustConcise: {set: timing_player}
+  # TimingDiagramFactory.java:96, command/CommandAtPlayer.java:79.
+  CommandAtPlayer: {set: timing_player}
+
+contexts:
+  main:
+    - command: TimingStateWithoutPlayer
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.TimingDiagram
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/TimingDiagram.java
+        line: 86
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandChangeStateByTime.java:102-104
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/TimingDiagramFactory.java:93-94
+      kind: single
+      reject: true
+      parts:
+        ref: T_BY_TIME
+    - command: TimingConstraintWithoutPlayer
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.TimingDiagram
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/TimingDiagram.java
+        line: 86
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandConstraint.java:112-115
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_AT_TIME}
+          - {ref: T_CONSTRAINT_ARROW}
+          - {ref: T_AT_TIME}
+          - {ref: T_MESSAGE_TAIL}
+    - include: gen-timing-diagram#main
+  timing_player:
+    - include: gen-timing-diagram#main

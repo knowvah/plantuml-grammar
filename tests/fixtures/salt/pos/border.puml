@@ -1,0 +1,11 @@
+' salt: CommandAnything
+@startsalt
+{
+N=
+[North]
+S=
+[South]
+C=
+[Center]
+}
+@endsalt

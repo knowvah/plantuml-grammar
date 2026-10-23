@@ -1,0 +1,5 @@
+' meta: CommandListSprite
+@startuml
+title t
+listsprites
+@enduml

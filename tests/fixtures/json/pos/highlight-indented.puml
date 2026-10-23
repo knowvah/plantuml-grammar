@@ -1,0 +1,6 @@
+' json: JsonText
+' An indented #highlight line does not start with '#': it is JSON text.
+@startjson
+  #highlight <<x>>
+{"a": 1}
+@endjson

@@ -1,0 +1,5 @@
+' activity3: CommandFootboxIgnored
+@startuml
+hide footbox now
+:a;
+@enduml

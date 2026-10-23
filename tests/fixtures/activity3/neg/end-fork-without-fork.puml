@@ -1,0 +1,5 @@
+' activity3: CommandForkEnd3
+@startuml
+:x;
+end fork
+@enduml

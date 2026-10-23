@@ -1,0 +1,6 @@
+' salt: CommandAnything
+@startsalt
+!pragma graphviz_dot jdot
+{
+}
+@endsalt

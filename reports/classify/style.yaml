@@ -1,0 +1,192 @@
+family: style
+note: 'Acceptance override (T33): style is an overlay slice. Targets are fixture/oracle agreement and
+  zero FR whose failing line is inside a <style> region. Every case below fails outside the <style> region
+  and belongs to the named family.'
+cases:
+  pdiff:dbhum/b_an/banabu-01-toji092.puml#0:
+    class: bug
+    note: FR at block line 9 ('[foo] lasts 21 days'), outside the <style> region(s) at lines 2-8; owned
+      by the gantt family
+  pdiff:dbhum/b_ut/butebe-56-pode841.puml#0:
+    class: bug
+    note: FR at block line 21 ('[Task] lasts 20 days'), outside the <style> region(s) at lines 2-20; owned
+      by the gantt family
+  pdiff:dbhum/c_ar/caradi-82-kuvu509.puml#0:
+    class: bug
+    note: FR at block line 12 ('Project starts the 2023/12/04.'), outside the <style> region(s) at lines
+      3-10; owned by the gantt family
+  pdiff:dbhum/c_az/cazumu-70-fuma704.puml#0:
+    class: bug
+    note: FR at block line 13 ('[Prototype design] lasts 13 days and is colored in Lavender/'), outside
+      the <style> region(s) at lines 2-11; owned by the gantt family
+  pdiff:dbhum/c_of/cofuvo-63-xetu117.puml#0:
+    class: bug
+    note: FR at block line 11 ('[Task1] lasts 10 days and is 50% complete'), outside the <style> region(s)
+      at lines 2-9; owned by the gantt family
+  pdiff:dbhum/c_uk/cukuno-01-guzu991.puml#0:
+    class: bug
+    note: FR at block line 21 ('Project starts the 1st of january 2021'), outside the <style> region(s)
+      at lines 3-18; owned by the gantt family
+  pdiff:dbhum/c_up/cupuri-11-piru303.puml#0:
+    class: bug
+    note: 'FA: the jar rejects at file line 38; the block''s <style> region(s) at block lines 2-21 are
+      accepted by StyleParser (T33 fixtures); owned by the mindmap-wbs family'
+  pdiff:dbhum/d_ep/depati-88-code332.puml#0:
+    class: bug
+    note: FR at block line 10 ('Project starts the 2023-05-09'), outside the <style> region(s) at lines
+      2-9; owned by the gantt family
+  pdiff:dbhum/d_up/dupema-22-roze848.puml#0:
+    class: bug
+    note: FR at block line 14 ('Project starts 2020-07-01'), outside the <style> region(s) at lines 2-11;
+      owned by the gantt family
+  pdiff:dbhum/f_ab/fabuje-68-gona310.puml#0:
+    class: bug
+    note: FR at block line 12 ('{'), outside the <style> region(s) at lines 3-9; owned by the class family
+  pdiff:dbhum/f_ic/ficipo-99-puxe496.puml#0:
+    class: bug
+    note: FR at block line 12 ('Project starts the 20th of september 2018'), outside the <style> region(s)
+      at lines 3-10; owned by the gantt family
+  pdiff:dbhum/f_om/fomuxu-72-juco154.puml#0:
+    class: bug
+    note: FR at block line 12 ('[Task1] lasts 20 days'), outside the <style> region(s) at lines 2-11;
+      owned by the gantt family
+  pdiff:dbhum/f_ur/furaxa-02-xipi554.puml#0:
+    class: bug
+    note: FR at block line 11 ('[task1] lasts 1 week'), outside the <style> region(s) at lines 2-9; owned
+      by the gantt family
+  pdiff:dbhum/g_ef/gefonu-85-zuje780.puml#0:
+    class: bug
+    note: FR at block line 18 ('[Prototype design] lasts 7 days'), outside the <style> region(s) at lines
+      2-15; owned by the gantt family
+  pdiff:dbhum/g_ov/goveba-36-sate631.puml#0:
+    class: bug
+    note: FR at block line 50 ('Project starts the 2020-12-01'), outside the <style> region(s) at lines
+      2-49, 67-73; owned by the gantt family
+  pdiff:dbhum/j_ib/jibeva-93-fefa676.puml#0:
+    class: bug
+    note: FR at block line 34 ('[Task1] lasts 20 days'), outside the <style> region(s) at lines 2-33;
+      owned by the gantt family
+  pdiff:dbhum/k_ek/kekezo-93-coro003.puml#0:
+    class: bug
+    note: FR at block line 12 ('[Task1] lasts 20 days'), outside the <style> region(s) at lines 2-11;
+      owned by the gantt family
+  pdiff:dbhum/k_et/ketaja-32-monu569.puml#0:
+    class: bug
+    note: FR at block line 14 ('Project starts 2020-07-01'), outside the <style> region(s) at lines 2-11;
+      owned by the gantt family
+  pdiff:dbhum/l_ic/licuro-27-rixu366.puml#0:
+    class: bug
+    note: FR at block line 12 ('Project starts the 20th of september 2018'), outside the <style> region(s)
+      at lines 3-10; owned by the gantt family
+  pdiff:dbhum/l_uz/luzape-81-vica587.puml#0:
+    class: bug
+    note: FR at block line 21 ('[Prototype design] requires 20 days.'), outside the <style> region(s)
+      at lines 3-18; owned by the gantt family
+  pdiff:dbhum/m_el/melacu-98-jere651.puml#0:
+    class: bug
+    note: FR at block line 7 ('Project starts 2020/02/14'), outside the <style> region(s) at lines 2-6;
+      owned by the gantt family
+  pdiff:dbhum/m_ex/mexito-28-toli086.puml#0:
+    class: bug
+    note: FR at block line 7 ('[Prototype design] lasts 14 days'), outside the <style> region(s) at lines
+      2-6; owned by the gantt family
+  pdiff:dbhum/m_ik/mikixe-60-riti913.puml#0:
+    class: bug
+    note: FR at block line 12 ('Project starts the 20th of september 2018'), outside the <style> region(s)
+      at lines 3-10; owned by the gantt family
+  pdiff:dbhum/m_ur/murugo-92-ximo228.puml#0:
+    class: bug
+    note: FR at block line 14 ('[Task1] lasts 10 days and is 50% complete'), outside the <style> region(s)
+      at lines 2-12; owned by the gantt family
+  pdiff:dbhum/n_er/neruke-07-ruce381.puml#0:
+    class: bug
+    note: FR at block line 12 ('{'), outside the <style> region(s) at lines 3-9; owned by the class family
+  pdiff:dbhum/n_ip/nipeki-55-poxe846.puml#0:
+    class: bug
+    note: FR at block line 12 ('Project starts the 20th of september 2018'), outside the <style> region(s)
+      at lines 3-10; owned by the gantt family
+  pdiff:dbhum/n_ut/nutadi-16-cuxu821.puml#0:
+    class: bug
+    note: FR at block line 17 ('[Prototype design] lasts 13 days'), outside the <style> region(s) at lines
+      3-14; owned by the gantt family
+  pdiff:dbhum/p_ef/pefeki-56-jazi903.puml#0:
+    class: bug
+    note: FR at block line 12 ('[Prototype design] as [TASK1] lasts 38 days'), outside the <style> region(s)
+      at lines 3-10; owned by the gantt family
+  pdiff:dbhum/p_id/pidole-84-tuvu346.puml#0:
+    class: bug
+    note: FR at block line 11 ('sunday are closed'), outside the <style> region(s) at lines 3-8; owned
+      by the gantt family
+  pdiff:dbhum/p_uv/puviva-32-meri658.puml#0:
+    class: bug
+    note: FR at block line 15 ('[foo] lasts 21 days'), outside the <style> region(s) at lines 2-12; owned
+      by the gantt family
+  pdiff:dbhum/p_uz/puzeji-04-nima839.puml#0:
+    class: bug
+    note: FR at block line 14 ('Project starts 2020-07-01'), outside the <style> region(s) at lines 2-11;
+      owned by the gantt family
+  pdiff:dbhum/r_ic/ricogo-60-juda624.puml#0:
+    class: bug
+    note: FR at block line 47 ('Project starts the 2020-12-01'), outside the <style> region(s) at lines
+      2-46; owned by the gantt family
+  pdiff:dbhum/s_ad/saduki-63-kuxi294.puml#0:
+    class: bug
+    note: FR at block line 15 ('Project starts 2020-07-01'), outside the <style> region(s) at lines 2-13;
+      owned by the gantt family
+  pdiff:dbhum/t_ek/tekumi-86-zusu124.puml#0:
+    class: bug
+    note: FR at block line 12 ('Project starts the 20th of september 2018'), outside the <style> region(s)
+      at lines 3-10; owned by the gantt family
+  pdiff:dbhum/t_en/tenali-11-zumi474.puml#0:
+    class: bug
+    note: FR at block line 12 ('[foo] lasts 21 days'), outside the <style> region(s) at lines 2-9; owned
+      by the gantt family
+  pdiff:dbhum/v_ag/vagofo-93-bogo506.puml#0:
+    class: bug
+    note: FR at block line 47 ('Project starts the 2020-12-01'), outside the <style> region(s) at lines
+      2-46; owned by the gantt family
+  pdiff:dbhum/v_ek/vekogi-91-ceso247.puml#0:
+    class: bug
+    note: FR at block line 16 ('[Prototype design] lasts 7 days'), outside the <style> region(s) at lines
+      3-14; owned by the gantt family
+  pdiff:dbhum/v_ex/vexedu-13-duse828.puml#0:
+    class: bug
+    note: FR at block line 10 ('[task01] requires 15 days'), outside the <style> region(s) at lines 2-8;
+      owned by the gantt family
+  pdiff:dbhum/v_if/vifaze-92-zoro596.puml#0:
+    class: bug
+    note: FR at block line 7 ('Project starts the 20th of september 2018'), outside the <style> region(s)
+      at lines 2-6; owned by the gantt family
+  pdiff:dbhum/v_ir/virejo-92-dobu761.puml#0:
+    class: bug
+    note: FR at block line 3 ('saturday are closed'), outside the <style> region(s) at lines 7-14; owned
+      by the gantt family
+  pdiff:dbhum/x_ef/xefava-55-lato939.puml#0:
+    class: bug
+    note: FR at block line 18 ('project starts 2021-07-01'), outside the <style> region(s) at lines 3-10;
+      owned by the gantt family
+  pdiff:dbhum/x_ul/xulexa-95-zoco224.puml#0:
+    class: bug
+    note: FR at block line 7 ('Project starts 2020/02/14'), outside the <style> region(s) at lines 2-6;
+      owned by the gantt family
+  pdiff:dbhum/x_um/xumeli-52-keso732.puml#0:
+    class: bug
+    note: FR at block line 12 ('{'), outside the <style> region(s) at lines 3-9; owned by the class family
+  pdiff:dbhum/z_iz/zizune-28-kage754.puml#0:
+    class: bug
+    note: FR at block line 20 ('project starts 2021-07-01'), outside the <style> region(s) at lines 3-12;
+      owned by the gantt family
+  plantuml-ts:class/fabuje-68-gona310.puml#0:
+    class: bug
+    note: FR at block line 12 ('{'), outside the <style> region(s) at lines 3-9; owned by the class family
+  plantuml-ts:class/neruke-07-ruce381.puml#0:
+    class: bug
+    note: FR at block line 12 ('{'), outside the <style> region(s) at lines 3-9; owned by the class family
+  plantuml-ts:class/xumeli-52-keso732.puml#0:
+    class: bug
+    note: FR at block line 12 ('{'), outside the <style> region(s) at lines 3-9; owned by the class family
+  vega:xgantt/gantt6.puml#0:
+    class: bug
+    note: FR at block line 21 ('Project starts the 1st of january 2021'), outside the <style> region(s)
+      at lines 3-18; owned by the gantt family
+exclusions: {}

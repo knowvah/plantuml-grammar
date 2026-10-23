@@ -1,0 +1,7 @@
+' activity-legacy: ActivityLinkFirstToBlock, ActivityEndGroupRoot
+@startuml
+(*) --> {
+  --> B
+}
+--> C
+@enduml

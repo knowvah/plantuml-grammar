@@ -1,0 +1,6 @@
+' single-line: single-line-help
+@startuml
+help colors
+  
+help fonts
+@enduml

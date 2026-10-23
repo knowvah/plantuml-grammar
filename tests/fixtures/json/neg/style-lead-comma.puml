@@ -1,0 +1,7 @@
+' json: JsonStyleError
+@startjson
+<style>
+, a
+</style>
+{"a": 1}
+@endjson

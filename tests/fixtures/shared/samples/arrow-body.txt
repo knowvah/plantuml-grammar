@@ -1,0 +1,19 @@
+A -- B
+A ==> B
+A ..> B
+A -.-> B
+component MyComponent [[http://www.google.com]] [
+24 -> 24: Call method GET_PROXY_RUN
+rectangle <$react{scale=1}>
+sh0012->zacl0003[arrowtail=none,arrowhead=none,minlen=1,color="#000013",lhead=cluster7];
+"<color:F87E25>0xDC": "<color:F87E25>long: -4",
+State1 --> State2 : Succeeded
+a -->> a --: return
+cl3 o-up-> cl3Up
+907b9585_1051_42a3_9240_689569a717bd::C13 <-d- 9732db51_36e3_417c_8e7d_a3cbd4ed83ba::C13
+.procedure {
+User -> (Start)
+sdfThing --> "0+" sdfProperty : hasProperty
+activate GAMMA
+yWF4QzFl1dG1tlFR-fx-jGQ00dVy1bZ3SWQWbsqfnCj-4j0Iw39E8VH5LiHmtIzcwEtfNsu0aBl-503szC_XT0T8kEp7416WyvehTy0OkUXFZ3UwFzy1zxPT
+state toutou9 {

@@ -1,0 +1,6 @@
+' timing: CommandHighlight
+' gap: unknown color name (klimt/color/HColorSet.java:69-73)
+@startuml
+robust "R" as R
+highlight 0 to 5 #notacolor
+@enduml

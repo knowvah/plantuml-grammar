@@ -1,0 +1,5 @@
+' misc-charts: ChartCoordinateLineWithoutRange
+@startchart
+line [(1,2)]
+h-axis 0 --> 5
+@endchart

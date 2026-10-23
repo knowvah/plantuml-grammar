@@ -1,0 +1,4 @@
+@startuml
+!enddefinelongx
+a -> b
+@enduml

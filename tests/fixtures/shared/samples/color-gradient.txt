@@ -1,0 +1,21 @@
+#red|blue
+#FF0000-00FF00
+#a
+#Red\Blue
+#ab-
+#BlueViolet/AliceBlue
+BorderColor #00538D
+!define interact( a, b, c )  a -> b : start##c##end
+queue queue #aliceblue;line:blue;line.dotted;text:blue {
+a -[#blue,dashed;#red]-> b: test
+experiments . correlations #Green : Cronbach
+fontColor<<System Boundry>> #ababab
+HyperlinkColor #00FFFF
+#AgreementShare: AgreementShare
+package qbbjjrhzlmzqun.siwd #DDDDDD{
+:3ex;<<output>> <<#pink>>
+package a_$a #yellow {}
+participant Alice #red\blue
+--> [no] A4
+:sort generalRegimePeriods by periodStart ASC;
+group if condition 1

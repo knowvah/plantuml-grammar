@@ -1,0 +1,5 @@
+' activity-legacy: ActivityLinkFirst
+' gap: unknown colors fail in HColorSet.getColor (no color table check)
+@startuml
+(*) --> A #zzzz
+@enduml

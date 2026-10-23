@@ -1,0 +1,4 @@
+@startuml
+!if 1
+a -> b
+@enduml

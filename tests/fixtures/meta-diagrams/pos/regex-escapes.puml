@@ -1,0 +1,8 @@
+' meta: RegexLineWellFormed
+@startregex
+\0377\uFFFF\x{FFFF}\p{L}\UFF
+AB[[:digit:]]C[[:x:yz
+\\\^\$\.\|\?\*\+\(\)\[\]\{\}
+a{,,}b{2,3}c*?
+[\]
+@endregex

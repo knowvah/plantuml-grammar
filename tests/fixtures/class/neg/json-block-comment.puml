@@ -1,0 +1,7 @@
+' class: CommandCreateJsonBlock, CommandCreateJsonError
+@startuml
+class X
+json J {
+  "a": 1 // note
+}
+@enduml

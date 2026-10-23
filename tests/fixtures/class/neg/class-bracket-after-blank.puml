@@ -1,0 +1,8 @@
+' class: CommandCreateClassMultilinesBracketNextLine
+@startuml
+class A
+
+{
+  + x
+}
+@enduml

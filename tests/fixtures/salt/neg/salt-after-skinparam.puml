@@ -1,0 +1,7 @@
+' salt: SaltNotNeeded
+@startsalt
+skinparam x y
+salt
+{
+}
+@endsalt

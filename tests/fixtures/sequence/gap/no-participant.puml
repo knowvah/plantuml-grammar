@@ -1,0 +1,5 @@
+' sequence: CommandDivider
+' gap: a body without participants is incomplete (SequenceDiagram.java:591-593, PSystemCommandFactory.java:161-162): needs a whole-block count
+@startuml
+== x ==
+@enduml

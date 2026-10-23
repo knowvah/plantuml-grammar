@@ -1,0 +1,7 @@
+' state: CommandLinkState
+' gap: a dotted endpoint whose parent state was never declared cannot be used (statediagram/command/CommandLinkStateCommon.java:277-278); declarations are cross-line facts
+@startuml
+state Z {
+}
+Z --> P.Q
+@enduml

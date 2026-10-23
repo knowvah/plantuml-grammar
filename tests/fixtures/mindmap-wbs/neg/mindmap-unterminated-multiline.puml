@@ -1,0 +1,6 @@
+' mindmap-wbs: CommandMindMapOrgmodeMultiline
+@startmindmap
+* root
+**:a
+b
+@endmindmap

@@ -1,0 +1,7 @@
+' state: CommandFactoryNoteOnEntity_1
+' gap: a note without `of` needs a last entity, which only a state declaration sets in pass THREE (command/note/CommandFactoryNoteOnEntity.java:298-301, net/atmp/CucaDiagram.java:161-166)
+@startuml
+state Z {
+}
+note left : x
+@enduml

@@ -1,0 +1,6 @@
+' gantt: CommandTaskCompleteDefault
+@startgantt
+task default completion to 0100
+task completion default to 50%
+[A] -> [B]
+@endgantt

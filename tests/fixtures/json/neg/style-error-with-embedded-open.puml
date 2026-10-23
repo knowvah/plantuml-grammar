@@ -1,0 +1,8 @@
+' json: JsonStyle, JsonStyleError
+@startjson
+<style>
+:depth(1) } a,b
+{{
+</style>
+[1]
+@endjson

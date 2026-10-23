@@ -1,0 +1,127 @@
+# Classifications for the `class` family (T18: ClassDiagramFactory, class and object
+# diagrams). Upstream pin 97a5992. Every residual case is a false accept caused by an
+# execution check on entity state (an entity or package that already exists, has another
+# type, or does not exist). The interpreter keeps no entity table, so these are semantic
+# gaps; the message in each note is the jar's (`java -jar <stock jar> -syntax`).
+cases:
+  # plantuml-ts
+  class/dulone-62-neri182.puml#0:
+    class: semantic
+    note: "map CapitalCity defined twice: \"Map already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateMap.java:165-166
+  class/fegafi-82-xiri255.puml#0:
+    class: semantic
+    note: "class X.Encoding made X a package; `class X` then fails: \"Bad name\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClass.java:198
+  class/foxufo-19-nuco936.puml#0:
+    class: semantic
+    note: "package Order exists, `class Order` fails: \"Bad name\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClass.java:198
+  class/jicogu-02-cani636.puml#0:
+    class: semantic
+    note: "Order exists as a package; class Order {...} cannot mute it: \"Cannot create Order because it already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClassMultilines.java:245-246
+  class/luzive-62-zote562.puml#0:
+    class: semantic
+    note: "`<> StationCrossing` reuses a class name: \"Already existing\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandDiamondAssociation.java:82-83
+  class/notevi-43-sita948.puml#0:
+    class: semantic
+    note: "Order exists as a package; class Order {...}: \"Cannot create Order because it already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClassMultilines.java:245-246
+  class/pedoze-30-xoxo765.puml#0:
+    class: semantic
+    note: "class X then class X.Encoding: \"Bad hierarchy for class\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/ClassDiagram.java:91-95
+  class/petiku-70-fogu777.puml#0:
+    class: semantic
+    note: "bar created by a link, `struct bar {` cannot mute it: \"Cannot create bar because it already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClassMultilines.java:245-246
+  class/pizegi-06-jiro383.puml#0:
+    class: semantic
+    note: "lollipop link to a class that does not exist: \"No class\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandLinkLollipop.java:185-186
+  class/revosa-68-goci965.puml#0:
+    class: semantic
+    note: "b is a class, so `b.b` in a link cannot resolve it as a package: \"Not a package\""
+    cite: src/main/java/net/atmp/CucaDiagram.java:282
+  class/rogoxa-80-mori838.puml#0:
+    class: semantic
+    note: "package Toto exists, `class Toto` fails: \"Bad name\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClass.java:198
+  class/sunuli-13-geju490.puml#0:
+    class: semantic
+    note: "class com.Toto then class com.Toto.Internal: \"Bad hierarchy for class\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/ClassDiagram.java:91-95
+  class/xadepe-11-noja686.puml#0:
+    class: semantic
+    note: "Toto is a class, `class Toto.Internal` needs it as a package: \"Not a package\""
+    cite: src/main/java/net/atmp/CucaDiagram.java:282
+  object/losote-76-beki147.puml#0:
+    class: semantic
+    note: "object user defined twice: \"Object already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateEntityObject.java:121-122
+  # pdiff (dbhum mirrors plantuml-ts and adds kokofa)
+  dbhum/d_ul/dulone-62-neri182.puml#0:
+    class: semantic
+    note: "map CapitalCity defined twice: \"Map already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateMap.java:165-166
+  dbhum/f_eg/fegafi-82-xiri255.puml#0:
+    class: semantic
+    note: "class X.Encoding made X a package; `class X` then fails: \"Bad name\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClass.java:198
+  dbhum/f_ox/foxufo-19-nuco936.puml#0:
+    class: semantic
+    note: "package Order exists, `class Order` fails: \"Bad name\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClass.java:198
+  dbhum/j_ic/jicogu-02-cani636.puml#0:
+    class: semantic
+    note: "Order exists as a package; class Order {...} cannot mute it: \"Cannot create Order because it already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClassMultilines.java:245-246
+  dbhum/k_ok/kokofa-47-deni140.puml#0:
+    class: semantic
+    note: "json J defined twice: \"JSON already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateJson.java:142-143
+  dbhum/l_os/losote-76-beki147.puml#0:
+    class: semantic
+    note: "object user defined twice: \"Object already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateEntityObject.java:121-122
+  dbhum/l_uz/luzive-62-zote562.puml#0:
+    class: semantic
+    note: "`<> StationCrossing` reuses a class name: \"Already existing\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandDiamondAssociation.java:82-83
+  dbhum/n_ot/notevi-43-sita948.puml#0:
+    class: semantic
+    note: "Order exists as a package; class Order {...}: \"Cannot create Order because it already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClassMultilines.java:245-246
+  dbhum/p_ed/pedoze-30-xoxo765.puml#0:
+    class: semantic
+    note: "class X then class X.Encoding: \"Bad hierarchy for class\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/ClassDiagram.java:91-95
+  dbhum/p_et/petiku-70-fogu777.puml#0:
+    class: semantic
+    note: "bar created by a link, `struct bar {` cannot mute it: \"Cannot create bar because it already exists\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClassMultilines.java:245-246
+  dbhum/p_iz/pizegi-06-jiro383.puml#0:
+    class: semantic
+    note: "lollipop link to a class that does not exist: \"No class\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandLinkLollipop.java:185-186
+  dbhum/r_ev/revosa-68-goci965.puml#0:
+    class: semantic
+    note: "b is a class, so `b.b` in a link cannot resolve it as a package: \"Not a package\""
+    cite: src/main/java/net/atmp/CucaDiagram.java:282
+  dbhum/r_og/rogoxa-80-mori838.puml#0:
+    class: semantic
+    note: "package Toto exists, `class Toto` fails: \"Bad name\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClass.java:198
+  dbhum/s_un/sunuli-13-geju490.puml#0:
+    class: semantic
+    note: "class com.Toto then class com.Toto.Internal: \"Bad hierarchy for class\""
+    cite: src/main/java/net/sourceforge/plantuml/classdiagram/ClassDiagram.java:91-95
+  dbhum/x_ad/xadepe-11-noja686.puml#0:
+    class: semantic
+    note: "Toto is a class, `class Toto.Internal` needs it as a package: \"Not a package\""
+    cite: src/main/java/net/atmp/CucaDiagram.java:282
+# Every extracted ClassDiagramFactory command is modeled (tools.report.coverage: 86
+# modeled, 0 partial, 0 missing).
+exclusions: {}

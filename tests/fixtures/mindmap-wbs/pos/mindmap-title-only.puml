@@ -1,0 +1,4 @@
+' mindmap-wbs: CommandTitle
+@startmindmap
+title only a title
+@endmindmap

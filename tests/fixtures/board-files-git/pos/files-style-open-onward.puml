@@ -1,0 +1,11 @@
+' board-files-git: FilesStyleBlockOpenOnward, FilesStyleOnwardLine, FilesStyleContinued, FilesOtherLine
+@startfiles
+<style>
+root /* x
+</style>
+/a
+<style>
+*/ {
+}
+</style>
+@endfiles

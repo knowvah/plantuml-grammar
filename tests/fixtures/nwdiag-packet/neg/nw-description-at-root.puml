@@ -1,0 +1,7 @@
+' nwdiag-packet: NwDescriptionWithoutOwner
+@startnwdiag
+network n {
+  a
+}
+Description = x
+@endnwdiag

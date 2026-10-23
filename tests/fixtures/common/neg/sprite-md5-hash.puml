@@ -1,0 +1,6 @@
+' common: CommandSpriteMd5
+' factory: SequenceDiagramFactory
+@startuml
+sprite $x data:image/png;md5,#
+Alice -> Bob : hello
+@enduml

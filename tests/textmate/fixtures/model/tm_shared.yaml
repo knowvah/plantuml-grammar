@@ -1,0 +1,12 @@
+schema_version: 1
+id: tm_shared
+layer: shared
+variables:
+  NAME:
+    regex: "([\\p{L}_])(?P<rest>[\\p{L}\\p{N}_]*)"
+    name: ident
+    scope: entity.name.type
+  STEREOTYPE: {regex: "<<\\w+>>", scope: storage.modifier.stereotype}
+  COLOR: {regex: "#\\w+", scope: constant.other.color}
+  TITLE_TEXT: {regex: "\"[^\"]*\"", scope: string.quoted.double}
+  ARROW: {regex: "[-.]+(?:>|\\|>)", scope: keyword.operator.arrow}

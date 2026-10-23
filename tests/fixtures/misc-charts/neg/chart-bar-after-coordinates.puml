@@ -1,0 +1,6 @@
+' misc-charts: ChartFirstCoordinateLine, ChartIndexBarAfterCoordinate
+@startchart
+h-axis 0 --> 5
+line [(1,2)]
+bar [1]
+@endchart

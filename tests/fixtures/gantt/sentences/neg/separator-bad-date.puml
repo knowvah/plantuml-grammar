@@ -1,0 +1,6 @@
+' gantt: NaturalGanttSeparatorInvalid
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+separator just before 2020-02-30
+@endgantt

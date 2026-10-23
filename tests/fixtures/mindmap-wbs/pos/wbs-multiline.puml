@@ -1,0 +1,12 @@
+' mindmap-wbs: CommandWBSItemMultilineNew, CommandWBSItemMultilineOld
+@startwbs
+* root
+**:a
+b;
+**[#red]<:c
+d; <<st>>
+**(m)_:e
+f;
+**[#red](n):g
+h;
+@endwbs

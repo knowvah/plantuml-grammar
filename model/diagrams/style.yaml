@@ -1,0 +1,317 @@
+# `<style>` blocks (T33). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/.
+#
+# Upstream. Every command factory registers three style commands
+# (command/CommonCommands.java:91-93, command/UBrexCommonCommands.java:87-89); they are
+# already in every generated model:
+# * CommandStyleSingleLineCSS (style/CommandStyleSingleLineCSS.java:61-68):
+#   `<style>CSS</style>` on one line, CSS limited to [-#.\w\s\u00A0;:{}]+.
+# * CommandStyleMultilinesCSS (style/CommandStyleMultilinesCSS.java:58-71): `<style>`,
+#   then everything up to the first line matching END `^[%s]*\</?style\>[%s]*$` (so a
+#   second `<style>` also closes the block).
+# * CommandStyleImport (style/CommandStyleImport.java:67-80): `<style attr=path>`.
+# Both CSS commands feed their text to style/parser/StyleParser.java. Each body line is
+# trimmed, gets a trailing "\n" (utils/CharInspectorImpl.java:60-62), and the text is
+# tokenized (StyleParser.java:239-289) and parsed (:88-176). A StyleParsingException
+# turns into CommandExecutionResult.error (CommandStyleMultilinesCSS.java:92-93,
+# CommandStyleSingleLineCSS.java:89-90). IllegalStateException (:112, :172) and the NPEs
+# of a missing next token (:104, :121, :153) make the diagram an error too.
+# Oracle-verified: the jar REJECTS bodies such as a lone `{`, `Prop`, `Prop:`,
+# `Prop red {`, `Prop *`, `*`, `,`, `:`, `:depth(1)` without `{` on the same line,
+# `a,` / `b {`, a last line `} // c`, and `@x` in a value.
+#
+# Model. The body grammar is exact, so it cannot be a line-per-line context: a token
+# may span lines (`root` / `{`, `Prop` / `red`, `/* ... */`), a `//` comment swallows the
+# newline token (`Prop red // c` / `next {` is an error), and the end of the token
+# stream matters (NPE). A `push` context also cannot reject an unterminated `<style>`.
+# So the generated multiline entry is refined into a `join` (docs/grammar-guide.md
+# "Multiline kinds") whose parts match the whole block. The lines are joined with U+E100,
+# which plays the role of the "\n" token.
+# * `join` is uncapped upstream: CommandMultilines2 has no line cap
+#   (command/PSystemCommandFactory.java:268-286; the cap at :281 is
+#   CommandDecoratorMultine only). The smallest k wins, and STYLE_END_IS_LAST requires
+#   k to be the first END line (CommandMultilines2.java:105-107). So the join completes
+#   exactly where upstream does, and only when StyleParser accepts the body.
+#   max_lines 100000 is above any block, so it is uncapped too.
+# * CommandStyleMultilinesCSSReject: when the join fails (bad body or no END line),
+#   upstream errors at the `<style>` line, by EXECUTION_ERROR
+#   (PSystemCommandFactory.java:180-186) or because no command matches (:169-174). This
+#   entry consumes `<style>` plus one line and enters the empty `style_reject` context,
+#   so the next body line is rejected. Its parts need a U+E100, so it never matches a
+#   single line.
+# * CommandStyleMultilinesCSSStructure + `style_body`: the emitter view. Emitters
+#   approximate `join` by a single line (tools/emit/textmate.py), and no single line
+#   contains U+E100, so to them both joins are dead. They see the upstream form,
+#   `multiline` from `<style>` to END. TextMate nests the scoped `style_body` rules
+#   (selectors, declarations, comments, catch-all) inside it. The interpreter
+#   reaches this entry only when `<style>` is the last body line; the multiline never
+#   completes there, so the line is rejected as upstream does, and the push never runs.
+# Known gaps (FA only): `<style>` as the second-to-last body line with no END line
+#   (accepted here, rejected upstream); CommandStyleImport reads a file at
+#   execution (CommandStyleImport.java:101-122), so a missing file is accepted here;
+#   Java ASCII `\w`/`\s` vs Unicode (tools/interp/compile.py).
+schema_version: 1
+id: style
+layer: shared
+
+variables:
+  # ---- multiline body: the token stream of StyleParser over the joined lines ----
+  # Lookahead right after `<style>`: no line before the last is an END line, and the
+  # last joined line is (CommandStyleMultilinesCSS.java:58, CommandMultilines2.java:105).
+  STYLE_END_IS_LAST: {regex: "(?=\uE100(?:(?![\\s\u00A0]*</?style>[\\s\u00A0]*\uE100)[^\uE100]*\uE100)*[\\s\u00A0]*</?style>[\\s\u00A0]*$)", ci: true}
+  STYLE_NEWLINE: {regex: "\uE100"}
+  STYLE_END_LINE: {regex: "[^\uE100]*"}
+  # Skipped text (StyleParser.java:247-255, jumpUntil :291-310): spaces/tabs, `//` up to
+  # and including the newline, `/* */` and `/' '/` (the closer may overlap the opener,
+  # `/*/` is closed), an unclosed one runs to the end. The last U+E100 is the final "\n".
+  STYLE_GAP: {regex: "(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)(?:(?!\\*/)(?:[^\uE100]|\uE100(?=[^\uE100]*\uE100)))*(?:\\*/|\uE100(?![^\uE100]*\uE100))|/(?=')(?:(?!'/)(?:[^\uE100]|\uE100(?=[^\uE100]*\uE100)))*(?:'/|\uE100(?![^\uE100]*\uE100)))*)"}
+  # STRING token (StyleParser.java:279-284): quoted (readQuotedString :328-341, may span
+  # lines), `.`-prefixed (keeps spaces, readString :349), plain (readString :343-360).
+  # Never on the last (END) line.
+  STYLE_STRING: {regex: "(?=[^\uE100]*\uE100)(?>\"(?:[^\"\uE100]|\uE100(?=[^\uE100]*\uE100))*(?:\"|\uE100(?![^\uE100]*\uE100))|\\.[^\\t{};,:\uE100\\r]*|(?!/[/*'])[^ \\t{};,:*@\".\uE100\\r][^ \\t{};,:\uE100\\r]*)"}
+  # A STRING `<style>` / `</style>` is skipped (StyleParser.java:99-102).
+  STYLE_TAG_SKIP: {regex: "(?=[^\uE100]*\uE100)(?:\"</?style>\"|</?style>(?=[ \\t{};,:\uE100\\r]))", ci: true}
+  STYLE_KEY:
+    seq:
+      - {regex: "(?!\"</?style>\"|</?style>(?=[ \\t{};,:\uE100\\r]))", ci: true}
+      - {ref: STYLE_STRING}
+  # AROBASE_MEDIA (StyleParser.java:277-278, readArobaseMedia :312-326): up to and
+  # including the first `{`, `}` or `;`, across lines.
+  STYLE_MEDIA: {regex: "@(?:[^{};\uE100]|\uE100(?=[^\uE100]*\uE100))*(?:[{};]|\uE100(?![^\uE100]*\uE100))"}
+  # A next token exists and it is not a COMMA (:104 dereferences peek(0)).
+  STYLE_NEXT_TOKEN: {regex: "(?=[^\uE100]*\uE100)(?=[^ \\t/,]|/(?![/*']))"}
+  # STRING [STAR] (:114-119); a COMMA right after the STRING takes the :104 branch.
+  STYLE_KEY_HEAD:
+    seq:
+      - {ref: STYLE_KEY}
+      - {ref: STYLE_GAP}
+      - {regex: "(?!,)"}
+      - opt: {seq: [{literal: "*", ci: false}, {ref: STYLE_GAP}]}
+  # skipNewLines (:221-228), maximal.
+  STYLE_SKIP_NEWLINES:
+    seq:
+      - {ref: STYLE_GAP}
+      - star: {seq: [{ref: STYLE_NEWLINE}, {ref: STYLE_GAP}]}
+      - {regex: "(?!\uE100)"}
+  # skipColon (:230-237), maximal.
+  STYLE_COLONS:
+    seq:
+      - star: {seq: [{literal: ":", ci: false}, {ref: STYLE_GAP}]}
+      - {regex: "(?!:)"}
+  # readValue (:190-219): STRING, COMMA, or COLON + STRING, until NEWLINE, `;` or `}`.
+  STYLE_VALUE:
+    star:
+      seq:
+        - {ref: STYLE_GAP}
+        - alt:
+            - {ref: STYLE_STRING}
+            - {literal: ",", ci: false}
+            - {seq: [{literal: ":", ci: false}, {ref: STYLE_GAP}, {ref: STYLE_STRING}]}
+  STYLE_VALUE_END:
+    seq:
+      - {ref: STYLE_GAP}
+      - {regex: "(?=[\uE100;}]|[^\uE100]*$)"}
+  # One statement of parseNow (:91-174).
+  STYLE_STATEMENT:
+    alt:
+      # NEWLINE, SEMICOLON, `<style>` tokens are skipped (:94-102).
+      - alt: [{ref: STYLE_NEWLINE}, {literal: ";", ci: false}, {ref: STYLE_TAG_SKIP}]
+      # any token + COMMA: readWithComma (:178-188), newlines, OPEN, else
+      # IllegalStateException (:104-113).
+      - seq:
+          - alt: [{ref: STYLE_KEY}, {ref: STYLE_MEDIA}, {regex: "[*:{},]"}]
+          - {ref: STYLE_GAP}
+          - {literal: ",", ci: false}
+          - star: {seq: [{ref: STYLE_GAP}, {alt: [{ref: STYLE_STRING}, {literal: ",", ci: false}]}]}
+          - {ref: STYLE_SKIP_NEWLINES}
+          - {literal: "{", ci: false}
+      # `:depth(1) {`, `:depth(1)* {` on adjacent tokens (:153-168).
+      - seq:
+          - {literal: ":", ci: false}
+          - {ref: STYLE_GAP}
+          - {ref: STYLE_STRING}
+          - {ref: STYLE_GAP}
+          - opt: {seq: [{literal: "*", ci: false}, {ref: STYLE_GAP}]}
+          - {literal: "{", ci: false}
+      # Selector: STRING [STAR] newlines OPEN (:120-125).
+      - seq: [{ref: STYLE_KEY_HEAD}, {ref: STYLE_SKIP_NEWLINES}, {literal: "{", ci: false}]
+      # Declaration: colons, then a STRING must follow (:126-142).
+      - seq:
+          - {regex: "(?!\"?--)"}
+          - {ref: STYLE_KEY_HEAD}
+          - {ref: STYLE_SKIP_NEWLINES}
+          - {ref: STYLE_COLONS}
+          - {ref: STYLE_STRING}
+          - {ref: STYLE_VALUE}
+          - {ref: STYLE_VALUE_END}
+      # Variable `--name`: any value, even empty, but :121 needs a next token (:127-128).
+      - seq:
+          - {regex: "(?=\"?--)"}
+          - {ref: STYLE_KEY_HEAD}
+          - {ref: STYLE_SKIP_NEWLINES}
+          - {regex: "(?=[^\uE100]*\uE100)"}
+          - {ref: STYLE_COLONS}
+          - {ref: STYLE_VALUE}
+          - {ref: STYLE_VALUE_END}
+      # CLOSE_BRACKET (:144-148), AROBASE_MEDIA (:150-152); OPEN alone is an error (:169).
+      - seq: [{literal: "}", ci: false}, {ref: STYLE_GAP}, {ref: STYLE_NEXT_TOKEN}]
+      - seq: [{ref: STYLE_MEDIA}, {ref: STYLE_GAP}, {ref: STYLE_NEXT_TOKEN}]
+  STYLE_SHEET:
+    seq:
+      - star: {seq: [{ref: STYLE_GAP}, {ref: STYLE_STATEMENT}]}
+      - {ref: STYLE_GAP}
+
+  # ---- single line `<style>CSS</style>`: same parser on one line + "\n" ----
+  # Characters are limited to the STYLE group (CommandStyleSingleLineCSS.java:64): no
+  # comments, quotes, `*`, `,` or `@` can occur.
+  STYLE_SL_STRING: {regex: "(?>\\.(?:[-#.\\w\u00A0 ]|[^\\S \\t])*|(?:[-#\\w\u00A0]|[^\\S \\t])(?:[-#.\\w\u00A0]|[^\\S \\t])*)"}
+  STYLE_SL_GAP: {regex: "[ \\t]*"}
+  STYLE_SL_COLONS:
+    seq:
+      - star: {seq: [{literal: ":", ci: false}, {ref: STYLE_SL_GAP}]}
+      - {regex: "(?!:)"}
+  STYLE_SL_VALUE:
+    star:
+      seq:
+        - {ref: STYLE_SL_GAP}
+        - alt:
+            - {ref: STYLE_SL_STRING}
+            - {seq: [{literal: ":", ci: false}, {ref: STYLE_SL_GAP}, {ref: STYLE_SL_STRING}]}
+  STYLE_SL_VALUE_END:
+    seq: [{ref: STYLE_SL_GAP}, {regex: "(?=[;}<])"}]
+  STYLE_SL_STATEMENT:
+    alt:
+      - {literal: ";", ci: false}
+      - seq:
+          - {literal: ":", ci: false}
+          - {ref: STYLE_SL_GAP}
+          - {ref: STYLE_SL_STRING}
+          - {ref: STYLE_SL_GAP}
+          - {literal: "{", ci: false}
+      - seq: [{ref: STYLE_SL_STRING}, {ref: STYLE_SL_GAP}, {literal: "{", ci: false}]
+      - seq:
+          - {regex: "(?!--)"}
+          - {ref: STYLE_SL_STRING}
+          - {ref: STYLE_SL_GAP}
+          - {ref: STYLE_SL_COLONS}
+          - {ref: STYLE_SL_STRING}
+          - {ref: STYLE_SL_VALUE}
+          - {ref: STYLE_SL_VALUE_END}
+      - seq:
+          - {regex: "(?=--)"}
+          - {ref: STYLE_SL_STRING}
+          - {ref: STYLE_SL_GAP}
+          - {regex: "(?!<)"}
+          - {ref: STYLE_SL_COLONS}
+          - {ref: STYLE_SL_VALUE}
+          - {ref: STYLE_SL_VALUE_END}
+      - {literal: "}", ci: false}
+  STYLE_SL_SHEET:
+    seq:
+      - star: {seq: [{ref: STYLE_SL_GAP}, {ref: STYLE_SL_STATEMENT}]}
+      - {ref: STYLE_SL_GAP}
+
+  # ---- emitter view (style_body): scoped, lenient ----
+  STYLE_SELECTOR_ITEM:
+    alt:
+      - {regex: ":[^\\s{},:;*]+", scope: entity.other.attribute-name.pseudo-class}
+      - {regex: "\\.[^\\t{},:;]+", scope: entity.other.attribute-name.class}
+      - {literal: "*", ci: false, scope: keyword.operator.wildcard}
+      - {regex: "[^\\s{},:;*.\"/@][^\\s{},:;]*", scope: entity.name.tag}
+
+overrides:
+  CommandStyleMultilinesCSS:
+    join: {max_lines: 100000}
+    end: null
+    parts:
+      seq:
+        - {literal: <style>, ci: true, scope: entity.name.tag}
+        - {ref: STYLE_END_IS_LAST}
+        - {ref: STYLE_NEWLINE}
+        - {ref: STYLE_SHEET}
+        - {ref: STYLE_END_LINE}
+  CommandStyleSingleLineCSS:
+    parts:
+      seq:
+        - {literal: <style>, ci: true, scope: entity.name.tag}
+        - {regex: "(?!<)"}
+        - {ref: STYLE_SL_SHEET}
+        - {literal: </style>, ci: true, scope: entity.name.tag}
+
+insert_after:
+  CommandStyleMultilinesCSS:
+    - command: CommandStyleMultilinesCSSReject
+      provenance: {class: net.sourceforge.plantuml.style.CommandStyleMultilinesCSS, file: src/main/java/net/sourceforge/plantuml/style/CommandStyleMultilinesCSS.java, line: 92, engine: IRegex}
+      kind: multiline
+      join: {max_lines: 1}
+      parts:
+        seq:
+          - {literal: <style>, ci: true}
+          - {regex: "\uE100[\\s\\S]*"}
+      push: style_reject
+    - command: CommandStyleMultilinesCSSStructure
+      provenance: {class: net.sourceforge.plantuml.style.CommandStyleMultilinesCSS, file: src/main/java/net/sourceforge/plantuml/style/CommandStyleMultilinesCSS.java, line: 66, engine: IRegex}
+      kind: multiline
+      parts: {literal: <style>, ci: true, scope: entity.name.tag}
+      end: {regex: "[\\s\u00A0]*</?style>[\\s\u00A0]*", ci: true, scope: entity.name.tag}
+      push: style_body
+
+contexts:
+  style_reject: []
+  style_body:
+    - command: StyleBlockEnd
+      provenance: {class: net.sourceforge.plantuml.command.CommandMultilines2, file: src/main/java/net/sourceforge/plantuml/command/CommandMultilines2.java, line: 105}
+      kind: single
+      parts: {regex: "[\\s\u00A0]*</?style>[\\s\u00A0]*", ci: true, scope: entity.name.tag}
+      pop: true
+    - command: StyleLineComment
+      provenance: {class: net.sourceforge.plantuml.style.parser.StyleParser, file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java, line: 250}
+      kind: single
+      parts: {regex: "//.*", scope: comment.line.double-slash}
+    - command: StyleBlockComment
+      provenance: {class: net.sourceforge.plantuml.style.parser.StyleParser, file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java, line: 254}
+      kind: single
+      parts: {regex: "/\\*.*", scope: comment.block}
+    - command: StyleAtRule
+      provenance: {class: net.sourceforge.plantuml.style.parser.StyleParser, file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java, line: 277}
+      kind: single
+      parts:
+        seq:
+          - {regex: "@[\\w-]*", scope: keyword.control.at-rule}
+          - {regex: ".*"}
+    - command: StyleBlockClose
+      provenance: {class: net.sourceforge.plantuml.style.parser.StyleParser, file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java, line: 144}
+      kind: single
+      parts: {regex: "\\}(?:[ \\t]*[};])*", scope: punctuation.section.block.end}
+    - command: StyleSelectorOpen
+      provenance: {class: net.sourceforge.plantuml.style.parser.StyleParser, file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java, line: 120}
+      kind: single
+      parts:
+        seq:
+          - {ref: STYLE_SELECTOR_ITEM}
+          - star: {seq: [{regex: "[ \\t]*,?[ \\t]*"}, {ref: STYLE_SELECTOR_ITEM}]}
+          - {regex: "[ \\t]*"}
+          - {literal: "{", ci: false, scope: punctuation.section.block.begin}
+          - {regex: ".*"}
+    - command: StyleCustomProperty
+      provenance: {class: net.sourceforge.plantuml.style.parser.StyleParser, file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java, line: 127}
+      kind: single
+      parts:
+        seq:
+          - {regex: "--[^\\s:;{}]+", scope: variable.other.custom-property}
+          - {regex: "[ \\t]*:*[ \\t]*"}
+          - {regex: "[^;{}]*", scope: string.unquoted}
+          - {regex: ".*"}
+    - command: StyleDeclaration
+      provenance: {class: net.sourceforge.plantuml.style.parser.StyleParser, file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java, line: 129}
+      kind: single
+      parts:
+        seq:
+          - {regex: "[A-Za-z][\\w.-]*", scope: support.type.property-name}
+          - {regex: "[ \\t]*:*[ \\t]*"}
+          - {regex: "[^;{}]*", scope: string.unquoted}
+          - {regex: ".*"}
+    - command: StyleAnyLine
+      provenance: {class: net.sourceforge.plantuml.style.parser.StyleParser, file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java, line: 240}
+      kind: single
+      parts: {regex: ".*"}

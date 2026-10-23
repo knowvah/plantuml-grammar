@@ -1,0 +1,4 @@
+' refines: stereotype-group | <<a<b>>
+@startuml
+state S <<a<b>>
+@enduml

@@ -1,0 +1,481 @@
+# Execution errors of timing commands that a line can show (T23), included by `timing`.
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/
+# timingdiagram/ unless stated.
+#
+# Same pattern as `common-errors` and `sequence-errors`: the generated regex matches first
+# upstream and the execute step then fails the factory (command/PSystemCommandFactory.java:
+# 180-187); a runtime exception (NumberFormatException) is turned into the same error by
+# command/ProtectedCommand.java:65-76. Each command is narrowed to the lines its execute
+# step accepts and followed by a `reject` with the upstream shape (insert_after).
+# Emitters drop `reject` entries and keep the narrowed rule. The reject shapes use
+# `[0-9]` where the generated rules say `\d`: Pattern2 compiles without
+# UNICODE_CHARACTER_CLASS, so Java's `\d` is ASCII only.
+# * Time expressions (command/TimeTickBuilder.java:52-59, parsed :71-113): DATE, HOUR
+#   and CLOCK numbers go through Integer.parseInt (:84, :89-91, :97-99), a label offset
+#   through new BigDecimal (:79). Overflow or a malformed offset (`+.`, `+1.2.3`) throws.
+#   Every command that reads a time reaches that parse whenever its other checks pass,
+#   and fails anyway when they do not, so a bad literal always fails the line.
+# * A trailing time followed by `: message` (CommandTimeMessage TIME2, CommandConstraint
+#   TIME2, CommandHighlight TO): upstream tries HOUR before DIGIT, so `B@5:0:99999999999`
+#   is an overflowing HOUR upstream, while the narrowed rule could read DIGIT `5` plus the
+#   message `0:99999999999`. A `reject` with an overflowing HOUR goes BEFORE those
+#   commands (insert_before); no earlier choice point can avoid HOUR (PLAYER and arrow are
+#   delimited by `@`, `-` and `>`).
+# * `scale N as M pixels`: Long.parseLong of both numbers, then tick or pixel <= 0 is
+#   "Bad value" (command/CommandScalePixel.java:114-117). A unit factor that makes the
+#   product wrap around is not modeled (gap/scale-pixel-overflow-wrap).
+# * `X is N pixels height`: Integer.parseInt (command/CommandPixelHeight.java:86).
+# * `use date format "..."`: new SimpleDateFormat(pattern, Locale.US) throws for an
+#   unquoted ASCII letter outside `GyMdkHmsSEDFwWahKzZYuXL`, a run of four or more `X`
+#   and an unterminated quote (TimingDiagram.java:409-414).
+# Unknown colors (klimt/color/HColorSet.java:69-73) and lookups of players, time labels
+# and clocks stay gaps (tests/fixtures/timing/gap).
+schema_version: 1
+id: timing-errors
+layer: shared
+include: [common, gen-shared]
+
+variables:
+  # --- time expressions (command/TimeTickBuilder.java:52-59) ---------------------------
+  T_AT: {literal: "@", ci: true, scope: keyword.operator.time}
+  T_TIME_CODE: {regex: ':([\p{L}\p{N}_.]+)([-+][.0-9]+)?', ci: true, scope: variable.other.time-label}
+  T_TIME_DATE: {regex: '([0-9]+)/([0-9]+)/([0-9]+)', ci: true, scope: constant.numeric.date}
+  T_TIME_HOUR: {regex: '([0-9]+):([0-9]+):([0-9]+)', ci: true, scope: constant.numeric.time}
+  T_TIME_DIGIT: {regex: '(\+?)(-?[0-9]+\.?[0-9]*)', ci: true, scope: constant.numeric.time}
+  T_TIME_CLOCK: {regex: '([\p{L}\p{N}_.@]+)\*([0-9]+)', ci: true, scope: variable.other.clock}
+  T_TIME:
+    alt:
+      - {ref: T_TIME_CODE}
+      - {ref: T_TIME_DATE}
+      - {ref: T_TIME_HOUR}
+      - {ref: T_TIME_DIGIT}
+      - {ref: T_TIME_CLOCK}
+  # The offset is new BigDecimal("+1.5") (TimeTickBuilder.java:79): digits with at most
+  # one dot, at least one digit.
+  T_TIME_CODE_OK:
+    regex: ':([\p{L}\p{N}_.]+)([-+](?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))?'
+    ci: true
+    scope: variable.other.time-label
+  T_SLASH: {literal: /, ci: true, scope: punctuation.separator.date}
+  T_COLON: {literal: ":", ci: true, scope: punctuation.separator.time}
+  T_TIME_DATE_OK:
+    seq: [{ref: JAVA_INT}, {ref: T_SLASH}, {ref: JAVA_INT}, {ref: T_SLASH}, {ref: JAVA_INT}]
+  T_TIME_HOUR_OK:
+    seq: [{ref: JAVA_INT}, {ref: T_COLON}, {ref: JAVA_INT}, {ref: T_COLON}, {ref: JAVA_INT}]
+  T_TIME_CLOCK_OK:
+    seq:
+      - {regex: '[\p{L}\p{N}_.@]+\*', ci: true, scope: variable.other.clock}
+      - {ref: JAVA_INT}
+  T_TIME_OK:
+    alt:
+      - {ref: T_TIME_CODE_OK}
+      - {ref: T_TIME_DATE_OK}
+      - {ref: T_TIME_HOUR_OK}
+      - {ref: T_TIME_DIGIT}
+      - {ref: T_TIME_CLOCK_OK}
+  # An HOUR with at least one number above 2147483647 (leading zeros allowed).
+  T_TIME_HOUR_BAD:
+    regex: '(?:0*(?:[1-9][0-9]{10,}|[3-9][0-9]{9}|2[2-9][0-9]{8}|21[5-9][0-9]{7}|214[89][0-9]{6}|2147[5-9][0-9]{5}|214749[0-9]{4}|214748[4-9][0-9]{3}|2147483[7-9][0-9]{2}|21474836[5-9][0-9]|214748364[89]):[0-9]+:[0-9]+|[0-9]+:0*(?:[1-9][0-9]{10,}|[3-9][0-9]{9}|2[2-9][0-9]{8}|21[5-9][0-9]{7}|214[89][0-9]{6}|2147[5-9][0-9]{5}|214749[0-9]{4}|214748[4-9][0-9]{3}|2147483[7-9][0-9]{2}|21474836[5-9][0-9]|214748364[89]):[0-9]+|[0-9]+:[0-9]+:0*(?:[1-9][0-9]{10,}|[3-9][0-9]{9}|2[2-9][0-9]{8}|21[5-9][0-9]{7}|214[89][0-9]{6}|2147[5-9][0-9]{5}|214749[0-9]{4}|214748[4-9][0-9]{3}|2147483[7-9][0-9]{2}|21474836[5-9][0-9]|214748364[89]))'
+    ci: true
+    scope: invalid.illegal.time
+  T_AT_TIME: {seq: [{ref: T_AT}, {ref: T_TIME}]}
+  T_AT_TIME_OK: {seq: [{ref: T_AT}, {ref: T_TIME_OK}]}
+
+  # --- state changes (command/CommandChangeStateByTime.java:58-76, CommandChangeState.java:
+  # 59, :93-101) -------------------------------------------------------------------------
+  T_IS: {literal: is, ci: true, scope: keyword.other.is}
+  T_STATE:
+    alt:
+      - {regex: "[\"“”]([^\"“”]*)[\"“”]", ci: true, scope: string.quoted.state}
+      - {regex: '([-\p{L}\p{N}_][-\p{L}\p{N}_.]*)', ci: true, scope: constant.other.state}
+      - {regex: '(\{hidden\})', ci: true, scope: constant.language.state}
+      - {regex: '(\{\.\.\.\})', ci: true, scope: constant.language.state}
+      - {regex: '(\{-\})', ci: true, scope: constant.language.state}
+      - {regex: '(\{\?\})', ci: true, scope: constant.language.state}
+      - {regex: '(?:\{([-\p{L}\p{N}_][-\p{L}\p{N}_.]*),([-\p{L}\p{N}_][-\p{L}\p{N}_.]*)\})', ci: true, scope: constant.other.state}
+  T_COMMENT:
+    opt:
+      seq:
+        - {ref: SPACE_ANY}
+        - {literal: ":", ci: true, scope: punctuation.separator.comment}
+        - {ref: SPACE_ANY}
+        - {regex: '(.*?)', ci: true, scope: string.unquoted.comment}
+  T_STATE_TAIL:
+    seq:
+      - {ref: SPACE_ANY}
+      - {ref: T_IS}
+      - {ref: SPACE_ANY}
+      - {ref: T_STATE}
+      - {ref: SPACE_ANY}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+      - {ref: T_COMMENT}
+      - {ref: SPACE_ANY}
+  T_BY_TIME: {seq: [{ref: SPACE_ANY}, {ref: T_TIME}, {ref: T_STATE_TAIL}]}
+  T_BY_TIME_OK: {seq: [{ref: SPACE_ANY}, {ref: T_TIME_OK}, {ref: T_STATE_TAIL}]}
+
+  # --- messages and constraints (command/CommandTimeMessage.java:56-80,
+  # CommandConstraint.java:61-80) ------------------------------------------------------
+  T_PLAYER: {regex: '([\p{L}_][\p{L}\p{N}_.]*)', ci: true, scope: variable.other.player}
+  T_MESSAGE:
+    opt:
+      seq:
+        - {literal: ":", ci: true, scope: punctuation.separator.message}
+        - {ref: SPACE_ANY}
+        - {regex: '(.*)', ci: true, scope: string.unquoted.message}
+  T_MESSAGE_TAIL: {seq: [{ref: SPACE_ANY}, {ref: T_MESSAGE}, {ref: SPACE_ANY}]}
+  T_TM_ARROW:
+    seq:
+      - {ref: SPACE_ANY}
+      - {regex: '(-+)', ci: true, scope: keyword.operator.arrow.body}
+      - {ref: ARROW_STYLE}
+      - {regex: '\>', ci: true, scope: keyword.operator.arrow.head}
+      - {ref: SPACE_ANY}
+  T_CONSTRAINT_ARROW:
+    seq:
+      - {ref: SPACE_ANY}
+      - {literal: <, ci: true, scope: keyword.operator.arrow.head}
+      - {regex: '(-+)', ci: true, scope: keyword.operator.arrow.body}
+      - {ref: ARROW_STYLE1}
+      - {regex: '(-*)', ci: true, scope: keyword.operator.arrow.body}
+      - {literal: ">", ci: true, scope: keyword.operator.arrow.head}
+      - {ref: SPACE_ANY}
+  T_CONSTRAINT_PART1: {regex: '(([\p{L}_][\p{L}\p{N}_.]*))?', ci: true, scope: variable.other.player}
+
+  # --- highlight (command/CommandHighlight.java:66-85) ----------------------------------
+  T_HIGHLIGHT_HEAD:
+    seq:
+      - {ref: SPACE_ANY}
+      - {literal: highlight, ci: true, scope: keyword.other.highlight}
+      - {ref: SPACE_SOME}
+  T_HIGHLIGHT_TO:
+    seq:
+      - {ref: SPACE_SOME}
+      - {literal: to, ci: true, scope: keyword.other.to}
+      - {ref: SPACE_SOME}
+  T_HIGHLIGHT_TAIL:
+    seq:
+      - {ref: SPACE_ANY}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+      - opt:
+          seq:
+            - {literal: ":", ci: true, scope: punctuation.separator.caption}
+            - {ref: SPACE_ANY}
+            - {regex: '(.*)', ci: true, scope: string.unquoted.caption}
+
+  # --- scale and height (command/CommandScalePixel.java:56-71, CommandPixelHeight.java:
+  # 56-67) ------------------------------------------------------------------------------
+  T_SCALE_WORD: {literal: scale, ci: true, scope: keyword.other.scale}
+  T_AS: {literal: as, ci: true, scope: keyword.other.as}
+  T_PIXELS: {regex: 'pixels?', ci: true, scope: keyword.other.unit}
+  T_DIGITS: {regex: '[0-9]+', ci: true, scope: constant.numeric.integer}
+  # Long.parseLong over an ASCII digit run, value in [1, 9223372036854775807].
+  T_LONG_POSITIVE:
+    regex: '0*(?:[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[01][0-9]{17}|92[01][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[01][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6]|9223372036854775807)'
+    ci: true
+    scope: constant.numeric.integer
+  T_SCALE_UNIT:
+    opt:
+      seq:
+        - opt: {ref: SPACE_ONE}
+        - {regex: '([smhdDyY])', ci: true, scope: keyword.other.unit}
+  T_HEIGHT_HEAD:
+    seq:
+      - {regex: '([\p{L}\p{N}_.@]+)', ci: true, scope: variable.other.player}
+      - {ref: SPACE_SOME}
+      - {ref: T_IS}
+      - {ref: SPACE_SOME}
+  T_HEIGHT_TAIL:
+    seq:
+      - {ref: SPACE_SOME}
+      - {ref: T_PIXELS}
+      - {ref: SPACE_SOME}
+      - {literal: height, ci: true, scope: keyword.other.height}
+
+  # --- date format (command/CommandUseDateFormat.java:55-64) ----------------------------
+  T_DATE_FORMAT_HEAD:
+    seq:
+      - {literal: use, ci: true, scope: keyword.other.date-format}
+      - {ref: SPACE_ANY}
+      - {literal: date, ci: true, scope: keyword.other.date-format}
+      - {ref: SPACE_ANY}
+      - {literal: format, ci: true, scope: keyword.other.date-format}
+      - {ref: SPACE_ANY}
+  T_DATE_FORMAT_ANY:
+    regex: "[\"“”]([^\"“”]+)[\"“”]"
+    ci: true
+    scope: string.quoted.date-format
+  # java.text.SimpleDateFormat.compile: `''` is a quote; `'...'` is literal text (`''`
+  # inside it too); an unquoted ASCII letter must be a pattern letter; a run of `X`
+  # longer than 3 is an error; anything else is literal. Case-sensitive.
+  T_DATE_FORMAT_OK:
+    regex: "[\"“”]((?:''|'(?:''|[^'\"“”])*'|X{1,3}(?!X)|[GyMdkHmsSEDFwWahKzZYuL]|[^a-zA-Z'\"“”])+)[\"“”]"
+    scope: string.quoted.date-format
+
+overrides:
+  # TimingDiagramFactory.java:94.
+  CommandChangeStateByTime:
+    parts: {ref: T_BY_TIME_OK}
+  # TimingDiagramFactory.java:95.
+  CommandAtTime:
+    parts:
+      seq:
+        - {ref: T_AT_TIME_OK}
+        - opt:
+            seq:
+              - {ref: SPACE_SOME}
+              - {ref: T_AS}
+              - {ref: SPACE_SOME}
+              - {literal: ":", ci: true, scope: punctuation.definition.time-label}
+              - {regex: '([\p{L}\p{N}_.]+)', ci: true, scope: entity.name.label.time}
+        - {ref: SPACE_ANY}
+  # TimingDiagramFactory.java:97.
+  CommandTimeMessage:
+    parts:
+      seq:
+        - {ref: T_PLAYER}
+        - opt: {ref: T_AT_TIME_OK}
+        - {ref: T_TM_ARROW}
+        - {ref: T_PLAYER}
+        - opt: {ref: T_AT_TIME_OK}
+        - {ref: T_MESSAGE_TAIL}
+  # TimingDiagramFactory.java:100.
+  CommandConstraint:
+    parts:
+      seq:
+        - {ref: T_CONSTRAINT_PART1}
+        - {ref: T_AT_TIME_OK}
+        - {ref: T_CONSTRAINT_ARROW}
+        - {ref: T_AT_TIME_OK}
+        - {ref: T_MESSAGE_TAIL}
+  # TimingDiagramFactory.java:101.
+  CommandScalePixel:
+    parts:
+      seq:
+        - {ref: T_SCALE_WORD}
+        - {ref: SPACE_SOME}
+        - {ref: T_LONG_POSITIVE}
+        - {ref: T_SCALE_UNIT}
+        - {ref: SPACE_SOME}
+        - {ref: T_AS}
+        - {ref: SPACE_SOME}
+        - {ref: T_LONG_POSITIVE}
+        - {ref: SPACE_SOME}
+        - {ref: T_PIXELS}
+        - {ref: SPACE_ANY}
+  # TimingDiagramFactory.java:103.
+  CommandHighlight:
+    parts:
+      seq:
+        - {ref: T_HIGHLIGHT_HEAD}
+        - {ref: T_TIME_OK}
+        - {ref: T_HIGHLIGHT_TO}
+        - {ref: T_TIME_OK}
+        - {ref: T_HIGHLIGHT_TAIL}
+  # TimingDiagramFactory.java:106.
+  CommandPixelHeight:
+    parts:
+      seq: [{ref: T_HEIGHT_HEAD}, {ref: JAVA_INT}, {ref: T_HEIGHT_TAIL}]
+  # TimingDiagramFactory.java:107.
+  CommandUseDateFormat:
+    parts:
+      seq: [{ref: T_DATE_FORMAT_HEAD}, {ref: T_DATE_FORMAT_OK}]
+
+insert_before:
+  CommandTimeMessage:
+    - command: CommandTimeMessageHourOverflow
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandTimeMessage
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandTimeMessage.java
+        line: 124
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/TimeTickBuilder.java:89-91
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_PLAYER}
+          - opt: {ref: T_AT_TIME}
+          - {ref: T_TM_ARROW}
+          - {ref: T_PLAYER}
+          - {ref: T_AT}
+          - {ref: T_TIME_HOUR_BAD}
+          - {ref: T_MESSAGE_TAIL}
+  CommandConstraint:
+    - command: CommandConstraintHourOverflow
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandConstraint
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandConstraint.java
+        line: 128
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/TimeTickBuilder.java:89-91
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_CONSTRAINT_PART1}
+          - {ref: T_AT_TIME}
+          - {ref: T_CONSTRAINT_ARROW}
+          - {ref: T_AT}
+          - {ref: T_TIME_HOUR_BAD}
+          - {ref: T_MESSAGE_TAIL}
+  CommandHighlight:
+    - command: CommandHighlightHourOverflow
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandHighlight
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandHighlight.java
+        line: 110
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/TimeTickBuilder.java:89-91
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_HIGHLIGHT_HEAD}
+          - {ref: T_TIME}
+          - {ref: T_HIGHLIGHT_TO}
+          - {ref: T_TIME_HOUR_BAD}
+          - {ref: T_HIGHLIGHT_TAIL}
+
+insert_after:
+  CommandChangeStateByTime:
+    - command: CommandChangeStateByTimeError
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandChangeStateByTime
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandChangeStateByTime.java
+        line: 106
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/TimeTickBuilder.java:79-99
+      kind: single
+      reject: true
+      parts: {ref: T_BY_TIME}
+  CommandAtTime:
+    - command: CommandAtTimeError
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandAtTime
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandAtTime.java
+        line: 90
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/TimeTickBuilder.java:79-99
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_AT_TIME}
+          - opt:
+              seq:
+                - {ref: SPACE_SOME}
+                - {ref: T_AS}
+                - {ref: SPACE_SOME}
+                - {literal: ":", ci: true}
+                - {regex: '([\p{L}\p{N}_.]+)', ci: true}
+          - {ref: SPACE_ANY}
+  CommandTimeMessage:
+    - command: CommandTimeMessageError
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandTimeMessage
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandTimeMessage.java
+        line: 123
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/TimeTickBuilder.java:79-99
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_PLAYER}
+          - opt: {ref: T_AT_TIME}
+          - {ref: T_TM_ARROW}
+          - {ref: T_PLAYER}
+          - opt: {ref: T_AT_TIME}
+          - {ref: T_MESSAGE_TAIL}
+  CommandConstraint:
+    - command: CommandConstraintError
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandConstraint
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandConstraint.java
+        line: 122
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/TimeTickBuilder.java:79-99
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_CONSTRAINT_PART1}
+          - {ref: T_AT_TIME}
+          - {ref: T_CONSTRAINT_ARROW}
+          - {ref: T_AT_TIME}
+          - {ref: T_MESSAGE_TAIL}
+  CommandScalePixel:
+    - command: CommandScalePixelError
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandScalePixel
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandScalePixel.java
+        line: 117
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandScalePixel.java:114-115
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_SCALE_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: T_DIGITS}
+          - {ref: T_SCALE_UNIT}
+          - {ref: SPACE_SOME}
+          - {ref: T_AS}
+          - {ref: SPACE_SOME}
+          - {ref: T_DIGITS}
+          - {ref: SPACE_SOME}
+          - {ref: T_PIXELS}
+          - {ref: SPACE_ANY}
+  CommandHighlight:
+    - command: CommandHighlightError
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandHighlight
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandHighlight.java
+        line: 109
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/command/TimeTickBuilder.java:79-99
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: T_HIGHLIGHT_HEAD}
+          - {ref: T_TIME}
+          - {ref: T_HIGHLIGHT_TO}
+          - {ref: T_TIME}
+          - {ref: T_HIGHLIGHT_TAIL}
+  CommandPixelHeight:
+    - command: CommandPixelHeightError
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandPixelHeight
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandPixelHeight.java
+        line: 86
+        engine: IRegex
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: T_HEIGHT_HEAD}, {ref: T_DIGITS}, {ref: T_HEIGHT_TAIL}]
+  CommandUseDateFormat:
+    - command: CommandUseDateFormatError
+      provenance:
+        class: net.sourceforge.plantuml.timingdiagram.command.CommandUseDateFormat
+        file: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandUseDateFormat.java
+        line: 77
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/timingdiagram/TimingDiagram.java:409-414
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: T_DATE_FORMAT_HEAD}, {ref: T_DATE_FORMAT_ANY}]

@@ -1,0 +1,8 @@
+' nwdiag-packet: CommandElement
+' gap: Element already in another group (NwDiagram.java:240-242) needs the set of names in every group
+@startnwdiag
+group {
+  a
+  a
+}
+@endnwdiag

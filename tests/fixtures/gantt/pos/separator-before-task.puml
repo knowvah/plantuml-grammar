@@ -1,0 +1,6 @@
+' gantt: CommandSeparator, CommandGanttArrow2
+@startgantt
+-- a --
+[A] -> [B]
+-- b --
+@endgantt

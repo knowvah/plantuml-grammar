@@ -1,0 +1,32 @@
+' style: comment forms
+@startuml
+<style>
+// comment
+/* block
+   comment */
+root { /* x */ LineColor red }
+/*/ closed at once
+</style>
+class Foo
+@enduml
+
+' style: unclosed block comment
+@startuml
+<style>
+root {
+}
+/* a
+</style>
+class Foo
+@enduml
+
+' style: comment after the last value
+@startuml
+<style>
+root {
+LineColor red
+}
+LineColor red // comment
+</style>
+class Foo
+@enduml

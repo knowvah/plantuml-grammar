@@ -1,0 +1,6 @@
+' common: CommandSpriteStdlib
+' factory: SequenceDiagramFactory
+@startuml
+sprite $adn #tupadr3#font-awesome/adn:adn
+Alice -> Bob : hello
+@enduml

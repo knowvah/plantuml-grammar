@@ -1,0 +1,6 @@
+' single-line: single-line-dot
+@startdot
+digraph G {
+
+}
+@enddot

@@ -1,0 +1,7 @@
+' common: CommandSpriteMd5
+' factory: SequenceDiagramFactory
+' gap: semantic: MD5 sprite cache lookup (CommandSpriteMd5.java:76-77)
+@startuml
+sprite $x data:image/png;md5,0123456789abcdef0123456789abcdef
+Alice -> Bob : hello
+@enduml

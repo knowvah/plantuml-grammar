@@ -1,0 +1,21 @@
+' state: CommandConcurrentState, CommandCreatePackageState, StateEnd
+@startuml
+state Active {
+  state A1
+  --
+  state A2
+  ||
+  state A3
+  ---
+  state A4 {
+    state A5
+    |||
+    state A6
+  }
+  state A7
+}
+frame Fr {
+  --
+  state F1
+}
+@enduml

@@ -1,0 +1,290 @@
+# Salt wireframes (T28). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/ unless stated.
+#
+# Dispatch. `@startsalt` is the only start keyword of PSystemSaltFactory
+# (core/DiagramType.java:190-192); `@startuml` maps to SEQUENCE..SPRITES without SALT
+# (:197-200), so this model never sees an `@startuml` block. Salt inside `@startuml`
+# takes two other routes, neither of them this model:
+# * a second line that trims to `salt` fails before any factory runs
+#   (error/PSystemErrorUtils.java:81-87, called at PSystemBuilder.java:252-255). The
+#   interpreter has no such pre-check, but it needs none: no `uml` factory accepts a bare
+#   `salt` line, so the block is rejected anyway (tests/fixtures/salt/neg/uml-*).
+# * `{{salt` ... `}}` inside a label is an embedded diagram (EmbeddedDiagram.java:337-338).
+#   Multiline scans swallow the lines up to the matching `}}` as one unit
+#   (command/PSystemCommandFactory.java:288-307, tools/interp/source.py); single-line
+#   commands see only the `{{` line (:224). The embedded diagram is drawn only when
+#   rendering, so its content never changes a verdict.
+#
+# Commands. PSystemSaltFactory.initCommandsList (salt/PSystemSaltFactory.java:56-60) is
+# the common block (commands2, scale, titles) followed by CommandAnything, a catch-all
+# `(.*)` on the UNTRIMMED line (salt/CommandAnything.java:50-58, doTrim=false; generated
+# `trim: false`) that appends the line to the diagram's data (:72,
+# salt/PSystemSalt.java:103-105). `common` refines the common block exactly as for every
+# other command factory (its execute errors - `scale 0`, `page 0x1`, bad sprites - would
+# otherwise fall through to CommandAnything and be accepted).
+#
+# What the jar rejects (oracle-verified, tests/fixtures/salt):
+# * CommandAnything fails with "This is not needed anymore." when the diagram has no data
+#   yet and the line trims to `salt` (CommandAnything.java:69-71; String.trim strips
+#   chars <= ' ', `equals` is case-sensitive). Data is only ever added by CommandAnything,
+#   so "no data yet" means "no earlier CommandAnything line": common commands (sprite,
+#   skinparam, style, title, legend ...) and blank lines (CommandNope) keep it, while a
+#   line no common command takes (`scale abc`, `hide stereotype`) ends it. Model: `main`
+#   is the "no data" state with the reject as a HEAD entry, and CommandAnything `set`s
+#   `salt_data` (patches apply to every splice alike, so it also re-sets `salt_data` from
+#   inside it). A head entry runs before the whole generated list, so it must not see a
+#   line an earlier command takes; no common command matches a line that is exactly
+#   `salt` or only U+E100 (test_head_lines_reach_no_other_command). An untrimmed line
+#   made only of U+E100 adds no data (SaltEmptyDataLine).
+# * A line with U+0085, U+2028 or U+2029 before its last character: CommandAnything's
+#   `^(.*)$` does not match it (SALT_JAVA_LINE).
+# * Accepted although `common` would fail it: a `skinparam x {` bracket abandoned at an
+#   inconsistent body line falls through to CommandAnything (SaltSkinParamBodyInconsistent).
+# * Nothing else. The widgets are NOT parsed while commands are matched: PSystemSalt only
+#   stores lines, and DataSourceImpl / the Element*Factory classes run when the diagram
+#   is drawn (PSystemSalt.getTextBlock -> createElement, PSystemSalt.java:111-132,
+#   174-235). The syntax check therefore accepts unbalanced or stray braces, unknown
+#   tokens, a bad border position, an unclosed `<<image`, an unknown `<<name>>`, a lone
+#   `"` - every one of them fails only at render time (IllegalStateException,
+#   IndexOutOfBounds, NullPointerException). Pinned by tests/fixtures/salt/pos/render-*.
+#
+# Structure (highlighting only; acceptance is unchanged). CommandAnything's `parts` is
+# replaced by SALT_ROW, the line as DataSourceImpl tokenizes it (DataSourceImpl.java:
+# 69-114): unescaped `|` and `}` delimit cells (StringTokenizer "|}"), every `{` starts a
+# block token `\{(?:[-+^#!*/]|S-|SI|S)?` (:48, Pattern2 so case-insensitive), `\|`, `\{`,
+# `\}` are escapes (:62-73), and each token is trimmed (:76, :109). A cell is classified
+# like AbstractElementFactoryComplex.getNextElement tries the factories
+# (PSystemSalt.java:219-235, factory/AbstractElementFactoryComplex.java:61-67). SALT_ROW
+# matches exactly the lines Java's `^(.*)$` matches (test_row_matches_exactly_the_lines_
+# java_matches), so only the widgets' scopes are added. Approximations, all scope-only: the classification ignores
+# where a cell sits (menu/tab entries and tree labels are read as raw text upstream, image
+# pixel rows like `..XX..` read as separators here), tree markers and border positions
+# are recognised in any cell, and brace nesting is not tracked (it spans lines and is
+# never checked). Regex fragments used throughout: a cell character is
+# `(?:\\[|{}]|[^|{}\r\n])`, a non-blank one `(?:\\[|{}]|[^|{}\t \r\n])`; kinds start
+# and end with a non-blank so the blank padding around them is unambiguous.
+schema_version: 1
+id: salt
+layer: diagram
+diagram: SALT
+factory: PSystemSaltFactory
+include: [gen-psystem-salt, common]
+
+variables:
+  # --- delimiters (DataSourceImpl.java:48, :74-104) -----------------------------------
+  SALT_BLANKS: {regex: '[ \t]+', ci: false}
+  SALT_OPEN_MENU: {regex: '\{\*', ci: false, scope: keyword.other.menu}
+  SALT_OPEN_TAB: {regex: '\{/', ci: false, scope: keyword.other.tab}
+  SALT_OPEN_SCROLL: {regex: '\{(?:S-|SI|S)', ci: true, scope: keyword.other.scroll}
+  SALT_OPEN_GRID: {regex: '\{(?:[-+^#!]|(?![*/Ss]))', ci: false, scope: punctuation.section.group.begin}
+  SALT_CLOSE: {regex: '\}', ci: false, scope: punctuation.section.group.end}
+  SALT_SEPARATOR: {regex: '\|', ci: false, scope: punctuation.separator.cell}
+  SALT_DELIMITER:
+    alt:
+      - {ref: SALT_OPEN_MENU}
+      - {ref: SALT_OPEN_TAB}
+      - {ref: SALT_OPEN_SCROLL}
+      - {ref: SALT_OPEN_GRID}
+      - {ref: SALT_CLOSE}
+      - {ref: SALT_SEPARATOR}
+
+  # --- tokens read inside complex elements ------------------------------------------
+  # ElementFactoryTree.java:112-136 (`T` or `T` + a TableStrategy char,
+  # salt/element/TableStrategy.java:39-40).
+  SALT_TREE_MARKER: {regex: 'T[-+^!#]?', ci: false, scope: keyword.other.tree}
+  # ElementFactoryBorder.java:65-96 (`[NSEW]=` opens a border, then any position letter).
+  SALT_BORDER_POSITION: {regex: '[NSEWC]=', ci: false, scope: keyword.other.border-position}
+  # ElementFactoryPyramid.java:77-78, :88-93 (a `*` cell spans the cell to its left).
+  SALT_SPAN: {regex: '\*', ci: false, scope: keyword.operator.span}
+  # ElementFactoryImage.java:64-67 (an image body ends at a `>>` token).
+  SALT_IMAGE_CLOSE: {regex: '>>', ci: false, scope: punctuation.definition.image.end}
+  # salt/element/ElementTree.java:64-69 (a leading `+` run is the tree level).
+  SALT_TREE_ENTRY: {regex: '\++(?:(?:\\[|{}]|[^|{}\r\n])*(?:\\[|{}]|[^|{}\t \r\n]))?', ci: false, scope: markup.list.tree-entry}
+
+  # --- simple elements, PSystemSalt.addSimpleFactory order (PSystemSalt.java:221-234) --
+  # ElementFactoryLine.java:60-80: starts and ends with `--`, `==`, `~~` or `..`.
+  SALT_LINE:
+    regex: '(?:--(?:-|(?:\\[|{}]|[^|{}\r\n])*--)?|==(?:=|(?:\\[|{}]|[^|{}\r\n])*==)?|~~(?:~|(?:\\[|{}]|[^|{}\r\n])*~~)?|\.\.(?:\.|(?:\\[|{}]|[^|{}\r\n])*\.\.)?)'
+    ci: false
+    scope: meta.separator
+  # ElementFactoryTextField.java:68-71: starts and ends with `"`.
+  SALT_TEXT_FIELD: {regex: '"(?:(?:\\[|{}]|[^|{}\r\n])*")?', ci: false, scope: string.quoted.double.text-field}
+  # ElementFactoryCheckboxOn.java:76-79, ElementFactoryCheckboxOff.java:77-80.
+  SALT_CHECKBOX_ON: {regex: '\[X\](?:(?:\\[|{}]|[^|{}\r\n])*(?:\\[|{}]|[^|{}\t \r\n]))?', ci: false, scope: constant.language.checkbox.checked}
+  SALT_CHECKBOX_OFF: {regex: '\[ ?\](?:(?:\\[|{}]|[^|{}\r\n])*(?:\\[|{}]|[^|{}\t \r\n]))?', ci: false, scope: constant.language.checkbox.unchecked}
+  # ElementFactoryButton.java:67-82: `[` ... `]`, but not a `[[link]]`.
+  SALT_BUTTON: {regex: '\[(?!\[)(?:\\[|{}]|[^|{}\r\n])*\]', ci: false, scope: markup.other.button}
+  # ElementFactoryDroplist.java:67-70: starts and ends with `^`.
+  SALT_DROPLIST: {regex: '\^(?:(?:\\[|{}]|[^|{}\r\n])*\^)?', ci: false, scope: markup.other.droplist}
+  # ElementFactoryRadioOn.java:76-79, ElementFactoryRadioOff.java:76-79.
+  SALT_RADIO_ON: {regex: '\(X\)(?:(?:\\[|{}]|[^|{}\r\n])*(?:\\[|{}]|[^|{}\t \r\n]))?', ci: false, scope: constant.language.radio.checked}
+  SALT_RADIO_OFF: {regex: '\( ?\)(?:(?:\\[|{}]|[^|{}\r\n])*(?:\\[|{}]|[^|{}\t \r\n]))?', ci: false, scope: constant.language.radio.unchecked}
+  # ElementFactoryImage.java:75-78 (`<<` or `<<\w+`, String.matches, ASCII \w) and
+  # ElementFactoryRetrieveFromDictonnary.java:68-71 (`<<\w+>>`).
+  SALT_IMAGE_OPEN: {regex: '<<[A-Za-z0-9_]*', ci: false, scope: punctuation.definition.image.begin}
+  SALT_IMAGE_REF: {regex: '<<[A-Za-z0-9_]+>>', ci: false, scope: variable.other.image}
+  # ElementFactoryText.java:70-77: any other non-empty token. Its text is creole, drawn
+  # by the shared engine; an OpenIconic `<&name>` (klimt/creole/command/Splitter.java:
+  # 62-72, without the `{scale}` braces, which the tokenizer splits off) is the salt
+  # icon idiom, so a leading one is marked.
+  SALT_ICON:
+    regex: '<(?:#[A-Za-z0-9_]+)?&[-A-Za-z0-9_]+(?:,?(?:(?:scale=|\*)[0-9.]+)?(?:,?color[= :](?:#[0-9a-fA-F]{1,8}|[A-Za-z0-9_]+))?)?>'
+    ci: true
+    scope: entity.name.icon
+  SALT_TEXT_RUN: {regex: '(?:\\[|{}]|[^|{}\t \r\n])(?:(?:\\[|{}]|[^|{}\r\n])*(?:\\[|{}]|[^|{}\t \r\n]))?', ci: false, scope: string.unquoted.text}
+  SALT_TEXT:
+    alt:
+      - seq:
+          - {ref: SALT_ICON}
+          - opt:
+              seq:
+                - opt: {ref: SALT_BLANKS}
+                - {ref: SALT_TEXT_RUN}
+      - {ref: SALT_TEXT_RUN}
+
+  SALT_ELEMENT:
+    alt:
+      - {ref: SALT_TREE_MARKER}
+      - {ref: SALT_BORDER_POSITION}
+      - {ref: SALT_SPAN}
+      - {ref: SALT_IMAGE_CLOSE}
+      - {ref: SALT_LINE}
+      - {ref: SALT_TEXT_FIELD}
+      - {ref: SALT_CHECKBOX_ON}
+      - {ref: SALT_CHECKBOX_OFF}
+      - {ref: SALT_BUTTON}
+      - {ref: SALT_DROPLIST}
+      - {ref: SALT_RADIO_ON}
+      - {ref: SALT_RADIO_OFF}
+      - {ref: SALT_IMAGE_REF}
+      - {ref: SALT_IMAGE_OPEN}
+      - {ref: SALT_TREE_ENTRY}
+      - {ref: SALT_TEXT}
+  # One cell: blanks only (dropped by addInternal, DataSourceImpl.java:111), or one
+  # element with optional blank padding.
+  SALT_CELL:
+    alt:
+      - seq:
+          - opt: {ref: SALT_BLANKS}
+          - {ref: SALT_ELEMENT}
+          - opt: {ref: SALT_BLANKS}
+      - {ref: SALT_BLANKS}
+  # CommandAnything is `^(.*)$` matched with find() (CommandAnything.java:55-57,
+  # regex/RegexComposed.java:112-118): Java's `.` excludes U+0085, U+2028 and U+2029 and
+  # its `$` also matches before a final one, so such a character may only end the line.
+  # Zero-width, so the interpreter is exact.
+  SALT_JAVA_LINE: {regex: "(?![^\x85  ]*[\x85  ].)", ci: false}
+  SALT_ROW:
+    seq:
+      - {ref: SALT_JAVA_LINE}
+      - opt: {ref: SALT_CELL}
+      - star:
+          seq:
+            - {ref: SALT_DELIMITER}
+            - opt: {ref: SALT_CELL}
+
+overrides:
+  # PSystemSaltFactory.java:60; the line is stored by CommandAnything.java:72 and drawn
+  # through DataSourceImpl and the element factories cited in `also`.
+  CommandAnything:
+    provenance:
+      class: net.sourceforge.plantuml.salt.CommandAnything
+      file: src/main/java/net/sourceforge/plantuml/salt/CommandAnything.java
+      line: 54
+      engine: IRegex
+      also:
+        - src/main/java/net/sourceforge/plantuml/salt/DataSourceImpl.java:69-114
+        - src/main/java/net/sourceforge/plantuml/salt/PSystemSalt.java:174-235
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryPyramid.java:95-106
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryScroll.java:72-78
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryBorder.java:92-102
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryTree.java:112-136
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryMenu.java:84-90
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryTab.java:75-81
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryLine.java:60-80
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryTextField.java:68-71
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryCheckboxOn.java:76-79
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryCheckboxOff.java:77-80
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryButton.java:67-82
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryDroplist.java:67-70
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryRadioOn.java:76-79
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryRadioOff.java:76-79
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryImage.java:75-78
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryRetrieveFromDictonnary.java:68-71
+        - src/main/java/net/sourceforge/plantuml/salt/factory/ElementFactoryText.java:70-77
+    parts: {ref: SALT_ROW}
+    set: salt_data
+
+insert_after:
+  # A skinparam body line that SkinLoader.p1 rejects makes CommandMultilinesBracket.isValid
+  # NOT_OK (command/CommandMultilinesBracket.java:76-79) and getCandidate tries the next
+  # command for the START line (command/PSystemCommandFactory.java:236-240): here that is
+  # CommandAnything, so `skinparam x {` becomes data and the following lines run on their
+  # own. `common` fails such a line inside its `require_pop` body instead, which is
+  # exact for factories where no later command takes the start line, but not for salt.
+  # This catch-all, after common's three body entries, moves into a context that never
+  # pops; the block then ends with the `require_pop` frame open, and the interpreter
+  # backtracks to the start line (emitters cannot express the backtrack and keep
+  # common's body).
+  CommandSkinParamBodySetting:
+    - command: SaltSkinParamBodyInconsistent
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMultilinesBracket
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilinesBracket.java
+        line: 78
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:236-240
+      kind: single
+      emit: false
+      parts: {regex: '.+', ci: false}
+      set: salt_skinparam_abandoned
+
+contexts:
+  # No data yet (PSystemSalt.size() == 0).
+  main:
+    - command: SaltNotNeeded
+      provenance:
+        class: net.sourceforge.plantuml.salt.PSystemSalt
+        file: src/main/java/net/sourceforge/plantuml/salt/PSystemSalt.java
+        line: 107
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/salt/CommandAnything.java:69-71
+      kind: single
+      reject: true
+      parts: {literal: salt, ci: false, scope: invalid.illegal.salt-keyword}
+    # CommandAnything stores `s.split(U+E100)` (PSystemSalt.java:103-105,
+    # text/StringLocated.java:141-143); String.split drops trailing empty strings, so an
+    # untrimmed line made only of U+E100 adds no data and the state stays "no data".
+    - command: SaltEmptyDataLine
+      provenance:
+        class: net.sourceforge.plantuml.text.StringLocated
+        file: src/main/java/net/sourceforge/plantuml/text/StringLocated.java
+        line: 141
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/salt/CommandAnything.java:72
+          - src/main/java/net/sourceforge/plantuml/salt/PSystemSalt.java:103-105
+      kind: single
+      trim: false
+      emit: false
+      parts: {regex: "+", ci: false, scope: punctuation.separator.newline}
+    - include: gen-psystem-salt#main
+  # At least one CommandAnything line stored: `salt` is ordinary data.
+  salt_data:
+    - include: gen-psystem-salt#main
+  # A skinparam bracket that upstream abandoned: never pops, so the block end backtracks
+  # to `skinparam x {` (see SaltSkinParamBodyInconsistent).
+  salt_skinparam_abandoned:
+    - command: SaltSkinParamAbandonedLine
+      provenance:
+        class: net.sourceforge.plantuml.command.PSystemCommandFactory
+        file: src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java
+        line: 268
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:274-275
+      kind: single
+      emit: false
+      parts: {regex: '.*', ci: false}

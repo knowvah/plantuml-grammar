@@ -1,0 +1,11 @@
+' timing: CommandNote, CommandNoteLong
+@startuml
+robust "R" as R
+@0
+R is a
+note top of R : a short note
+note bottom of R
+  a long
+  note
+end note
+@enduml

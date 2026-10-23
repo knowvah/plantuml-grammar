@@ -1,0 +1,4 @@
+' misc-charts: WireComponentFails
+@startwire
+* a [2147483648x10]
+@endwire

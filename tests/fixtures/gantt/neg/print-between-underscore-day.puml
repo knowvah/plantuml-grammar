@@ -1,0 +1,4 @@
+' gantt: CommandPrintBetween
+@startgantt
+print between 2020-01-1_ and 2020-01-02
+@endgantt

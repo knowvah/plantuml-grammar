@@ -1,0 +1,64 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# CrashDiagramFactory (crash/CrashDiagramFactory.java:55-57): CommandSelectCrash then the
+# catch-all CommandCrashAny, no CommonCommands. UBrex folds ASCII only (ubrex/CaseMode.java:
+# 41-45) and spaceOneOrMore is spaces only. `crash when <type>` stores the type, the last one
+# wins (CommandSelectCrash.java:86):
+# * parsing throws in executeArg (:88-89); ProtectedCommand turns it into an execution
+#   error at that line (command/ProtectedCommand.java:65-76): reject.
+# * finalizing throws in CrashDiagram.checkFinalError (CrashDiagram.java:98-100), outside
+#   any command, so PSystemBuilder.java:275-280 reports a crash, unless a later
+#   `crash when drawing` replaced the type. Modeled as a require_pop push into
+#   crash_finalizing that only `crash when drawing` pops: a block ending inside it backtracks
+#   to the pushing line, where the next entry rejects.
+# * drawing throws only when drawing (CrashDiagram.java:62-64): accepted by the syntax check.
+# CommandCrashAny is narrowed to the other lines so emitters (which drop rejects) refuse
+# `crash when parsing` and an unclosed `crash when finalizing` too.
+schema_version: 1
+id: single-line-crash
+layer: diagram
+diagram: CRASH
+factory: CrashDiagramFactory
+include: [gen-crash-diagram]
+overrides:
+  CommandSelectCrash:
+    parts: {regex: "[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +[dD][rR][aA][wW][iI][nN][gG]"}
+  CommandCrashAny:
+    parts: {regex: "(?![ \\t]*[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +(?:[pP][aA][rR][sS][iI][nN][gG]|[fF][iI][nN][aA][lL][iI][zZ][iI][nN][gG]|[dD][rR][aA][wW][iI][nN][gG])[ \\t]*(?![^\\r\\n]))[\\s\\S]*"}
+insert_before:
+  CommandSelectCrash:
+    - command: CrashWhenParsing
+      provenance: {class: net.sourceforge.plantuml.command.ProtectedCommand, file: src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java, line: 65, also: [src/main/java/net/sourceforge/plantuml/crash/CommandSelectCrash.java:88-89, src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:180-187]}
+      kind: single
+      reject: true
+      parts: {regex: "[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +[pP][aA][rR][sS][iI][nN][gG]"}
+    - command: CrashWhenFinalizing
+      provenance: {class: net.sourceforge.plantuml.crash.CrashDiagram, file: src/main/java/net/sourceforge/plantuml/crash/CrashDiagram.java, line: 98, also: [src/main/java/net/sourceforge/plantuml/crash/CommandSelectCrash.java:86, src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-280]}
+      kind: single
+      parts: {regex: "[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +[fF][iI][nN][aA][lL][iI][zZ][iI][nN][gG]"}
+      push: crash_finalizing
+      require_pop: true
+    - command: CrashFinalizingUnfinished
+      provenance: {class: net.sourceforge.plantuml.PSystemBuilder, file: src/main/java/net/sourceforge/plantuml/PSystemBuilder.java, line: 275, also: [src/main/java/net/sourceforge/plantuml/crash/CrashDiagram.java:98-100]}
+      kind: single
+      reject: true
+      parts: {regex: "[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +[fF][iI][nN][aA][lL][iI][zZ][iI][nN][gG]"}
+contexts:
+  crash_finalizing:
+    - command: CrashWhenParsing
+      provenance: {class: net.sourceforge.plantuml.command.ProtectedCommand, file: src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java, line: 65, also: [src/main/java/net/sourceforge/plantuml/crash/CommandSelectCrash.java:88-89, src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:180-187]}
+      kind: single
+      reject: true
+      parts: {regex: "[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +[pP][aA][rR][sS][iI][nN][gG]"}
+    - command: CrashFinalizingDrawing
+      provenance: {class: net.sourceforge.plantuml.crash.CrashDiagram, file: src/main/java/net/sourceforge/plantuml/crash/CrashDiagram.java, line: 88, also: [src/main/java/net/sourceforge/plantuml/crash/CommandSelectCrash.java:86]}
+      kind: single
+      pop: true
+      parts: {regex: "[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +[dD][rR][aA][wW][iI][nN][gG]"}
+    - command: CrashFinalizingAgain
+      provenance: {class: net.sourceforge.plantuml.crash.CrashDiagram, file: src/main/java/net/sourceforge/plantuml/crash/CrashDiagram.java, line: 88, also: [src/main/java/net/sourceforge/plantuml/crash/CommandSelectCrash.java:86]}
+      kind: single
+      parts: {regex: "[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +[fF][iI][nN][aA][lL][iI][zZ][iI][nN][gG]"}
+    - command: CrashFinalizingAny
+      provenance: {class: net.sourceforge.plantuml.crash.CrashDiagramFactory, file: src/main/java/net/sourceforge/plantuml/crash/CrashDiagramFactory.java, line: 57, also: [src/main/java/net/sourceforge/plantuml/crash/CommandCrashAny.java:57]}
+      kind: single
+      parts: {regex: "(?![ \\t]*[cC][rR][aA][sS][hH] +[wW][hH][eE][nN] +(?:[pP][aA][rR][sS][iI][nN][gG]|[fF][iI][nN][aA][lL][iI][zZ][iI][nN][gG]|[dD][rR][aA][wW][iI][nN][gG])[ \\t]*(?![^\\r\\n]))[\\s\\S]*"}

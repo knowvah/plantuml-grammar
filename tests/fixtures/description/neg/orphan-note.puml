@@ -1,0 +1,6 @@
+' description: GroupStackEmpty, RootEnd
+@startuml
+[c]
+}
+note "x" as n
+@enduml

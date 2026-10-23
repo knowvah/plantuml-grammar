@@ -1,0 +1,8 @@
+' json: JsonStyleError
+' A // comment eats the newline, so readWithComma reads </style> and skipNewLines finds nothing (StyleParser.java:107).
+@startjson
+<style>
+a, // c
+</style>
+[1]
+@endjson

@@ -1,0 +1,6 @@
+' gantt: NaturalGanttTask
+' jar: accepted
+' gap: UBrex commits to `5 days` and ignores `xyz and foo`; the model's tail refuses a word continued by ` and ` so that a regex cannot end the complement early
+@startgantt
+[A] lasts 5 daysxyz and foo
+@endgantt

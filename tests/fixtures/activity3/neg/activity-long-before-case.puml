@@ -1,0 +1,8 @@
+' activity3: CommandSwitch, CommandActivityLong3
+@startuml
+switch (x)
+:foo
+bar;
+case (a)
+endswitch
+@enduml

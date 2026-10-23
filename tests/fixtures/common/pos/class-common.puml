@@ -1,0 +1,10 @@
+' common: CommandNamespaceSeparator, CommandSkinParamMultilines, CommandHideShowByGender
+' factory: ClassDiagramFactory
+@startuml
+set namespaceSeparator ::
+skinparam class {
+  BackgroundColor red
+}
+class A::B
+hide circle
+@enduml

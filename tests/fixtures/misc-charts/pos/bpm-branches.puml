@@ -1,0 +1,19 @@
+' misc-charts: CommandNewBranch, BpmBranchElse, BpmBranchEnd, CommandDockedEvent, CommandMerge, CommandResume, CommandGoto
+@startbpm
+:login;
+new branch
+:show message;
+else
+:show task;
+else
+new branch
+:read;
+ELSE
+:dummy;
+END   BRANCH
+end branch
+20:<+>
+resume 20
+goto 20
+:logout;
+@endbpm

@@ -1,0 +1,25 @@
+# Classifications for the `meta-diagrams` family (T32: ebnf, regex, def, creole, sprites).
+# Upstream pin 97a5992; `cite` paths are relative to the upstream repository root.
+#
+# Parity (interpreter): vega 0 blocks, plantuml-ts 0 blocks, pdiff 113 blocks FR 0 / FA 0
+# (FA 2 before T32: dbhum/b_ak/bakuza-41-bulo451 `({([^{}]*))` and dbhum/t_aj/
+# tajefa-31-pefi801 `(?:[%s]*\\{([^{}]*)\\})?`, both a `{` read as a quantifier up to the
+# next `}` that fails `^\{[0-9,]+\}$`, RegexExpression.java:244-265; now RegexLineUnparsable).
+# No FR/FA to classify.
+#
+# Diagram type: ListSpriteDiagramFactory is SPRITES but builds a HELP diagram
+# (src/main/java/net/sourceforge/plantuml/klimt/sprite/ListSpriteDiagram.java:59-61); the
+# oracle reports HELP, the interpreter SPRITES. No pdiff/vega/plantuml-ts block uses
+# `@startsprites`; `@startuml` + `listsprites` blocks are HELP in the oracle and therefore
+# in the single-line family's slice.
+cases:
+  # `@startregex` ... `@enderegex`: any `@end...` closes a block upstream.
+exclusions:
+  CommandRegexfSingleLine: >-
+    modeled by the per-state tail entries RegexLineWellFormed (main, set regex_stacked),
+    RegexLineEmpty and RegexLineUnparsable (main), RegexLineBalanced and
+    RegexLineStackedUnparsable (regex_stacked) and the emitter view RegexLine in
+    model/diagrams/meta-diagrams-regex.yaml, which cite PSystemRegex.addBlocLines
+    (PSystemRegex.java:131-178) and CommandRegexfSingleLine.java:59-80; the generated entry
+    is removed because what a line may hold depends on the operand stack left by the
+    earlier lines (PSystemRegex.java:103), so one entry cannot act the same in both states

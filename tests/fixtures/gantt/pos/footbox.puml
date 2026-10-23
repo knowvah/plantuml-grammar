@@ -1,0 +1,7 @@
+' gantt: CommandFootboxGantt
+@startgantt
+hide footbox
+show footbox
+hidefootbox
+[A] -> [B]
+@endgantt

@@ -1,0 +1,42 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SPRITES",
+      "kind": "diagram_mismatch",
+      "note": "diagram mismatch only (both accept): `listsprites` is ListSpriteDiagramFactory (SPRITES) but ListSpriteDiagram is built as DiagramType.HELP, which the oracle reports",
+      "oracle": true,
+      "oracle_type": "HELP",
+      "path": "dbhum/f_ol/folutu-01-xuzo995.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SPRITES",
+      "kind": "diagram_mismatch",
+      "note": "diagram mismatch only, as dbhum/f_ol/folutu-01-xuzo995",
+      "oracle": true,
+      "oracle_type": "HELP",
+      "path": "dbhum/n_uj/nujapi-78-mota753.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "pdiff",
+  "family": "single-line",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 47,
+    "diagram_mismatch": 2,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 47,
+    "raw_fr": 0,
+    "timeout": 0
+  }
+}

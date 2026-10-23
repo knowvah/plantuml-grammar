@@ -1,0 +1,5 @@
+' sequence: CommandDeactivateShort
+@startuml
+Alice -> Bob : x
+deactivate +
+@enduml

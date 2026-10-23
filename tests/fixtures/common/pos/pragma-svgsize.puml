@@ -1,0 +1,6 @@
+' common: CommandPragma
+' factory: SequenceDiagramFactory
+@startuml
+!pragma svgsize 100 200
+Alice -> Bob : hello
+@enduml

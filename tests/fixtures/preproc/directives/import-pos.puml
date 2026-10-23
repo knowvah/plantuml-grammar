@@ -1,0 +1,4 @@
+@startuml
+!import /etc/hosts
+a -> b
+@enduml

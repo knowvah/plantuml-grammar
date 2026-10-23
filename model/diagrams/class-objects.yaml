@@ -1,0 +1,178 @@
+# Objects, maps and JSON blocks inside class diagrams (T18, included by `class`).
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# * `object X {` (objectdiagram/command/CommandCreateEntityObjectMultilines.java:80-91)
+#   ends at the first trimmed `}` line (:73-74) and stores every body line (:147):
+#   a context like the class body.
+# * `map X {` (objectdiagram/command/CommandCreateMap.java:85-98): same END (:78-79), but
+#   executeNow fails when a body line is neither `key => value` nor a `key *-> dest`
+#   link (:168-175, cucadiagram/BodierMap.java:61-83). The `map_body` context only
+#   has rules for those two shapes, so any other line fails there.
+# * `json X {` (objectdiagram/command/CommandCreateJson.java:83-94) is complete at the
+#   first `}` line where the body parses: finalVerification (:155-161) answers
+#   OK_PARTIAL until `"{" + body + "}"`, or else the body alone, parses (:163-195), and
+#   the body lines are concatenated with no separator. So the block is a `join` whose
+#   parts carry the JsonParser grammar (json/JsonParser.java:152-262) with U+E100 read
+#   as nothing: as whitespace between tokens and as nothing inside strings. A `//`
+#   comment (:230, :245) reads up to a newline that the concatenated text never has,
+#   so it never parses and has no rule. When the join fails no later command accepts
+#   the start line (upstream: syntax error, PSystemCommandFactory.java:170-175), which
+#   `CommandCreateJsonError` states explicitly; the generated multiline entry after it
+#   is kept for emitters only (they skip both the join and the reject).
+# * `json X <data>` (objectdiagram/command/CommandCreateJsonSingleLine.java:72-90)
+#   parses DATA (getJsonValue, :146-156) and fails with "Bad data" (:139-140); the regex
+#   is case-insensitive but the parser is not (`TRUE` fails), and a number may not
+#   have a leading zero. A reject placed before the generated rule takes the generated
+#   shape whose DATA does not parse; the generated rule stays for emitters, whose regex
+#   translation cannot carry the recursive JSON grammar (only `join` and `reject` entries,
+#   which they drop, use it).
+#
+# Lines are concatenated, so a number or literal split across lines is one token: the
+# joiner may also sit inside them. Gaps (absent from the corpora): an escape split across
+# lines; a tab at the start of a continued string
+# line is a control character upstream but trimmed here; embedded `{{ }}` diagrams in
+# map/object bodies.
+schema_version: 1
+id: class-objects
+layer: shared
+include: [shared, gen-shared, class-decl]
+
+variables:
+  # JsonParser grammar (`jv` a value, `jmembers` an object's member list; U+E100, the
+  # joiner of concatenated lines, is whitespace). Between the start line and the
+  # closing `}` line: `{` + body + `}` is an object, or
+  # the body alone is a value (CommandCreateJson.java:163-195).
+  CO_JSON_BLOCK_BODY:
+    regex: "(?(DEFINE)(?<jstr>\"(?:[^\"\\\\\\x00-\\x1f]|\\\\(?:[\"\\\\/bfnrt]|u[0-9A-Fa-f]{4}))*\")(?<jv>(?&jstr)|-?*(?:0|[1-9](?:*[0-9])*)(?:*\\.*[0-9](?:*[0-9])*)?(?:*[eE]*[+-]?*[0-9](?:*[0-9])*)?|t*r*u*e|f*a*l*s*e|n*u*l*l|\\[[ \\t\\n\\r]*(?:(?&jv)[ \\t\\n\\r]*(?:,[ \\t\\n\\r]*(?&jv)[ \\t\\n\\r]*)*)?\\]|\\{[ \\t\\n\\r]*(?&jmembers)?\\})(?<jmembers>(?&jstr)[ \\t\\n\\r]*:[ \\t\\n\\r]*(?&jv)[ \\t\\n\\r]*(?:,[ \\t\\n\\r]*(?&jstr)[ \\t\\n\\r]*:[ \\t\\n\\r]*(?&jv)[ \\t\\n\\r]*)*))(?:[ \\t\\n\\r]*(?&jmembers)?|[ \\t\\n\\r]*(?&jv)[ \\t\\n\\r]*)"
+    ci: false
+    scope: meta.structure.json
+  # DATA of the generated shape (gen-shared DATA_BOOLEAN, case-insensitive) that JsonParser
+  # rejects: not a boolean/number/null in lower case without leading zeros, not a valid
+  # string, array or object (CommandCreateJsonSingleLine.java:139-140, :146-156).
+  CO_JSON_DATA_INVALID:
+    regex: "(?(DEFINE)(?<jstr>\"(?:[^\"\\\\\\x00-\\x1f]|\\\\(?:[\"\\\\/bfnrt]|u[0-9A-Fa-f]{4}))*\")(?<jv>(?&jstr)|-?*(?:0|[1-9](?:*[0-9])*)(?:*\\.*[0-9](?:*[0-9])*)?(?:*[eE]*[+-]?*[0-9](?:*[0-9])*)?|t*r*u*e|f*a*l*s*e|n*u*l*l|\\[[ \\t\\n\\r]*(?:(?&jv)[ \\t\\n\\r]*(?:,[ \\t\\n\\r]*(?&jv)[ \\t\\n\\r]*)*)?\\]|\\{[ \\t\\n\\r]*(?&jmembers)?\\})(?<jmembers>(?&jstr)[ \\t\\n\\r]*:[ \\t\\n\\r]*(?&jv)[ \\t\\n\\r]*(?:,[ \\t\\n\\r]*(?&jstr)[ \\t\\n\\r]*:[ \\t\\n\\r]*(?&jv)[ \\t\\n\\r]*)*))(?!(?:true|false|null|-?(?:0|[1-9][0-9]*)|(?=\")(?&jstr)|(?=\\[)(?&jv)|(?=\\{[\\s ]*[\"“”](?:\\\\[\"“”]|[^\"“”])+[\"“”][\\s ]*:.*\\})(?&jv))(?!.))(?i:true|false|-?\\d+|null|\".*\"|\\[.*\\]|\\{[\\s\u00a0]*[\"\u201c\u201d\ue121](?:\\\\[\"\u201c\u201d\ue121]|[^\"\u201c\u201d\ue121])+[\"\u201c\u201d\ue121][\\s\u00a0]*:.*\\})"
+    ci: false
+  CO_STEREO:
+    seq:
+      - {ref: SPACE_ANY}
+      - opt: {ref: STEREOTYPE_SPEC}
+      - {ref: SPACE_ANY}
+  # CommandCreateJson.java:83-94 up to and including `{`.
+  CO_JSON_HEAD:
+    seq:
+      - {literal: json, ci: true, scope: storage.type.json}
+      - {ref: SPACE_SOME}
+      - {ref: DISPLAY1}
+      - {ref: CO_STEREO}
+      - opt: {ref: URL_LINK}
+      - {ref: SPACE_ANY}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+      - {ref: CD_BLOCK_OPEN}
+  # CommandCreateJsonSingleLine.java:72-90 before DATA.
+  CO_JSON_SINGLE_HEAD:
+    seq:
+      - {literal: json, ci: true, scope: storage.type.json}
+      - {ref: SPACE_SOME}
+      - {ref: NAME}
+      - {ref: CO_STEREO}
+      - opt: {ref: URL_LINK}
+      - {ref: SPACE_ANY}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+  # cucadiagram/BodierMap.java:61 (link) and :74 (`=>`).
+  CO_MAP_LINK: {regex: "\\*-+_?>", ci: false, scope: keyword.operator.arrow.map-link}
+  CO_MAP_ARROW: {literal: "=>", ci: false, scope: keyword.operator.map-entry}
+
+overrides:
+  CommandCreateEntityObjectMultilines:
+    kind: single
+    end: null
+    push: object_body
+    require_pop: true
+  CommandCreateMap:
+    kind: single
+    end: null
+    push: map_body
+    require_pop: true
+
+insert_before:
+  CommandCreateJsonSingleLine:
+    - command: CommandCreateJsonSingleLineError
+      provenance:
+        class: net.sourceforge.plantuml.objectdiagram.command.CommandCreateJsonSingleLine
+        file: src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateJsonSingleLine.java
+        line: 139
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateJsonSingleLine.java:146-156]
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: CO_JSON_SINGLE_HEAD}, {ref: CO_JSON_DATA_INVALID}]
+  CommandCreateJson:
+    - command: CommandCreateJsonBlock
+      provenance:
+        class: net.sourceforge.plantuml.objectdiagram.command.CommandCreateJson
+        file: src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateJson.java
+        line: 155
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateJson.java:163-195
+          - src/main/java/net/sourceforge/plantuml/json/JsonParser.java:152-262
+      kind: multiline
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - {ref: CO_JSON_HEAD}
+          - {ref: CD_JOINER}
+          - opt:
+              seq: [{ref: CO_JSON_BLOCK_BODY}, {ref: CD_JOINER}]
+          - {ref: CD_BLOCK_CLOSE}
+    - command: CommandCreateJsonError
+      provenance:
+        class: net.sourceforge.plantuml.command.PSystemCommandFactory
+        file: src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java
+        line: 170
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateJson.java:155-161]
+      kind: single
+      reject: true
+      parts: {ref: CO_JSON_HEAD}
+
+
+contexts:
+  object_body:
+    - include: class_body
+  map_body:
+    - command: MapBodyEnd
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMultilines2
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilines2.java
+        line: 105
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/objectdiagram/command/CommandCreateMap.java:78-79]
+      kind: single
+      parts: {ref: CD_BODY_END}
+      pop: true
+    - command: MapBodyEntry
+      provenance:
+        class: net.sourceforge.plantuml.cucadiagram.BodierMap
+        file: src/main/java/net/sourceforge/plantuml/cucadiagram/BodierMap.java
+        line: 74
+      kind: single
+      parts:
+        seq:
+          - {regex: "(?:(?!=>).)*", ci: false, scope: variable.other.map-key}
+          - {ref: CO_MAP_ARROW}
+          - {regex: ".*", ci: false, scope: string.unquoted.map-value}
+    - command: MapBodyLink
+      provenance:
+        class: net.sourceforge.plantuml.cucadiagram.BodierMap
+        file: src/main/java/net/sourceforge/plantuml/cucadiagram/BodierMap.java
+        line: 79
+      kind: single
+      parts:
+        seq:
+          - {regex: ".*?", ci: false, scope: variable.other.map-key}
+          - {ref: CO_MAP_LINK}
+          - {regex: ".*", ci: false, scope: entity.name.type.map-target}

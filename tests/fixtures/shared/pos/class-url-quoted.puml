@@ -1,0 +1,4 @@
+' refines: url-link | [["http://plantuml.com/x y"{tip} label]]
+@startuml
+class A [["http://plantuml.com/x y"{tip} label]]
+@enduml

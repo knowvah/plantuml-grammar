@@ -1,0 +1,10 @@
+' common: CommandStyleMultilinesCSS
+' factory: SequenceDiagramFactory
+@startuml
+<style>
+root {
+  FontColor red
+}
+</style>
+Alice -> Bob : hello
+@enduml

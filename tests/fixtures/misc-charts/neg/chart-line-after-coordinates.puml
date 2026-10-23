@@ -1,0 +1,6 @@
+' misc-charts: ChartIndexLineAfterCoordinate
+@startchart
+h-axis 0 --> 5
+scatter [(1,2)]
+line [1]
+@endchart

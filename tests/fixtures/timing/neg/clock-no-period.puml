@@ -1,0 +1,4 @@
+' timing: CommandClock
+@startuml
+clock "c" as C with period
+@enduml

@@ -1,0 +1,4 @@
+' meta: RegexLineUnparsable
+@startregex
+*
+@endregex

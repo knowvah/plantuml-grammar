@@ -1,0 +1,16 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+schema_version: 1
+id: single-line-donors
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemDonorsFactory
+include: [embedded-donors, single-line-base]
+overrides:
+  PSystemDonorsFactory:
+    provenance: {class: net.sourceforge.plantuml.donors.PSystemDonorsFactory, file: src/main/java/net/sourceforge/plantuml/donors/PSystemDonorsFactory.java, line: 49, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "[dD][oO][nN][oO][rR][sS][ \\t\\x0B\\f]*"}
+    set: sl_done
+    gives: single_line

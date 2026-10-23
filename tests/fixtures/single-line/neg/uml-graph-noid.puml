@@ -1,0 +1,5 @@
+' single-line: (PSystemErrorUtils.checkBasicError)
+@startuml
+graph {
+}
+@enduml

@@ -1,0 +1,9 @@
+' meta: RegexLineWellFormed, RegexLineBalanced
+@startregex
+a
+*
+b|
+(?i)x
+(?=)
+a()
+@endregex

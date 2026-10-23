@@ -1,0 +1,5 @@
+' mindmap-wbs: MindMapOrgmodeUnknownColor
+@startmindmap
+* root
+**[#ff] a
+@endmindmap

@@ -1,0 +1,7 @@
+' class: MapBodyEntry
+@startuml
+class X
+map M {
+  key value
+}
+@enduml

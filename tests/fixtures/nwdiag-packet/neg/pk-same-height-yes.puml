@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandSameHeight
+@startpacketdiag
+same_height = yes
+0-7: A
+@endpacketdiag

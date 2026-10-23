@@ -1,0 +1,15 @@
+' sequence: CommandReferenceOverSeveral, CommandReferenceMultilinesOverSeveral
+@startuml
+participant Alice
+participant Bob
+ref over Alice, Bob : init
+ref#pink over Bob [[http://example.org]] : colored
+ref over "Alice"
+  multiline
+  reference
+end ref
+ref over Alice, Bob #red
+  ended with end
+end
+Alice -> Bob : after
+@enduml

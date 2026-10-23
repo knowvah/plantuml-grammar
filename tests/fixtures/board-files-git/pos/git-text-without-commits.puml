@@ -1,0 +1,5 @@
+' board-files-git: GitGraphLine
+@startgit
+hello world
+/
+@endgit

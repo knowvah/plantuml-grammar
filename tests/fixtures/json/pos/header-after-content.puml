@@ -1,0 +1,7 @@
+' json: JsonText
+' Header lines only count before the first content line (StyleExtractor.java:76-97).
+@startjson
+[1]
+skinparam x {
+title y
+@endjson

@@ -1,0 +1,8 @@
+' board-files-git: FilesStyleBlockStopped, FilesAfterStyleStop
+@startfiles
+<style>
+root {
+FontColor:
+}
+</style>
+@endfiles

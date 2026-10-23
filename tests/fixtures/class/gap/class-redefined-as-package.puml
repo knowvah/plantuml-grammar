@@ -1,0 +1,6 @@
+' class: CommandCreateClass
+' gap: entity state: Toto is a class, so Toto.Internal cannot use it as a package (quarkInContextSafe)
+@startuml
+class Toto
+class Toto.Internal
+@enduml

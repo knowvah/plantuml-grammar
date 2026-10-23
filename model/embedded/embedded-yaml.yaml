@@ -1,0 +1,20 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# YamlDiagramFactory.createSystem is not a command factory: any Exception is caught (:91-93) and a JsonDiagram is still returned (:94-107).
+# Any body, including an empty one, is accepted without parsing (D4).
+
+schema_version: 1
+id: embedded-yaml
+layer: diagram
+diagram: YAML
+factory: YamlDiagramFactory
+contexts:
+  main:
+    - command: YamlDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.yaml.YamlDiagramFactory, file: src/main/java/net/sourceforge/plantuml/yaml/YamlDiagramFactory.java, line: 91}
+      kind: opaque
+      parts: {regex: ".*"}
+  empty:
+    - command: YamlDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.yaml.YamlDiagramFactory, file: src/main/java/net/sourceforge/plantuml/yaml/YamlDiagramFactory.java, line: 91}
+      kind: opaque
+      parts: {regex: ".*"}

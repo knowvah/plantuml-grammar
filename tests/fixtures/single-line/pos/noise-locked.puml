@@ -1,0 +1,5 @@
+' single-line: single-line-license
+@startuml
+skinparamlocked x y
+license
+@enduml

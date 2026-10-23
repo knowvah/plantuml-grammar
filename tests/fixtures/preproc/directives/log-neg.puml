@@ -1,0 +1,4 @@
+@startuml
+!LOG hello
+a -> b
+@enduml

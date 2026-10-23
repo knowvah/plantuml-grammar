@@ -1,0 +1,6 @@
+' board-files-git: FilesStyleOpen, FilesStyleLine, FilesStyleUnterminated, FilesUnterminatedStopped, FilesAfterStyleStop
+@startfiles
+<style>
+foo:
+*
+@endfiles

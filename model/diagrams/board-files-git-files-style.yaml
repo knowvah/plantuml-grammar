@@ -1,0 +1,233 @@
+# Style token stream of a files diagram (T31), used by board-files-git-files.yaml.
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# The variables describe StyleParser (style/parser/StyleParser.java) over the lines of a
+# style block joined with U+E100, which plays the "\n" token the parser reads after every
+# trimmed line (utils/CharInspectorImpl.java:51-79). The parse only matters for whether it
+# throws, and which exception comes first (see board-files-git-files.yaml); style.yaml
+# models the stricter language of `<style>` commands, where any exception is an error.
+# Every quantified piece whose Java counterpart is deterministic (skipNewLines,
+# skipColon, the optional STAR, the tokenizer) is made maximal with a guard, so that a
+# regex backtrack cannot invent a parse Java never makes. Lookarounds cannot span Part
+# leaves, so the gap pattern is repeated inside each lookahead leaf.
+schema_version: 1
+id: board-files-git-files-style
+layer: shared
+
+variables:
+  # ---- tokenizer (StyleParser.java:240-360) over the U+E100-joined block ----
+  # Skipped text: blanks, `//` through the newline, closed `/* */` and `/' '/` (the
+  # closer may overlap the opener, `/*/` is closed: jumpUntil :291-310).
+  FILES_GAP: {regex: "(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*)", ci: false}
+  FILES_NL: {regex: "\uE100", ci: false}
+  # STRING (:279-284): closed quote (readQuotedString :328-341), `.`-prefixed (keeps
+  # spaces), plain (readString :343-360).
+  FILES_STR: {regex: "(?>\"[^\"]*\"|\\.[^\uE100\\r{};,:\\t]*|(?:[^ \\t,;\uE100\\r*:{}@\"./]|/(?![/'*]))[^ \\t{};,:\uE100\\r]*)", ci: false}
+  # A STRING `<style>` / `</style>` is skipped (:99-102, equalsIgnoreCase).
+  FILES_TAG: {regex: "(?>\"(?i:</?style>)\"|(?i:</?style>)(?=[ \\t{};,:\uE100\\r]|$))", ci: false}
+  FILES_NOT_TAG: {regex: "(?!\"(?i:</?style>)\"|(?i:</?style>)(?=[ \\t{};,:\uE100\\r]|$))", ci: false}
+  FILES_VAR: {regex: "(?=\"?--)", ci: false}
+  FILES_NOT_VAR: {regex: "(?!\"?--)", ci: false}
+  # AROBASE_MEDIA (:312-326): up to and including the first `{`, `}` or `;`.
+  FILES_AT: {regex: "@[^{};]*[{};]", ci: false}
+  # A next token exists (:104, :129, :209 dereference it). A terminated block ends
+  # with the `</style>` token plus the implicit "\n", and a chunk of an unterminated
+  # block (files_unterminated) ends at a line end, so `$` stands for a NEWLINE. An
+  # unclosed comment runs to the end of the stream and leaves none; a `//` comment at
+  # the end of a chunk swallows the NEWLINE, so the next token is still unknown there.
+  FILES_NEXT_EXISTS: {regex: "(?=(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*)(?!/(?=\\*)(?![\\s\\S]*\\*/)|/(?=')(?![\\s\\S]*'/)|//[^\uE100]*$))", ci: false}
+  # :104 also takes the comma branch for a COMMA.
+  FILES_NEXT_NOT_COMMA: {regex: "(?=(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*)(?!,|/(?=\\*)(?![\\s\\S]*\\*/)|/(?=')(?![\\s\\S]*'/)|//[^\uE100]*$))", ci: false}
+  # After skipNewLines (:121) the `$` NEWLINE is consumed: a real token must follow.
+  FILES_NEXT_AFTER_NL: {regex: "(?=(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*)(?!/(?=\\*)(?![\\s\\S]*\\*/)|/(?=')(?![\\s\\S]*'/)|//[^\uE100]*$)[\\s\\S])", ci: false}
+  FILES_NEXT_NOT_OPEN: {regex: "(?!(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*)\\{)", ci: false}
+  # The next token is not a STRING (any `"` starts one, even unclosed).
+  FILES_NEXT_NOT_STR: {regex: "(?!(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*)(?:[\".]|[^ \\t,;\uE100\\r*:{}@\"./]|/(?![/'*])))", ci: false}
+  # The block's first END line is its last line (StyleExtractor.java:70-75, :109-111).
+  FILES_END_IS_LAST: {regex: "(?=<style>(?:\uE100(?!</style>(?:\uE100|$))[^\uE100]*)*\uE100</style>$)", ci: false}
+  FILES_REST: {regex: "[\\s\\S]*", ci: false}
+  FILES_UNCLOSED_COMMENT: {regex: "(?:/(?=\\*)(?![\\s\\S]*\\*/)|/(?=')(?![\\s\\S]*'/))", ci: false}
+  FILES_UNCLOSED_QUOTE: {regex: "\"[^\"]*$", ci: false}
+
+  # ---- parseNow (StyleParser.java:88-176) ----
+  # One STAR, taken whenever present (:116-119 is an `if`).
+  FILES_STAR_OPT:
+    alt:
+      - {seq: [{ref: FILES_GAP}, {literal: "*", ci: false}]}
+      - {regex: "(?!(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*)\\*)", ci: false}
+  # skipNewLines (:221-228) and skipColon (:230-237), both maximal.
+  FILES_SKIP_NL:
+    seq:
+      - star: {seq: [{ref: FILES_GAP}, {ref: FILES_NL}]}
+      - {regex: "(?!(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*)\uE100)", ci: false}
+  FILES_COLS:
+    seq:
+      - star: {seq: [{ref: FILES_GAP}, {literal: ":", ci: false}]}
+      - {regex: "(?!(?>(?:[ \\t]+|//[^\uE100]*\uE100|/(?=\\*)[\\s\\S]*?\\*/|/(?=')[\\s\\S]*?'/)*):)", ci: false}
+  # readValue (:190-219) up to NEWLINE, `;`, `}` or the end.
+  FILES_VALUE:
+    star:
+      seq:
+        - {ref: FILES_GAP}
+        - alt:
+            - {ref: FILES_STR}
+            - {literal: ",", ci: false}
+            - {seq: [{literal: ":", ci: false}, {ref: FILES_GAP}, {ref: FILES_STR}]}
+  FILES_VALUE_END:
+    seq:
+      - {ref: FILES_GAP}
+      - {regex: "(?=[\uE100;}]|$)", ci: false}
+  # STRING head of a selector or declaration: the next token is not a COMMA (:104), an
+  # optional STAR (:116-119), then skipNewLines (:120).
+  FILES_KEY_HEAD:
+    seq:
+      - {ref: FILES_STR}
+      - {ref: FILES_NEXT_NOT_COMMA}
+      - {ref: FILES_STAR_OPT}
+      - {ref: FILES_SKIP_NL}
+  FILES_STATEMENT:
+    alt:
+      # NEWLINE, SEMICOLON, `<style>` tokens (:94-102).
+      - seq:
+          - {ref: FILES_GAP}
+          - alt: [{ref: FILES_NL}, {literal: ";", ci: false}, {ref: FILES_TAG}]
+      # Any token + COMMA: readWithComma (:178-188), newlines, OPEN (:104-111).
+      - seq:
+          - {ref: FILES_GAP}
+          - alt:
+              - {seq: [{ref: FILES_NOT_TAG}, {ref: FILES_STR}]}
+              - {ref: FILES_AT}
+              - {regex: "[*:{},}]", ci: false}
+          - {ref: FILES_GAP}
+          - {literal: ",", ci: false}
+          - star: {seq: [{ref: FILES_GAP}, {alt: [{ref: FILES_STR}, {literal: ",", ci: false}]}]}
+          - {ref: FILES_SKIP_NL}
+          - {ref: FILES_GAP}
+          - {literal: "{", ci: false}
+      # Selector (:120-125).
+      - seq:
+          - {ref: FILES_GAP}
+          - {ref: FILES_NOT_TAG}
+          - {ref: FILES_KEY_HEAD}
+          - {ref: FILES_GAP}
+          - {literal: "{", ci: false}
+      # Declaration: colons, then a STRING (:126-139).
+      - seq:
+          - {ref: FILES_GAP}
+          - {ref: FILES_NOT_TAG}
+          - {ref: FILES_NOT_VAR}
+          - {ref: FILES_KEY_HEAD}
+          - {ref: FILES_COLS}
+          - {ref: FILES_GAP}
+          - {ref: FILES_STR}
+          - {ref: FILES_VALUE}
+          - {ref: FILES_VALUE_END}
+      # `--name`: any value, even empty (:127-128); :121 needs a token first.
+      - seq:
+          - {ref: FILES_GAP}
+          - {ref: FILES_NOT_TAG}
+          - {ref: FILES_VAR}
+          - {ref: FILES_KEY_HEAD}
+          - {ref: FILES_NEXT_AFTER_NL}
+          - {ref: FILES_COLS}
+          - {ref: FILES_VALUE}
+          - {ref: FILES_VALUE_END}
+      # CLOSE_BRACKET (:144-148), AROBASE_MEDIA (:150-152).
+      - seq:
+          - {ref: FILES_GAP}
+          - alt: [{literal: "}", ci: false}, {ref: FILES_AT}]
+          - {ref: FILES_NEXT_NOT_COMMA}
+      # `:name {`, `:name* {` (:153-168).
+      - seq:
+          - {ref: FILES_GAP}
+          - {literal: ":", ci: false}
+          - {ref: FILES_GAP}
+          - {ref: FILES_STR}
+          - {ref: FILES_STAR_OPT}
+          - {ref: FILES_GAP}
+          - {literal: "{", ci: false}
+  # Where a StyleParsingException is thrown.
+  FILES_STOP:
+    alt:
+      # OPEN as a statement (:169-170).
+      - seq:
+          - {ref: FILES_GAP}
+          - {literal: "{", ci: false}
+          - {ref: FILES_NEXT_NOT_COMMA}
+      # A declaration key followed by no STRING (:140-141).
+      - seq:
+          - {ref: FILES_GAP}
+          - {ref: FILES_NOT_TAG}
+          - {ref: FILES_NOT_VAR}
+          - {ref: FILES_KEY_HEAD}
+          - {ref: FILES_NEXT_AFTER_NL}
+          - {ref: FILES_NEXT_NOT_OPEN}
+          - {ref: FILES_COLS}
+          - {ref: FILES_NEXT_EXISTS}
+          - {ref: FILES_NEXT_NOT_STR}
+      # `*`, `{`, `@` in a value, or `:` not followed by a STRING (:212-215).
+      - seq:
+          - {ref: FILES_GAP}
+          - {ref: FILES_NOT_TAG}
+          - alt:
+              - seq:
+                  - {ref: FILES_NOT_VAR}
+                  - {ref: FILES_KEY_HEAD}
+                  - {ref: FILES_COLS}
+                  - {ref: FILES_GAP}
+                  - {ref: FILES_STR}
+              - seq:
+                  - {ref: FILES_VAR}
+                  - {ref: FILES_KEY_HEAD}
+                  - {ref: FILES_NEXT_AFTER_NL}
+                  - {ref: FILES_NEXT_NOT_OPEN}
+                  - {ref: FILES_COLS}
+          - {ref: FILES_VALUE}
+          - {ref: FILES_GAP}
+          - alt:
+              - {regex: "[*{@]", ci: false}
+              - {seq: [{literal: ":", ci: false}, {ref: FILES_NEXT_EXISTS}, {ref: FILES_NEXT_NOT_STR}]}
+  # The stream ends inside an unclosed comment or quote, which runs on to the end
+  # (jumpUntil :291-310, readQuotedString :333-337); accepted endings only. An unclosed
+  # comment leaves no next token, an unclosed quote is a last STRING; both are fine at a
+  # statement start (comment) or as a value item (:192-196 stops at the end).
+  FILES_OPEN_END:
+    alt:
+      - seq: [{ref: FILES_GAP}, {ref: FILES_UNCLOSED_COMMENT}]
+      - seq:
+          - {ref: FILES_GAP}
+          - {ref: FILES_NOT_TAG}
+          - alt:
+              - seq:
+                  - {ref: FILES_NOT_VAR}
+                  - {ref: FILES_KEY_HEAD}
+                  - {ref: FILES_COLS}
+                  - {ref: FILES_GAP}
+                  - alt:
+                      - {ref: FILES_UNCLOSED_QUOTE}
+                      - seq:
+                          - {ref: FILES_STR}
+                          - {ref: FILES_VALUE}
+                          - {ref: FILES_GAP}
+                          - alt:
+                              - {ref: FILES_UNCLOSED_COMMENT}
+                              - seq:
+                                  - opt: {seq: [{literal: ":", ci: false}, {ref: FILES_GAP}]}
+                                  - {ref: FILES_UNCLOSED_QUOTE}
+              - seq:
+                  - {ref: FILES_VAR}
+                  - {ref: FILES_KEY_HEAD}
+                  - {ref: FILES_NEXT_AFTER_NL}
+                  - {ref: FILES_COLS}
+                  - {ref: FILES_VALUE}
+                  - {ref: FILES_GAP}
+                  - alt:
+                      - {ref: FILES_UNCLOSED_COMMENT}
+                      - seq:
+                          - opt: {seq: [{literal: ":", ci: false}, {ref: FILES_GAP}]}
+                          - {ref: FILES_UNCLOSED_QUOTE}
+
+  # The tokenizer alone, possessive (it never backtracks), stopping at an unclosed
+  # quote, comment or media prefix.
+  FILES_TOKENS: {regex: "(?:[ \\t]+|//[^\uE100]*\uE100|(?>/(?=\\*)[\\s\\S]*?\\*/)|(?>/(?=')[\\s\\S]*?'/)|\"[^\"]*\"|@[^{};]*[{};]|\\.[^\uE100\\r{};,:\\t]*|(?:[^ \\t,;\uE100\\r*:{}@\"./]|/(?![/'*]))[^ \\t{};,:\uE100\\r]*|[\uE100,;*:{}])*+", ci: false}
+  FILES_UNCLOSED: {regex: "(?:\"|@|/(?=\\*)(?![\\s\\S]*\\*/)|/(?=')(?![\\s\\S]*'/))", ci: false}

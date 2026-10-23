@@ -1,0 +1,7 @@
+' class: CommandPackageEmptyName
+@startuml
+class A {
+}
+package #red {
+}
+@enduml

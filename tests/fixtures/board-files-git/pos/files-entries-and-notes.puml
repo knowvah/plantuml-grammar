@@ -1,0 +1,11 @@
+' board-files-git: FilesEntry, FilesNoteStart, FilesNoteEnd, FilesOtherLine
+@startfiles
+/.github/
+/src/example.py
+<note>
+this is a note
+on two lines
+</note>
+/LICENSE
+ /not-an-entry
+@endfiles

@@ -1,0 +1,5 @@
+' activity3: CommandKill3
+@startuml
+:a;
+skill
+@enduml

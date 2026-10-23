@@ -1,0 +1,5 @@
+' mindmap-wbs: CommandWBSItemMultilineNew
+@startwbs
+* root
+**:a;
+@endwbs

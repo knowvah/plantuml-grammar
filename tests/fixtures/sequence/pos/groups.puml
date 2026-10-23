@@ -1,0 +1,43 @@
+' sequence: CommandGrouping
+@startuml
+A -> B
+alt success
+  A -> B : ok
+else #pink failure
+  A -> B : ko
+end
+opt maybe
+  loop 10 times
+    A -> B
+  end
+end
+par
+  A -> B
+also
+  A -> C
+end
+par2 two
+  A -> B
+end
+break stop
+  A -> B
+end
+critical section
+  A -> B
+end
+group My own label [My own label 2]
+  A -> B
+end
+partition P
+  A -> B
+end
+& alt#gold #lightblue parallel group
+  A -> B
+end note
+alt end -> B is a message
+  end -> B : from participant end
+  end++
+end
+alt open at the end
+  A -> B
+@enduml

@@ -1,0 +1,69 @@
+# Color values the misc-charts factories accept at execute time (T30, layer: shared).
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Every color slot of the chart, chen and wire commands is a regex that admits any word,
+# and the color is resolved only in executeArg: HColorSet.getColor throws
+# NoSuchColorException for an unknown word (klimt/color/HColorSet.java:69-76), which
+# AbstractDiagram.executeCommand turns into an execution error (core/AbstractDiagram.java:
+# 173-180). The variables below are the words that resolve:
+# * one word: transparent/background/automatic (:82-86), hex of 1, 3, 6 or 8 digits
+#   (:122-158) or a ColorTrieNode name (klimt/color/ColorTrieNode.java:55-209);
+# * a gradient `a<sep>b` (:109-117) whose sides are hex or names (parseSimpleColor
+#   knows no special words).
+# The chen slots carry a whole Colors spec (klimt/color/ColorParser.java:43-46, parsed by
+# klimt/color/Colors.java:95-116): its `;`-tokens without `:` and without `.` are looked up
+# strictly, `prop:value` tokens go through getColorOrNull and never fail, and bare
+# `line.dashed|dotted|bold` tokens are skipped.
+schema_version: 1
+id: misc-charts-colors
+layer: shared
+include: [shared]
+
+variables:
+  # A word HColorSet.getColor resolves (1-character hex gray included).
+  MC_COLOR_SIMPLE_OK:
+    alt:
+      - {ref: COLOR_SPECIAL}
+      - {ref: COLOR_NAME}
+      - {ref: COLOR_HEX}
+      - {ref: COLOR_HEX_GRAY}
+  # `#` + resolvable word: wire `(#\w+)?` slots, chart `#(...|\w+)` slots.
+  MC_HASH_COLOR_OK:
+    seq:
+      - {ref: COLOR_HASH}
+      - {ref: MC_COLOR_SIMPLE_OK}
+  # One side of a gradient (HColorSet.java:112-113 calls parseSimpleColor).
+  MC_GRADIENT_SIDE_OK:
+    alt:
+      - {ref: COLOR_NAME}
+      - {ref: COLOR_HEX}
+      - {ref: COLOR_HEX_GRAY}
+  # A resolvable `\w+[-\\|/]?\w+` (two characters at least, like the upstream regex).
+  MC_COLOR_BODY_OK:
+    alt:
+      - seq: [{ref: MC_GRADIENT_SIDE_OK}, {ref: COLOR_GRADIENT_SEP}, {ref: MC_GRADIENT_SIDE_OK}]
+      - {ref: COLOR_SPECIAL}
+      - {ref: COLOR_NAME}
+      - {ref: COLOR_HEX}
+  MC_COLOR_PROP_VALUE:
+    seq:
+      - {regex: '(?:text|back|header|line|line\.dashed|line\.dotted|line\.bold|shadowing)', ci: true, scope: support.type.property-name}
+      - {literal: ':', ci: true}
+      - {regex: '\w+[-\\|/]?\w+', ci: true, scope: constant.other.color}
+  MC_COLOR_PROP_BARE:
+    regex: 'line\.(?:dashed|dotted|bold)'
+    ci: true
+    scope: support.type.property-name
+  # The gen-shared COLOR slot (ColorParser.simpleColor) restricted to specs that parse.
+  MC_COLORS_OK:
+    opt:
+      alt:
+        - seq:
+            - {ref: COLOR_HASH}
+            - opt:
+                seq: [{ref: MC_COLOR_BODY_OK}, {literal: ;, ci: true}]
+            - plus:
+                seq:
+                  - alt: [{ref: MC_COLOR_PROP_VALUE}, {ref: MC_COLOR_PROP_BARE}]
+                  - {regex: '(?:;|(?![\w;:.]))', ci: true}
+        - seq: [{ref: COLOR_HASH}, {ref: MC_COLOR_BODY_OK}]

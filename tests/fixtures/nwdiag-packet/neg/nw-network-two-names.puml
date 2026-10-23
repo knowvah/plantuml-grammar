@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandNetwork
+@startnwdiag
+network a b {
+}
+@endnwdiag

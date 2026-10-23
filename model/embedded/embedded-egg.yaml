@@ -1,0 +1,13 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# PSystemEggFactory.executeLine (eggs/PSystemEggFactory.java:54-68) accepts a line
+# whose letters, read as a base-26 key, XOR-decode one of two ciphertexts into printable
+# text (eggs/SentenceDecoder.java:47-66). That is not expressible as a regex, so this
+# model accepts nothing (known gap: the two secret sentences are rejected here).
+
+schema_version: 1
+id: embedded-egg
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemEggFactory
+contexts:
+  main: []

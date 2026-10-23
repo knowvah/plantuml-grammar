@@ -1,0 +1,14 @@
+' salt: CommandAnything
+@startsalt
+{
+{S
+a
+}
+{SI
+b
+}
+{S-
+c
+}
+}
+@endsalt

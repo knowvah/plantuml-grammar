@@ -1,0 +1,16 @@
+' timing: CommandScalePixel, CommandHideTimeAxis, CommandHighlight, CommandModeCompact, CommandFootboxIgnored
+@startuml
+mode compact
+hide footbox
+concise "C" as C
+scale 100 as 50 pixels
+scale 1 m as 20 pixels
+hide time axis
+manual time-axis
+@0
+C is a
+@200
+C is b
+highlight 0 to 100 #Gold;line:DimGrey : setup
+highlight 150 to 2147483647:0:0
+@enduml

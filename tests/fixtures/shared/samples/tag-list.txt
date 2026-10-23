@@ -1,0 +1,19 @@
+class A $tag1 $tag2
+$a
+$ 
+$x<y
+!function $foo($text)
+!global $ijk = "foo"
+'rectangle "<<//$alias//>>\n==$label\n<color:red><$Batch*$scale></color>\n//<size:12>[$technology]</size>//\n\n  $description 5" as $alias
+//<size:12>[$technology]</size>//
+!function $message()
+Alice -> Bob : hello <$redgradrect> there
+!$partlen=$data.partlen
+!$containerAlias = $call($container, 'render')
+Alice -> Bob : from v1 $myVar
+rectangle "It works." as r1 <<$amazon>> #LightGray
+Alice -> Bob : expected 4 $for
+remove $tag3
+component Dummy1 <<Folder>>
+TemplateValidator: validate()
+component foo1 $tag1

@@ -1,0 +1,6 @@
+' misc-charts: ChenAttributeFails
+@startchen
+entity A {
+  a #red;back
+}
+@endchen

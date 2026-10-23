@@ -1,0 +1,7 @@
+' meta: EbnfRuleMultilines
+@startebnf
+new-line = { ? CR ? },
+
+  ? LF ?,
+  { ? CR ? };
+@endebnf

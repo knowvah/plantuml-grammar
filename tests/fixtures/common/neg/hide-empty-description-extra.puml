@@ -1,0 +1,6 @@
+' common: CommandHideEmptyDescription
+' factory: SequenceDiagramFactory
+@startuml
+hide empty description now
+Alice -> Bob : hello
+@enduml

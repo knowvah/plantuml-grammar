@@ -1,0 +1,41 @@
+' style: single line {
+@startuml
+<style>{</style>
+class Foo
+@enduml
+
+' style: single line property without value
+@startuml
+<style>root{LineColor}</style>
+class Foo
+@enduml
+
+' style: single line bare word
+@startuml
+<style>root</style>
+class Foo
+@enduml
+
+' style: single line custom property at the end
+@startuml
+<style>--x</style>
+class Foo
+@enduml
+
+' style: single line comma is not allowed
+@startuml
+<style>a,b{}</style>
+class Foo
+@enduml
+
+' style: single line empty
+@startuml
+<style></style>
+class Foo
+@enduml
+
+' style: single line parentheses are not allowed
+@startuml
+<style>:depth(1){}</style>
+class Foo
+@enduml

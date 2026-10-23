@@ -1,0 +1,7 @@
+' salt: SaltSkinParamBodyInconsistent
+@startsalt
+skinparam foo {
+[OK]
+scale 0
+}
+@endsalt

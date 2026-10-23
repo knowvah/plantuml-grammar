@@ -1,0 +1,7 @@
+' gantt: NaturalGanttResource
+' jar: rejected
+' gap: `they` refers to the last resource subject (SubjectResource.java:68-72); none was given
+@startgantt
+[A] lasts 5 days
+they is off on monday
+@endgantt

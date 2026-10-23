@@ -1,0 +1,4 @@
+' single-line: (none: PSystemPathFactory is unregistered)
+@startuml
+path abc
+@enduml

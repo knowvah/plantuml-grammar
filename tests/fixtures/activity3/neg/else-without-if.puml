@@ -1,0 +1,5 @@
+' activity3: CommandElse3
+@startuml
+start
+else
+@enduml

@@ -1,0 +1,8 @@
+' mindmap-wbs: CommandWBSLink
+' gap: a link needs both codes declared on earlier lines (wbs/WBSDiagram.java:237-243)
+@startwbs
+* root
+a -> b
+**(a) A
+**(b) B
+@endwbs

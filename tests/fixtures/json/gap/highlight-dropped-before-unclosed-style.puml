@@ -1,0 +1,9 @@
+' json: JsonText, JsonHighlightError
+' jar: accepted
+' gap: an unclosed <style> after content swallows @endjson, so the last list line (here the bad #highlight) is skipped (JsonDiagramFactory.java:78-82)
+@startjson
+{"a": 1}
+#highlight <x>
+<style>
+foo {
+@endjson

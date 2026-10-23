@@ -1,0 +1,8 @@
+' mindmap-wbs: CommandWBSLink
+' gap: No such node: link codes are looked up in the codes declared so far (wbs/WBSDiagram.java:237-243)
+@startwbs
+* root
+**(a) A
+**(b) B
+a -> c
+@endwbs

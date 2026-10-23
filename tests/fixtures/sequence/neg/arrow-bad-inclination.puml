@@ -1,0 +1,5 @@
+' sequence: CommandArrow
+@startuml
+Alice -> Bob : x
+Alice -(3) Bob
+@enduml

@@ -1,0 +1,10 @@
+' board-files-git: FilesHeaderIgnored, FilesHeaderSkinparamBlock, FilesSkinparamSkipLine, FilesSkinparamSkipEnd
+@startfiles
+title t
+hide x
+skinparam x {
+<style>
+*
+}
+/a
+@endfiles

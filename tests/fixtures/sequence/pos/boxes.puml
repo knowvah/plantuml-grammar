@@ -1,0 +1,18 @@
+' sequence: CommandBoxStart, CommandBoxEnd
+@startuml
+box "Internal Service" #LightBlue
+  participant Bob
+  box "Nested" <<Sub>>
+    participant Alice
+  endbox
+end box
+box Plain name #white
+  participant Carl
+end   box
+box
+  participant Dan
+end box
+box "Open at the end"
+  participant Eve
+Bob -> Alice : hello
+@enduml

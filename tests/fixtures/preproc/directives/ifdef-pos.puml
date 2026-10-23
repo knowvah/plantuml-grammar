@@ -1,0 +1,6 @@
+@startuml
+!ifdef X
+a -> b
+!endif
+a -> b
+@enduml

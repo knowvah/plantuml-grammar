@@ -1,0 +1,6 @@
+@startuml
+!$x = {"q": "\""}
+!foreach $k in ["a\"b"]
+a -> b
+!endfor
+@enduml

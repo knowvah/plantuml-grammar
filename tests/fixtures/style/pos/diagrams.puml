@@ -1,0 +1,104 @@
+' style: sequence
+@startuml
+<style>
+sequenceDiagram { LineColor red }
+</style>
+Alice -> Bob : hi
+@enduml
+
+' style: activity
+@startuml
+<style>
+activityDiagram {
+activity { BackgroundColor red }
+}
+</style>
+start
+:a;
+stop
+@enduml
+
+' style: state
+@startuml
+<style>
+stateDiagram { LineColor red }
+</style>
+[*] --> S1
+@enduml
+
+' style: usecase
+@startuml
+<style>
+usecaseDiagram { LineColor red }
+</style>
+actor A
+A --> (U)
+@enduml
+
+' style: component
+@startuml
+<style>
+componentDiagram { LineColor red }
+</style>
+[A] --> [B]
+@enduml
+
+' style: mindmap
+@startmindmap
+<style>
+mindmapDiagram {
+:depth(1) { BackgroundColor red }
+}
+</style>
+* root
+** child
+@endmindmap
+
+' style: wbs
+@startwbs
+<style>
+wbsDiagram { LineColor red }
+</style>
+* root
+** child
+@endwbs
+
+' style: gantt
+@startgantt
+<style>
+ganttDiagram { task { BackgroundColor red } }
+</style>
+printscale weekly
+@endgantt
+
+' style: timing
+@startuml
+<style>
+timingDiagram { LineColor red }
+</style>
+robust "Web" as WB
+@0
+WB is Idle
+@enduml
+
+' style: nwdiag
+@startnwdiag
+<style>
+nwdiagDiagram { LineColor red }
+</style>
+nwdiag {
+network n {
+a;
+}
+}
+@endnwdiag
+
+' style: salt
+@startsalt
+<style>
+saltDiagram { LineColor red }
+</style>
+{
+Login | "MyName"
+}
+@endsalt

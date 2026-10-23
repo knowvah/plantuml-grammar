@@ -1,0 +1,16 @@
+' nwdiag-packet: NwGroupOpenAtRoot, NwNetworkOpenAtRoot, CommandProperty, CommandElement, CommandEndSomething
+@startnwdiag
+nwdiag {
+  group {
+    color = pink
+    description = front
+    app;
+    db;
+  }
+  network line1 {
+    width = full
+    app;
+    db;
+  }
+}
+@endnwdiag

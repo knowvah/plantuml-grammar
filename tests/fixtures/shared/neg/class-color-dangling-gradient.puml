@@ -1,0 +1,5 @@
+' refines: color-spec | #r|
+' refines: color-gradient | #r|
+@startuml
+class A #r|
+@enduml

@@ -1,0 +1,6 @@
+' misc-charts: ChenAttributeWithoutOwner
+@startchen
+entity A {
+}
+name : TEXT
+@endchen

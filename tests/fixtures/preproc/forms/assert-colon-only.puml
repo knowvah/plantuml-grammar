@@ -1,0 +1,4 @@
+@startuml
+!assert :x
+a -> b
+@enduml

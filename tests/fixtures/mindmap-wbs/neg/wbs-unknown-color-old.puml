@@ -1,0 +1,5 @@
+' mindmap-wbs: WBSItemUnknownColor
+@startwbs
+* root
+**(c)[#zzzz]< a
+@endwbs

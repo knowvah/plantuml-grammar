@@ -1,0 +1,8 @@
+' nwdiag-packet: CommandLink
+' gap: what about X (NwDiagram.java:174-180) needs the table of known servers
+@startnwdiag
+network n {
+  a
+}
+b -- c
+@endnwdiag

@@ -1,0 +1,6 @@
+' description: GroupStackEmpty, RootEnd
+@startuml
+card c
+}
+c --> d
+@enduml

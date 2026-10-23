@@ -1,0 +1,20 @@
+' description: CommandPackageWithUSymbol, GroupEnd
+@startuml
+package P {
+  node N {
+    cloud C {
+      database D
+    }
+    artifact A
+  }
+  frame F {
+    [Inside]
+  }
+}
+rectangle "Sys" as S {
+  (UC)
+}
+folder {
+  file f
+}
+@enduml

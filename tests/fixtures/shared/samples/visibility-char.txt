@@ -1,0 +1,19 @@
+-field
+#m()
+~x
++y
+-right->[no] "Render page template"
+-societyIds: {array:string}
+-d->[fail] "feedback"
+6-HDVsre68acpb8Er4p_9cZkyVRtGYojQ2MWm2Pak4PvPYwbYjp4FQKtf60L5aZ6gLTPP1kXp-Zx5c3xaSIATU0NcMwE-HDqKeLzJQkHtLz9AbIgxziJzlcH
+network -left- vpnServerA
+InstanceSpecification "owningInstance" *-- "slot[*]" Slot
+"onStop()" -*-> [Process is killed, user navigates back to activity] "onCreate()"
+sexbucjo <|-- dtdlqqxbqqfnlk
+7ae5f851_1719_4863_abca_7f3e4d72f0d2::C147 <-d- 093813e0_2029_43fe_9bf2_34239fb8bbfd::C147
+accf54d0_72f3_4b61_ab34_fa4125d3f246::C35 <-d- 9903b60c_d5ad_4ae1_8553_db13cf6a19f1::C35
+step1 -down-> if "" as conif then
+->feature_list;
+BackgroundColor #101010
+R -> Rs
+isDisjoint : Boolean

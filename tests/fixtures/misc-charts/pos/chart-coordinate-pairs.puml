@@ -1,0 +1,10 @@
+' misc-charts: ChartHAxisRange, ChartFirstCoordinateLine, CommandChartLine, CommandChartScatter
+@startchart
+h-axis "x" -5 --> 5
+line "a" [(1,2), (3,4)]
+line [ ( 1 , 2 ) , ( 3 .5, 4 ) ]
+scatter [[(0,0)]] <<square>>
+line [(1,2),(]
+line [(1,2,),(-3,4)]
+line [),(]
+@endchart

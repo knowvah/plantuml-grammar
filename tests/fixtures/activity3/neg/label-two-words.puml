@@ -1,0 +1,5 @@
+' activity3: CommandLabel
+@startuml
+:a;
+label a b
+@enduml

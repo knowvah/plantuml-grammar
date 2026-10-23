@@ -1,0 +1,8 @@
+' gantt: CommandPrintScale
+@startgantt
+printscale weekly with calendar date zoom 2
+projectscale monthly zoom 1.
+ganttscale daily with week numbering from -2147483648 zoom .5
+printscale yearly
+[A] -> [B]
+@endgantt

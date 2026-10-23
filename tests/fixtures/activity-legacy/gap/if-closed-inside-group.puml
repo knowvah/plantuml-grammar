@@ -1,0 +1,9 @@
+' activity-legacy: ActivityEndifLenient, ActivityEndifRoot
+' gap: the if and group stacks are independent; a context stack cannot pop an if below a group
+@startuml
+(*) --> if x then
+partition P {
+endif
+}
+endif
+@enduml

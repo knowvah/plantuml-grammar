@@ -1,0 +1,178 @@
+# Board diagrams (T31, `@startboard`). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/.
+#
+# Commands. BoardDiagramFactory.initCommandsList (board/BoardDiagramFactory.java:56-60)
+# is the common block (command/CommonCommands.java addCommonCommands1) followed by
+# CommandBoardPlus, `^([+]*)[%s]*([^%s].*)$` on the UNTRIMMED line
+# (board/CommandBoardPlus.java:50-58, doTrim=false; generated `trim: false`). It takes
+# every non-blank line no common command takes. BoardDiagram.addLine
+# (board/BoardDiagram.java:121-129) starts an activity when PLUS is empty, otherwise it
+# adds a release of depth `plus.length()` to the LAST activity (:127).
+#
+# What the jar rejects (oracle-verified, tests/fixtures/board-files-git):
+# * a release line before any activity: getLastActivity (:117-119) calls
+#   `activities.get(-1)`, the IndexOutOfBoundsException is caught by
+#   command/ProtectedCommand.java:65-76 and becomes an EXECUTION_ERROR
+#   (command/PSystemCommandFactory.java:180-187). Common lines and blank lines keep the
+#   "no activity" state, so `title t` / `+x` is rejected too. Model: `main` is the "no
+#   activity" state; CommandBoardPlus is narrowed to activity lines and `set`s
+#   `board_activities`, a reject of the release shape follows it (emitters drop the
+#   reject and keep the narrowed rule, so they refuse a leading release too), and
+#   `board_activities` takes release lines with a head entry.
+# * the common block's own errors (`scale 0`, bad sprites, malformed `<style>` bodies):
+#   `common` and `style` refine them as for every command factory.
+# * Nothing else. Activity.addRelease (board/Activity.java:65-78) climbs to the first
+#   ancestor with a smaller stage; the root has stage 0 and every release stage is at
+#   least 1, so a depth jump (`A` / `+++x`) is fine. BArray.put (board/BArray.java:49-53)
+#   throws only when the diagram is drawn.
+#
+# Which lines are releases. Java tries PLUS greedily: PLUS is the longest `+` run whose
+# remainder still holds a non-blank character, so with n leading `+` (no leading blank,
+# the line is untrimmed) PLUS is empty exactly when n == 0, or n == 1 and the rest is
+# blank (`+` alone names an activity "+"). A release is therefore a line that starts
+# with `+` and has a non-blank character after it (BOARD_RELEASE); an indented ` +x` is
+# an activity.
+#
+# Lines CommandBoardPlus takes because an earlier common command gave up (upstream tries
+# the next command for the START line, command/PSystemCommandFactory.java:236-240):
+# * an unterminated multiline title/legend/header/footer/caption: the generated
+#   `multiline` + `end` entries are dropped by the interpreter, then CommandBoardPlus
+#   takes the line;
+# * an unterminated sprite body: common's `require_pop` backtracks to the start line;
+# * a `skinparam x {` body with a line SkinLoader.p1 rejects
+#   (command/CommandMultilinesBracket.java:76-79): BoardSkinParamBodyInconsistent, as in
+#   salt.yaml;
+# * a `<style>` with no END line (style/CommandStyleMultilinesCSS.java:66,
+#   command/CommandMultilines2.java:105-110): `style` rejects at the second line
+#   (CommandStyleMultilinesCSSReject), which is right only when no later command takes
+#   `<style>`. Here the entry with that rule id is redefined: it keeps the reject when an
+#   END line exists (a bad body is an EXECUTION_ERROR at `<style>`,
+#   CommandStyleMultilinesCSS.java:92-93) and backtracks to CommandBoardPlus otherwise.
+schema_version: 1
+id: board-files-git-board
+layer: diagram
+diagram: BOARD
+factory: BoardDiagramFactory
+include: [gen-board-diagram, common]
+
+variables:
+  BOARD_BLANKS: {regex: "[\\s ]*", ci: false}
+  # A line starting with `+` and holding a non-blank character after it.
+  BOARD_RELEASE:
+    seq:
+      - {regex: "\\++", ci: false, name: PLUS, scope: keyword.operator.release}
+      - {ref: BOARD_BLANKS}
+      - {regex: "([^\\s ].*)", ci: false, name: LABEL, scope: string.unquoted.release}
+  # PLUS empty: `+` with only blanks after it, or a line not starting with `+`. The
+  # lookahead shares a leaf with the label (emitters drop zero-width leaves).
+  BOARD_ACTIVITY:
+    alt:
+      - {regex: "\\+[\\s\u00A0]*", ci: false, name: LABEL, scope: entity.name.section.activity}
+      - {regex: "(?!\\+)[\\s\u00A0]*([^\\s\u00A0].*)", ci: false, name: LABEL, scope: entity.name.section.activity}
+
+overrides:
+  # board/CommandBoardPlus.java:54-58 narrowed to PLUS == "" (BoardDiagram.java:122-126).
+  CommandBoardPlus:
+    parts: {ref: BOARD_ACTIVITY}
+    set: board_activities
+
+insert_after:
+  # Replaces style.yaml's two inserts on this key (a model's own declaration wins, see
+  # docs/grammar-guide.md "Refining generated models"): CommandStyleMultilinesCSSReject
+  # redefined (same rule id and role, see the header), then the structure entry, copied.
+  CommandStyleMultilinesCSS:
+    - command: CommandStyleMultilinesCSSReject
+      provenance:
+        class: net.sourceforge.plantuml.style.CommandStyleMultilinesCSS
+        file: src/main/java/net/sourceforge/plantuml/style/CommandStyleMultilinesCSS.java
+        line: 92
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:236-240
+          - src/main/java/net/sourceforge/plantuml/command/CommandMultilines2.java:105-110
+      kind: single
+      emit: false
+      parts: {literal: <style>, ci: true}
+      push: board_style_bad
+      require_pop: true
+    - command: CommandStyleMultilinesCSSStructure
+      provenance: {class: net.sourceforge.plantuml.style.CommandStyleMultilinesCSS, file: src/main/java/net/sourceforge/plantuml/style/CommandStyleMultilinesCSS.java, line: 66, engine: IRegex}
+      kind: multiline
+      parts: {literal: <style>, ci: true, scope: entity.name.tag}
+      end: {regex: "[\\s\u00A0]*</?style>[\\s\u00A0]*", ci: true, scope: entity.name.tag}
+      push: style_body
+  # A release with no activity yet: BoardDiagram.java:117-119 and :127.
+  CommandBoardPlus:
+    - command: BoardReleaseWithoutActivity
+      provenance:
+        class: net.sourceforge.plantuml.board.BoardDiagram
+        file: src/main/java/net/sourceforge/plantuml/board/BoardDiagram.java
+        line: 127
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/board/BoardDiagram.java:117-119
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: BOARD_RELEASE}
+  # See salt.yaml SaltSkinParamBodyInconsistent: a body line SkinLoader.p1 rejects makes
+  # upstream abandon the bracket and try CommandBoardPlus for `skinparam x {`.
+  CommandSkinParamBodySetting:
+    - command: BoardSkinParamBodyInconsistent
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMultilinesBracket
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilinesBracket.java
+        line: 78
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:236-240
+      kind: single
+      emit: false
+      parts: {regex: ".+", ci: false}
+      set: board_skinparam_abandoned
+
+contexts:
+  # At least one activity (BoardDiagram.activities not empty). The head entry runs before
+  # the common block; no common command matches a line starting with `+`.
+  board_activities:
+    # Cited by BoardDiagram, not CommandBoardPlus: a class-name patch key would hit it.
+    - command: BoardRelease
+      provenance:
+        class: net.sourceforge.plantuml.board.BoardDiagram
+        file: src/main/java/net/sourceforge/plantuml/board/BoardDiagram.java
+        line: 127
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/board/CommandBoardPlus.java:54-58
+          - src/main/java/net/sourceforge/plantuml/board/Activity.java:65-78
+      kind: single
+      trim: false
+      parts: {ref: BOARD_RELEASE}
+    - include: gen-board-diagram#main
+  # A `skinparam x {` bracket that upstream abandoned: never pops, so the block end
+  # backtracks to the start line.
+  board_skinparam_abandoned:
+    - command: BoardSkinParamAbandonedLine
+      provenance:
+        class: net.sourceforge.plantuml.command.PSystemCommandFactory
+        file: src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java
+        line: 268
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:274-275
+      kind: single
+      emit: false
+      parts: {regex: ".*", ci: false}
+  # `<style>` whose join failed: an END line means a bad body (no entry: the END line
+  # fails), no END line means the block end backtracks to `<style>`.
+  board_style_bad:
+    - command: BoardStyleBodyLine
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMultilines2
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilines2.java
+        line: 105
+        engine: IRegex
+      kind: single
+      emit: false
+      parts: {regex: "(?![\\s\u00A0]*</?style>[\\s\u00A0]*$).*", ci: true}

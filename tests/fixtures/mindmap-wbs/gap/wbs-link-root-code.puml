@@ -1,0 +1,7 @@
+' mindmap-wbs: CommandWBSLink
+' gap: the root's code is never registered (wbs/WBSDiagram.java:160-165), so a link to it fails (:238-240)
+@startwbs
+*(a) root
+**(b) B
+a -> b
+@endwbs

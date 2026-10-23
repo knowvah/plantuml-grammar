@@ -1,0 +1,7 @@
+' gantt: CommandHideResourceName, CommandHideResourceFootbox
+@startgantt
+hide ressources names
+hide resource footbox
+hide resources name
+[A] -> [B]
+@endgantt

@@ -1,0 +1,7 @@
+' activity-legacy: ActivityLinkFirst
+@startuml
+title T
+left to right direction
+(*) --> A
+--> B
+@enduml

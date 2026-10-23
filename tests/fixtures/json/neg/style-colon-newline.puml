@@ -1,0 +1,11 @@
+' json: JsonStyleError
+@startjson
+<style>
+node {
+:depth(1)
+{
+}
+}
+</style>
+{"a": 1}
+@endjson

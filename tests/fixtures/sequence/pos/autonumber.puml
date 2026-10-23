@@ -1,0 +1,23 @@
+' sequence: CommandAutonumber, CommandAutonumberStop, CommandAutonumberResume, CommandAutonumberIncrement
+@startuml
+autonumber
+Alice -> Bob : one
+autonumber 10
+Alice -> Bob : ten
+autonumber 40 10 "<b>[000]"
+Alice -> Bob : forty
+autonumber 1.1.1
+Alice -> Bob : dotted
+autonumber inc A
+Alice -> Bob : inc A
+autonumber inc B
+autonumber inc
+Alice -> Bob : inc
+autonumber stop
+Alice -> Bob : stopped
+autonumber resume
+autonumber resume 5
+autonumber resume "<font color=red><b>Message 0  "
+autonumber resume 1 "<b>0"
+Alice -> Bob : resumed %autonumber%
+@enduml

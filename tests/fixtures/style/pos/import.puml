@@ -1,0 +1,11 @@
+' style: internal skin
+@startuml
+<style src=strictuml.skin>
+class Foo
+@enduml
+
+' style: internal skin, quoted
+@startuml
+<style file="plantuml.skin">
+class Foo
+@enduml

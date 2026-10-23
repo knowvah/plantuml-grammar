@@ -1,0 +1,17 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+# `(?i)^li[sc][ea]n[sc]e\s*$`: Java (?i) folds ASCII only; \s is ASCII.
+schema_version: 1
+id: single-line-license
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemLicenseFactory
+include: [embedded-license, single-line-base]
+overrides:
+  PSystemLicenseFactory:
+    provenance: {class: net.sourceforge.plantuml.version.PSystemLicenseFactory, file: src/main/java/net/sourceforge/plantuml/version/PSystemLicenseFactory.java, line: 51, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "[lL][iI][sScC][eEaA][nN][sScC][eE][ \\t\\x0B\\f]*"}
+    set: sl_done
+    gives: single_line

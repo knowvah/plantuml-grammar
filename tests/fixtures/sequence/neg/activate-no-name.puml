@@ -1,0 +1,5 @@
+' sequence: CommandActivate
+@startuml
+Alice -> Bob : x
+activate
+@enduml

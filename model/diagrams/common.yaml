@@ -1,0 +1,474 @@
+# Commands shared by command-based diagrams (T16, layer: shared). Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# command/CommonCommands.java:55-127 registers one block of commands in every command
+# factory (titles :113-126, commands2 :63-93, scale :98-103, hides :107-109). The
+# generated models already hold that block in each factory's initCommandsList order, so
+# this model only refines those entries in place (overrides / insert_before; keys are the
+# generated rule ids) and adds the body contexts they push. A diagram model that
+# includes `common` gets every refinement; factories without some common command (gantt,
+# salt lack the hides) simply leave those keys unmatched.
+#
+# What the regexes cannot see, and what is refined here (each upstream check is cited at
+# its override):
+# * execute-time errors with a syntactic cause: `scale 0`, invalid doubles (`1.2.3`),
+#   `page 0x1`, int overflow (Integer.parseInt), sprite gray levels other than 4/8/16,
+#   `!pragma graphviz_dot`, `!pragma layout|svgsize` without a value (NPE);
+#   PSystemCommandFactory.java:179-187 turns any of them into a PSystemError.
+# * multiline bodies validated by isValid/execute: skinparam `{ }` lines must match
+#   SkinLoader.p1 (CommandMultilinesBracket.java:75-92, CommandSkinParamMultilines.java:
+#   54-59); a sprite needs at least one data line (CommandFactorySprite.java:119-122) and
+#   gray-16 data is hex (klimt/sprite/SpriteGrayLevel.java:189-206).
+# * skinparam blocks folded into one line by %newline() (CommandSkinParamJaws.java:96-108).
+#
+# A refined line that no longer matches would fall through to the next command, whereas
+# upstream matched it and then failed the factory; `common-errors` therefore follows each
+# narrowed rule with a `reject` of the generated shape. Bodies entered as contexts carry
+# `require_pop`: a body still open at the end of the block backtracks to its start line,
+# as upstream skips a multiline command that never completes (PSystemCommandFactory.java:
+# 236-240). Resource lookups (skins, files, stdlib, MD5 cache, z/4096-color decoding)
+# and the gray-16 width rule stay gaps, pinned by tests/fixtures/common/gap.
+#
+# Not refined (the generated entries are exact): titles, legend, header/footer, caption
+# and their `multiline` + `end` forms, mainframe, namespace separator, nope, assume,
+# skin, rotate, base64/md5/svg/stdlib sprites, style commands (bodies: T33), hides.
+schema_version: 1
+id: common
+layer: shared
+include: [shared, style, common-errors]
+
+variables:
+  # Integer.parseInt over an ASCII digit run (Pattern2 has no UNICODE_CHARACTER_CLASS,
+  # so `\d` is [0-9]): leading zeros are allowed, values above 2147483647 throw.
+  JAVA_INT_RANGE:
+    regex: "(?:1[0-9]{9}|20[0-9]{8}|21[0-3][0-9]{7}|214[0-6][0-9]{6}|2147[0-3][0-9]{5}|21474[0-7][0-9]{4}|214748[0-2][0-9]{3}|2147483[0-5][0-9]{2}|21474836[0-3][0-9]|214748364[0-7]|[1-9][0-9]{0,8})"
+    ci: true
+    scope: constant.numeric.integer
+  JAVA_INT_POSITIVE:
+    seq:
+      - {regex: "0*", ci: true, scope: constant.numeric.integer}
+      - {ref: JAVA_INT_RANGE}
+  JAVA_INT:
+    alt:
+      - {ref: JAVA_INT_POSITIVE}
+      - {regex: "0+", ci: true, scope: constant.numeric.integer}
+  # Double.parseDouble over `[0-9.]+`: at most one dot and at least one digit.
+  JAVA_DOUBLE: {regex: "(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)", ci: true, scope: constant.numeric.float}
+  JAVA_DOUBLE_NONZERO:
+    regex: "(?:0*[1-9][0-9]*(?:\\.[0-9]*)?|0*\\.[0-9]*[1-9][0-9]*)"
+    ci: true
+    scope: constant.numeric.float
+
+  # --- sprites (command/CommandFactorySprite.java:68-88) ------------------------------
+  SPRITE_KEYWORD: {literal: sprite, ci: true, scope: keyword.other.sprite}
+  SPRITE_DOLLAR: {regex: "\\$?", ci: true, scope: punctuation.definition.variable}
+  SPRITE_NAME: {regex: "([-.\\p{L}\\p{N}_]+)", ci: true, name: NAME, scope: entity.name.constant.sprite}
+  SPRITE_HEAD:
+    seq:
+      - {ref: SPRITE_KEYWORD}
+      - {ref: SPACE_SOME}
+      - {ref: SPRITE_DOLLAR}
+      - {ref: SPRITE_NAME}
+      - {ref: SPACE_ANY}
+  SPRITE_SIZE:
+    seq:
+      - {literal: "[", ci: true, scope: punctuation.section.brackets.begin}
+      - {ref: JAVA_INT}
+      - {literal: x, ci: true, scope: punctuation.separator.dimensions}
+      - {ref: JAVA_INT}
+      - {literal: /, ci: true, scope: punctuation.separator.dimensions}
+  SPRITE_SIZE_END: {literal: "]", ci: true, scope: punctuation.section.brackets.end}
+  # Only 4, 8 or 16 gray levels (CommandFactorySprite.java:191-193); `16` without `z`
+  # is decoded as plain hex (SpriteGrayLevel.java:176-178).
+  SPRITE_DIM_GRAY16:
+    seq:
+      - {ref: SPRITE_SIZE}
+      - {regex: "0*16", ci: true, scope: constant.numeric.integer}
+      - {ref: SPRITE_SIZE_END}
+  SPRITE_DIM_PACKED:
+    seq:
+      - {ref: SPRITE_SIZE}
+      - alt:
+          - {regex: "0*(?:4|8)", ci: true, scope: constant.numeric.integer}
+          - {regex: "0*(?:4|8|16)z", ci: true, scope: constant.numeric.integer}
+          - {literal: color, ci: true, scope: constant.language.sprite-color}
+      - {ref: SPRITE_SIZE_END}
+  SPRITE_DIM_SINGLE:
+    seq:
+      - {ref: SPRITE_SIZE}
+      - alt:
+          - {regex: "0*(?:4|8|16)z", ci: true, scope: constant.numeric.integer}
+          - {literal: color, ci: true, scope: constant.language.sprite-color}
+      - {ref: SPRITE_SIZE_END}
+  SPRITE_OPEN: {literal: "{", ci: true, scope: punctuation.section.block.begin}
+  # END of the multiline sprite, `^end[%s]?sprite|\}$` matched on the trimmed line
+  # (CommandFactorySprite.java:60, :91).
+  SPRITE_END: {regex: "end[\\s\_]?sprite|\\}", ci: true, scope: punctuation.section.block.end}
+  SPRITE_DATA_LINE: {regex: "(?!(?:end[\\s\_]?sprite|\\})(?![^\\n])).+", ci: true, scope: string.unquoted.sprite-data}
+  # Character.digit(c, 16) >= 0 (SpriteGrayLevel.java:199): ASCII hex, any Unicode
+  # decimal digit, fullwidth A-F/a-f; anything else makes setGray throw
+  # (SpriteMonochrome.java:156-157).
+  SPRITE_GRAY16_DATA: {regex: "[0-9A-Fa-f\\p{Nd}Ａ-Ｆａ-ｆ]+", ci: false, scope: constant.numeric.hex}
+  # Columns at or beyond the first line's width are ignored (SpriteGrayLevel.java:190,
+  # :194), so a later line is only known to need a hex first character.
+  SPRITE_GRAY16_LINE:
+    regex: "(?!end[\\s\_]?sprite(?![^\\n]))[0-9A-Fa-f\\p{Nd}Ａ-Ｆａ-ｆ].*"
+    ci: true
+    scope: constant.numeric.hex
+
+  # --- skinparam bodies (command/SkinLoader.java:51, p1) ------------------------------
+  SKINPARAM_KEY: {regex: "[\\w.]*(?:<<.*>>)?[\\w.]*", ci: true, scope: variable.parameter.skinparam}
+  SKINPARAM_SETTING:
+    seq:
+      - {ref: SKINPARAM_KEY}
+      - {ref: SPACE_SOME}
+      - {regex: ".*", ci: true, scope: string.unquoted.skinparam-value}
+
+  # --- skinparam blocks folded by %newline() (U+E100, jaws/Jaws.java:47) --------------
+  JAWS_NEWLINE: {literal: "", ci: true, scope: punctuation.separator.jaws}
+  JAWS_TRIM: {regex: "[\t ]*", ci: true}
+  JAWS_KEY: {regex: "[\\w.]*(?:<<[^]*>>)?[\\w.]*", ci: true, scope: variable.parameter.skinparam}
+  # First segment: the Jaws prefix `(skinparam|skinparamlocked)[%s]+` (CommandSkinParamJaws
+  # .java:58-63) and the delegate's start pattern (CommandSkinParamMultilines.java:50).
+  JAWS_FIRST_START:
+    seq:
+      - {literal: skinparam, ci: true, scope: keyword.other.skinparam}
+      - {ref: SPACE_SOME}
+      - opt:
+          seq:
+            - {ref: JAWS_KEY}
+            - {ref: SPACE_ANY}
+      - {literal: "{", ci: true, scope: punctuation.section.block.begin}
+      - {ref: JAWS_TRIM}
+  JAWS_START:
+    seq:
+      - {ref: JAWS_TRIM}
+      - {literal: skinparam, ci: true, scope: keyword.other.skinparam}
+      - {ref: SPACE_ANY}
+      - opt:
+          seq:
+            - {ref: SPACE_SOME}
+            - {ref: JAWS_KEY}
+      - {ref: SPACE_ANY}
+      - {literal: "{", ci: true, scope: punctuation.section.block.begin}
+      - {ref: JAWS_TRIM}
+  # A body segment is empty or a trimmed p1 line (SkinLoader.java:84-104).
+  JAWS_BODY:
+    seq:
+      - {ref: JAWS_TRIM}
+      - opt:
+          seq:
+            - {regex: "(?=[\\w.<])[\\w.]*(?:<<[^]*>>)?[\\w.]*", ci: true, scope: variable.parameter.skinparam}
+            - {ref: SPACE_SOME}
+            - {regex: "[^]*", ci: true, scope: string.unquoted.skinparam-value}
+  JAWS_CLOSE:
+    seq:
+      - {ref: JAWS_TRIM}
+      - {literal: "}", ci: true, scope: punctuation.section.block.end}
+      - {ref: JAWS_TRIM}
+  JAWS_GROUP_TAIL:
+    seq:
+      - star:
+          seq:
+            - {ref: JAWS_NEWLINE}
+            - {ref: JAWS_BODY}
+      - {ref: JAWS_NEWLINE}
+      - {ref: JAWS_CLOSE}
+  # Segments after the last `}` segment are never executed (CommandSkinParamJaws.java:98-105).
+  JAWS_TRAIL: {regex: "(?![\t ]*\\}[\t ]*(?![^\\n]))[^]*", ci: true}
+
+overrides:
+  # CommonCommands.java:64. CommandPragma.java:105-127: `graphviz_dot` is an execution
+  # error (:120-125) and `layout` / `svgsize` dereference the missing value (:107, :116).
+  CommandPragma:
+    parts:
+      seq:
+        - {literal: "!pragma", ci: true, scope: keyword.control.directive.pragma}
+        - {ref: SPACE_SOME}
+        - alt:
+            - seq:
+                - {regex: "(layout|svgsize)", ci: true, name: NAME, scope: entity.name.pragma}
+                - {ref: SPACE_SOME}
+                - {regex: "(.*)", ci: true, name: VALUE, scope: string.unquoted.pragma-value}
+            - seq:
+                - regex: "(?!(?:graphviz_dot|layout|svgsize)(?![A-Za-z_0-9]))([A-Za-z_][A-Za-z_0-9]*)"
+                  ci: true
+                  name: NAME
+                  scope: entity.name.pragma
+                - opt:
+                    seq:
+                      - {ref: SPACE_SOME}
+                      - {regex: "(.*)", ci: true, name: VALUE, scope: string.unquoted.pragma-value}
+  # CommonCommands.java:69. The bracket body is checked line by line
+  # (CommandMultilinesBracket.java:75-92 with CommandSkinParamMultilines.java:54-59), so
+  # it is entered as a context instead of an unchecked bracket scan.
+  CommandSkinParamMultilines: {kind: single, push: skinparam_body, require_pop: true}
+  # CommonCommands.java:68. Each folded group is executed by the multiline delegate
+  # (CommandSkinParamJaws.java:96-108, SkinLoader.java:84-104).
+  CommandSkinParamJaws:
+    parts:
+      alt:
+        - seq:
+            - {ref: JAWS_FIRST_START}
+            - {ref: JAWS_GROUP_TAIL}
+            - star:
+                seq:
+                  - {ref: JAWS_NEWLINE}
+                  - {ref: JAWS_START}
+                  - {ref: JAWS_GROUP_TAIL}
+            - star:
+                seq:
+                  - {ref: JAWS_NEWLINE}
+                  - {ref: JAWS_TRAIL}
+        - seq:
+            - {regex: "(skinparam|skinparamlocked)", ci: true, name: TYPE, scope: keyword.other.skinparam}
+            - {ref: SPACE_SOME}
+            - {ref: JAWS_TRAIL}
+            - plus:
+                seq:
+                  - {ref: JAWS_NEWLINE}
+                  - {ref: JAWS_TRAIL}
+  # CommonCommands.java:72. CommandMinwidth.java:74 parses with Integer.parseInt.
+  CommandMinwidth:
+    parts:
+      seq:
+        - {literal: minwidth, ci: true, scope: keyword.other.minwidth}
+        - {ref: SPACE_SOME}
+        - {ref: JAVA_INT}
+  # CommonCommands.java:73. CommandPage.java:60-67 is `(\d+)[%s]*x*[%s]*(\d+)`: with a
+  # separator NB1 is the whole first digit run, without one Java's greedy NB1 leaves
+  # NB2 the last digit (`page 23` is 2x3, `page 10` is 1x0). Both must parse and be
+  # positive (:87-90).
+  CommandPage:
+    parts:
+      seq:
+        - {literal: page, ci: true, scope: keyword.other.page}
+        - {ref: SPACE_SOME}
+        - alt:
+            - seq:
+                - {ref: JAVA_INT_POSITIVE}
+                - {regex: "(?:[\\s\_]+x*|x+)[\\s\_]*", ci: true, scope: punctuation.separator.dimensions}
+                - {ref: JAVA_INT_POSITIVE}
+            - seq:
+                - {ref: JAVA_INT_POSITIVE}
+                - {regex: "[1-9]", ci: true, scope: constant.numeric.integer}
+  # CommonCommands.java:77 (multiline). Gray-16 forms are taken by the entry inserted
+  # before it; this one keeps the packed forms with a valid level
+  # (CommandFactorySprite.java:188-193) and checks only that a data line exists (:121-122).
+  CommandFactorySprite_1:
+    kind: single
+    end: null
+    push: sprite_data_first
+    require_pop: true
+    parts:
+      seq:
+        - {ref: SPRITE_HEAD}
+        - {ref: SPRITE_DIM_PACKED}
+        - {ref: SPACE_ANY}
+        - {ref: SPRITE_OPEN}
+  # CommonCommands.java:78. Same level and size checks (CommandFactorySprite.java:139-141,
+  # :188-193).
+  CommandFactorySprite_2:
+    parts:
+      seq:
+        - {ref: SPRITE_HEAD}
+        - opt: {ref: SPRITE_DIM_SINGLE}
+        - {ref: SPACE_SOME}
+        - {regex: "([-_A-Za-z0-9]+)", ci: true, name: DATA, scope: string.unquoted.sprite-data}
+  # CommonCommands.java:98. CommandScale.java:92-101: both numbers go through
+  # Double.parseDouble and neither may be zero.
+  CommandScale:
+    parts:
+      seq:
+        - {literal: scale, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {ref: JAVA_DOUBLE_NONZERO}
+        - opt:
+            seq:
+              - {ref: SPACE_ANY}
+              - {literal: /, ci: true, scope: keyword.operator.arithmetic}
+              - {ref: SPACE_ANY}
+              - {ref: JAVA_DOUBLE_NONZERO}
+  # CommonCommands.java:99. CommandScaleWidthAndHeight.java:78-79 (Double.parseDouble).
+  CommandScaleWidthAndHeight:
+    parts:
+      seq:
+        - {literal: scale, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {ref: JAVA_DOUBLE}
+        - {ref: SPACE_ANY}
+        - {regex: "[*x]", ci: true, scope: punctuation.separator.dimensions}
+        - {ref: SPACE_ANY}
+        - {ref: JAVA_DOUBLE}
+  # CommonCommands.java:100. CommandScaleWidthOrHeight.java:79.
+  CommandScaleWidthOrHeight:
+    parts:
+      seq:
+        - {literal: scale, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {ref: JAVA_DOUBLE}
+        - {ref: SPACE_SOME}
+        - {regex: "(width|height)", ci: true, name: DIM, scope: keyword.other.scale-dimension}
+  # CommonCommands.java:101. CommandScaleMaxWidth.java:77.
+  CommandScaleMaxWidth:
+    parts:
+      seq:
+        - {literal: scale, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {literal: max, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {ref: JAVA_DOUBLE}
+        - {ref: SPACE_SOME}
+        - {literal: width, ci: true, scope: keyword.other.scale-dimension}
+  # CommonCommands.java:102. CommandScaleMaxHeight.java:77.
+  CommandScaleMaxHeight:
+    parts:
+      seq:
+        - {literal: scale, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {literal: max, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {ref: JAVA_DOUBLE}
+        - {ref: SPACE_SOME}
+        - {literal: height, ci: true, scope: keyword.other.scale-dimension}
+  # CommonCommands.java:103. CommandScaleMaxWidthAndHeight.java:79-80.
+  CommandScaleMaxWidthAndHeight:
+    parts:
+      seq:
+        - {literal: scale, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {literal: max, ci: true, scope: keyword.other.scale}
+        - {ref: SPACE_SOME}
+        - {ref: JAVA_DOUBLE}
+        - {ref: SPACE_ANY}
+        - {regex: "[*x]", ci: true, scope: punctuation.separator.dimensions}
+        - {ref: SPACE_ANY}
+        - {ref: JAVA_DOUBLE}
+
+insert_before:
+  # CommonCommands.java:77: the gray-16 forms of the multiline sprite (no size, or
+  # `/16` without `z`) whose data is validated as hex.
+  CommandFactorySprite_1:
+    - command: CommandFactorySpriteGray16
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandFactorySprite
+        file: src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java
+        line: 68
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/klimt/sprite/SpriteGrayLevel.java:176-178
+          - src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:77
+      kind: single
+      parts:
+        seq:
+          - {ref: SPRITE_HEAD}
+          - opt: {ref: SPRITE_DIM_GRAY16}
+          - {ref: SPACE_ANY}
+          - {ref: SPRITE_OPEN}
+      push: sprite_gray16_first
+      require_pop: true
+
+contexts:
+  # Inside `skinparam [x] {`: the bracket depth of CommandMultilinesBracket.java:75-92
+  # (a trimmed line ending in `{` opens, one ending in `}` closes) over SkinLoader.p1
+  # lines. Blank lines match p1 (`^\}?$`) and are skipped by the interpreter.
+  skinparam_body:
+    - command: CommandSkinParamBodyClose
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMultilinesBracket
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilinesBracket.java
+        line: 84
+        engine: IRegex
+      kind: single
+      parts:
+        alt:
+          - {literal: "}", ci: true, scope: punctuation.section.block.end}
+          - seq:
+              - {ref: SKINPARAM_KEY}
+              - {ref: SPACE_SOME}
+              - {regex: ".*\\}", ci: true, scope: string.unquoted.skinparam-value}
+      pop: true
+    - command: CommandSkinParamBodyOpen
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMultilinesBracket
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilinesBracket.java
+        line: 81
+        engine: IRegex
+      kind: single
+      parts:
+        seq:
+          - {ref: SKINPARAM_KEY}
+          - {ref: SPACE_SOME}
+          - {regex: ".*\\{", ci: true, scope: punctuation.section.block.begin}
+      push: skinparam_body
+    - command: CommandSkinParamBodySetting
+      provenance:
+        class: net.sourceforge.plantuml.command.SkinLoader
+        file: src/main/java/net/sourceforge/plantuml/command/SkinLoader.java
+        line: 51
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommandSkinParamMultilines.java:54-59]
+      kind: single
+      parts:
+        seq:
+          - {ref: SKINPARAM_KEY}
+          - {ref: SPACE_SOME}
+          - {regex: "(?:.*[^{}])?", ci: true, scope: string.unquoted.skinparam-value}
+
+  # Gray-16 sprite data: at least one line (CommandFactorySprite.java:119-122), the first
+  # all hex, later lines starting with a hex digit (see SPRITE_GRAY16_LINE).
+  sprite_gray16_first:
+    - command: CommandFactorySpriteGray16FirstLine
+      provenance:
+        class: net.sourceforge.plantuml.klimt.sprite.SpriteGrayLevel
+        file: src/main/java/net/sourceforge/plantuml/klimt/sprite/SpriteGrayLevel.java
+        line: 189
+      kind: single
+      parts: {ref: SPRITE_GRAY16_DATA}
+      set: sprite_gray16_body
+  sprite_gray16_body:
+    - command: CommandFactorySpriteGray16End
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandFactorySprite
+        file: src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java
+        line: 60
+        engine: IRegex
+      kind: single
+      parts: {ref: SPRITE_END}
+      pop: true
+    - command: CommandFactorySpriteGray16Line
+      provenance:
+        class: net.sourceforge.plantuml.klimt.sprite.SpriteGrayLevel
+        file: src/main/java/net/sourceforge/plantuml/klimt/sprite/SpriteGrayLevel.java
+        line: 194
+      kind: single
+      parts: {ref: SPRITE_GRAY16_LINE}
+
+  # Packed sprite data (4/8 levels, z, color): decoded against the declared size, which
+  # a line model cannot check; only a non-empty body is required.
+  sprite_data_first:
+    - command: CommandFactorySpriteDataFirstLine
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandFactorySprite
+        file: src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java
+        line: 121
+      kind: single
+      parts: {ref: SPRITE_DATA_LINE}
+      set: sprite_data_body
+  sprite_data_body:
+    - command: CommandFactorySpriteDataEnd
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandFactorySprite
+        file: src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java
+        line: 60
+        engine: IRegex
+      kind: single
+      parts: {ref: SPRITE_END}
+      pop: true
+    - command: CommandFactorySpriteDataLine
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandFactorySprite
+        file: src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java
+        line: 124
+      kind: single
+      parts: {ref: SPRITE_DATA_LINE}

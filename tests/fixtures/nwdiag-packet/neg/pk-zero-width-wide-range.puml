@@ -1,0 +1,7 @@
+' nwdiag-packet: PacketZeroWidthOnly
+@startpacketdiag
+packetdiag {
+  colwidth = 32
+  0100-099 x
+}
+@endpacketdiag

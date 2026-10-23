@@ -1,0 +1,6 @@
+@startuml
+!definelong X
+a -> b
+!enddefinelong
+a -> b
+@enduml

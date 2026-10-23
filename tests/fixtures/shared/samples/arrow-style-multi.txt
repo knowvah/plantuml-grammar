@@ -1,0 +1,18 @@
+[#red,bold;#blue,dotted]
+[;]
+[norank;node]
+SW -[#blue]> CBGF: MSRP SEND (imdn/delivery)
+CBGF -[#blue]-> SW: 200 OK
+-[#blue]-> callback received;
+-[#orchid]->
+-[#black]->
+CU -[hidden]- FacetB
+P -[#black]> I: INVITE
+-[#black]-> ee2;
+state Foo2 ##[dotted]green {
+repeat while (condition) is (yes) -[#black]-> yes
+-[#maroon,dashed]->
+a[#blue]->b: test:\nTEST
+Test <$demo4>
+!if %variable_exists("foo")
+<circle cx="15" cy="15" r="10" fill="green" />

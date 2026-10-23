@@ -1,0 +1,112 @@
+# `@startcreole` (T32, family meta-diagrams). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/ unless stated.
+#
+# PSystemCreoleFactory is a PSystemBasicFactory, not a command factory
+# (klimt/creole/legacy/PSystemCreoleFactory.java:43-61): every body line is stored as is
+# (PSystemCreole.java:74-76; CreoleLine and CreoleText cite executeLine, :54-59) and
+# parsed as creole only when the diagram is drawn (:78-89), so creole markup never
+# changes a verdict (model/creole.yaml header). The body lines therefore get the creole
+# structure of model/creole.yaml (included, never edited): whole-line constructs
+# (CREOLE_LINE) or inline markup (CREOLE_INLINE).
+#
+# The only rejection is an "empty" body (command/PSystemBasicFactory.java:74-102): after
+# UmlSource.removeInitialNoise (core/UmlSource.java:79-106) drops the LEADING body lines
+# that are exactly empty or start with `skinparam `, `skinparamlocked ` or `!pragma `
+# (case-sensitive, untrimmed), a source of two lines (start and end) is an error (:89-90).
+# So a body is accepted iff one line is neither empty nor such a noise line; a line of
+# blanks counts (oracle-verified: `` rejected, `` + `  ` accepted, `skinparam a b`
+# rejected, `skinparam a b` + ` ` accepted; tests/fixtures/meta-diagrams/*/creole-*).
+# `'` comments are removed before the factory runs. Model, with order-free flags
+# (docs/grammar-guide.md "Diagram flags"): noise lines `needs: creole_content`, every
+# other non-empty line `gives: creole_content`; an all-blank body runs through `empty`,
+# where a blank-but-not-empty line gives and the `@end` line needs. Exact.
+#
+# Emitters ignore flags and `trim`; CreoleNoiseLine, CreoleBlankLine and CreoleEnd are
+# `emit: false` (CreoleText covers noise lines for them). CreoleText is a lighter alternation
+# than CREOLE_INLINE: the tags that embed the 154-name color table (`<u:..>`, `<s:..>`,
+# `<w:..>`, `<back:..>`, `<font ..>`, `<$sprite>`, `<&icon>`, `<:emoji:>`) are scoped by a
+# generic tag (CREOLE_GENERIC_TAG), because the full alternation inside one line regex is
+# too large for PCRE2 (tests/emit/test_textmate.py). Scopes only; every line is accepted.
+schema_version: 1
+id: meta-diagrams-creole
+layer: diagram
+diagram: CREOLE
+factory: PSystemCreoleFactory
+include: [embedded-creole, creole]
+
+variables:
+  # Any `<tag...>` / `</tag>` the light alternation leaves out (CommandCreoleBuilder.java:
+  # 76-122 registers them; their bodies need the color table).
+  CREOLE_GENERIC_TAG: {regex: '</?[A-Za-z$&:#][^<>]*>', scope: entity.name.tag.creole}
+  CREOLE_DIAGRAM_TEXT:
+    plus:
+      alt:
+        - {ref: CREOLE_BACKSLASH_ESCAPE}
+        - {ref: CREOLE_TILDE_ESCAPE}
+        - {ref: CREOLE_BOLD}
+        - {ref: CREOLE_HTML_BOLD}
+        - {ref: CREOLE_ITALIC}
+        - {ref: CREOLE_HTML_ITALIC}
+        - {ref: CREOLE_HTML_PLAIN}
+        - {ref: CREOLE_UNDERLINE}
+        - {ref: CREOLE_STRIKE}
+        - {ref: CREOLE_WAVE}
+        - {ref: CREOLE_SIZE}
+        - {ref: CREOLE_COLOR}
+        - {ref: CREOLE_SUP}
+        - {ref: CREOLE_SUB}
+        - {ref: CREOLE_IMG}
+        - {ref: CREOLE_QRCODE}
+        - {ref: CREOLE_MATH}
+        - {ref: CREOLE_LATEX}
+        - {ref: CREOLE_SPACE}
+        - {ref: CREOLE_FONT_FAMILY}
+        - {ref: CREOLE_MONOSPACE}
+        - {ref: CREOLE_URL}
+        - {ref: CREOLE_UNICODE}
+        - {ref: CREOLE_ENTITY}
+        - {ref: CREOLE_GENERIC_TAG}
+        - {regex: '[^<>*/_"~\\\-=&\[\]{}^.,#|:$@!%+]+(?![^<>*/_"~\\\-=&\[\]{}^.,#|:$@!%+])', scope: markup.other.creole}
+        - {regex: '.', scope: markup.other.creole}
+  CREOLE_BLANK: {regex: '[\x00-\x20]+'}
+
+contexts:
+  main:
+    - command: CreoleNoiseLine
+      provenance: {class: net.sourceforge.plantuml.core.UmlSource, file: src/main/java/net/sourceforge/plantuml/core/UmlSource.java, line: 95, also: ['src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:88-90']}
+      kind: single
+      trim: false
+      emit: false
+      parts: {regex: '(?:skinparam |skinparamlocked |!pragma ).*'}
+      needs: creole_content
+    - command: CreoleBlankLine
+      provenance: {class: net.sourceforge.plantuml.core.UmlSource, file: src/main/java/net/sourceforge/plantuml/core/UmlSource.java, line: 96, also: ['src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:84-85']}
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CREOLE_BLANK}
+      gives: creole_content
+    - command: CreoleLine
+      provenance: {class: net.sourceforge.plantuml.klimt.creole.legacy.PSystemCreoleFactory, file: src/main/java/net/sourceforge/plantuml/klimt/creole/legacy/PSystemCreoleFactory.java, line: 55, also: ['src/main/java/net/sourceforge/plantuml/klimt/creole/legacy/PSystemCreole.java:74-76', 'src/main/java/net/sourceforge/plantuml/klimt/creole/legacy/CreoleStripeSimpleParser.java:92-155']}
+      kind: single
+      parts: {ref: CREOLE_LINE}
+      gives: creole_content
+    - command: CreoleText
+      provenance: {class: net.sourceforge.plantuml.klimt.creole.legacy.PSystemCreoleFactory, file: src/main/java/net/sourceforge/plantuml/klimt/creole/legacy/PSystemCreoleFactory.java, line: 55, also: ['src/main/java/net/sourceforge/plantuml/klimt/creole/legacy/PSystemCreole.java:74-76', 'src/main/java/net/sourceforge/plantuml/klimt/creole/legacy/CreoleParser.java:142-185']}
+      kind: single
+      parts: {ref: CREOLE_DIAGRAM_TEXT}
+      gives: creole_content
+  empty:
+    - command: CreoleBlankLine
+      provenance: {class: net.sourceforge.plantuml.core.UmlSource, file: src/main/java/net/sourceforge/plantuml/core/UmlSource.java, line: 96, also: ['src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:84-85']}
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CREOLE_BLANK}
+      gives: creole_content
+    - command: CreoleEnd
+      provenance: {class: net.sourceforge.plantuml.command.PSystemBasicFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java, line: 88, also: ['src/main/java/net/sourceforge/plantuml/core/UmlSource.java:239-241']}
+      kind: single
+      emit: false
+      parts: {regex: '[@\\]end.*'}
+      needs: creole_content

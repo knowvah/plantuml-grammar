@@ -1,0 +1,8 @@
+' nwdiag-packet: CommandElement
+@startnwdiag
+network n {
+  a [address = "10.0.0.1, 10.0.0.2", shape = database, description = "DB <&person>"];
+  b-1.x [color = red]
+  c;
+}
+@endnwdiag

@@ -1,0 +1,6 @@
+' mindmap-wbs: CommandWBSItemNew_44
+@startwbs
+* root <<s>>
+** a <<t>>
+**_ b <<u>>
+@endwbs

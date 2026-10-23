@@ -1,0 +1,6 @@
+' sequence: CommandDelay
+@startuml
+Alice -> Bob : x
+..
+Alice -> Bob : y
+@enduml

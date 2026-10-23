@@ -1,0 +1,4 @@
+' misc-charts: ChartLineFails
+@startchart
+line [1,2)]
+@endchart

@@ -1,0 +1,53 @@
+# Classifications for the `state` family (T20). Upstream pin 97a5992; `cite` paths are
+# relative to src/main/java/net/sourceforge/plantuml/ unless they start with net/atmp/.
+# FR is 0 on every corpus. The four false accepts (FA) are the same blocks in
+# plantuml-ts and pdiff: link endpoints that fail name resolution in ParserPass TWO,
+# after every state of the block exists. They depend on which group owns a state,
+# which the model cannot know (tests/fixtures/state/gap).
+cases:
+  # Inside ChildMode2, `ChildMode1.A` resolves under the current group
+  # (ParentMode.ChildMode2.ChildMode1.A, net/atmp/CucaDiagram.java:277-286), whose parent
+  # was never created, so "The state ChildMode1.A cannot be used here".
+  plantuml-ts:class/fugedo-34-fice721.puml#0:
+    class: semantic
+    note: "link endpoint ChildMode1.A resolves under the current group, whose parent state does not exist (cross-line, gap/link-unknown-parent)"
+    cite: src/main/java/net/sourceforge/plantuml/statediagram/command/CommandLinkStateCommon.java:277-278
+  pdiff:dbhum/f_ug/fugedo-34-fice721.puml#0:
+    class: semantic
+    note: "link endpoint ChildMode1.A resolves under the current group, whose parent state does not exist (cross-line, gap/link-unknown-parent)"
+    cite: src/main/java/net/sourceforge/plantuml/statediagram/command/CommandLinkStateCommon.java:277-278
+  # pUndetected was created inside the concurrent region of Drive; the link at the root
+  # cannot use it (StateDiagram.checkConcurrentStateOk).
+  plantuml-ts:class/xacona-99-peze211.puml#0:
+    class: semantic
+    note: "link endpoint pUndetected belongs to a concurrent region and is used outside it (cross-line, gap/state-reused-in-other-region)"
+    cite: src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java:75-90
+  pdiff:dbhum/x_ac/xacona-99-peze211.puml#0:
+    class: semantic
+    note: "link endpoint pUndetected belongs to a concurrent region and is used outside it (cross-line, gap/state-reused-in-other-region)"
+    cite: src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java:75-90
+  # XA13 is declared (pass ONE) in the second region of XA6; the root-level link on line 2
+  # runs in pass TWO and cannot use it.
+  plantuml-ts:class/zecivu-62-pagu681.puml#0:
+    class: semantic
+    note: "link endpoint XA13 is declared later inside a concurrent region; links run in pass TWO and cannot use it at the root (cross-line)"
+    cite: src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java:75-90
+  pdiff:dbhum/z_ec/zecivu-62-pagu681.puml#0:
+    class: semantic
+    note: "link endpoint XA13 is declared later inside a concurrent region; links run in pass TWO and cannot use it at the root (cross-line)"
+    cite: src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java:75-90
+  # c belongs to the region of b; `c -> d` runs in S's region.
+  plantuml-ts:sequence/cagego-53-vemo516.puml#0:
+    class: semantic
+    note: "link endpoint c belongs to another concurrent region (cross-line, gap/state-reused-in-other-region)"
+    cite: src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java:75-90
+  pdiff:dbhum/c_ag/cagego-53-vemo516.puml#0:
+    class: semantic
+    note: "link endpoint c belongs to another concurrent region (cross-line, gap/state-reused-in-other-region)"
+    cite: src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java:75-90
+exclusions:
+  CommandEndState: >-
+    modeled by the head entries StateEndAtRoot (main, reject), StateEndConcurrentRoot
+    (main_concurrent, reject) and StateEnd (state_body, pop) in model/diagrams/state.yaml,
+    which cite StateDiagram.endGroup and CommandEndState.java:61-64/:79-84; the generated
+    entry is removed because one entry cannot act differently per context

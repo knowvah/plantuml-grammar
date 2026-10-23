@@ -1,0 +1,100 @@
+# Gantt date complements that execute without error (T24; the T25 sentence grammar reuses
+# them). Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Shape. A date complement (gantt/lang/ComplementDate.java:74-102) is one of DayPattern's
+# three absolute shapes (gantt/lang/DayPattern.java:71-75, gantt/lang/TimeResolution.java:
+# 48-85): A `DD <text> MONTH <sep> YYYY`, B `YYYY <sep> MM <sep> DD`, C `MONTH <sep> DD
+# <sep> YYYY`; or a relative count, `N day(s) after start` or `D+N`. The generated
+# `COMPLEMENT_DATE_ANY` (gantt-lang) is that shape: digit runs of 1-2 (day, month) or 1-4
+# (year) characters, separators of non-digits, month names by their first three letters.
+#
+# Execution. ComplementDate.getMe (:104-127) parses every number with Integer.parseInt and
+# DayPattern builds LocalDate.of(year, month, day) (DayPattern.java:89-108); either throws
+# for a shape-valid date, and ProtectedCommand turns the exception into an execution error
+# (command/ProtectedCommand.java:65-76). So a date fails when
+# * a run contains `_`: UBrex's digit class is [0-9_] (com/plantuml/ubrex/CharClassRaw.java:
+#   65-69), so `_` fits the shape and then Integer.parseInt fails;
+# * the month is not 1..12, the day is 0 or beyond the month's length, or it is Feb 29 of a
+#   non-leap year (java.time ISO rules: divisible by 4 except centuries not divisible by
+#   400; year 0 is leap);
+# * a relative count exceeds Integer.MAX_VALUE.
+# GD_DATE_ANY_OK accepts exactly the shape-valid dates that execute: every digit run is
+# [0-9] and keeps the generated `(?![0-9_])` run boundary, and each month class is paired
+# with its day range (Feb 29 with a leap year).
+schema_version: 1
+id: gantt-dates
+layer: shared
+include: [gantt-lang, common]
+
+variables:
+  # Separator between date fields (UBrex `〇+〴D`).
+  GD_SEP:
+    plus: {regex: "[^0-9_]"}
+  GD_YEAR: {regex: "[0-9]{1,4}(?![0-9_])", scope: constant.numeric.integer.year}
+  # Leap years among 0..9999 written with 1-4 digits (leading zeros allowed): a last pair
+  # divisible by 4 other than 00, or 00 after a hundreds part divisible by 4.
+  GD_YEAR_LEAP:
+    regex: "(?:[048]|[0-9]{0,2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26]|[048])?00)(?![0-9_])"
+    scope: constant.numeric.integer.year
+  GD_MONTH_31: {regex: "(?:0?[13578]|1[02])(?![0-9_])", scope: constant.numeric.integer.month}
+  GD_MONTH_30: {regex: "(?:0?[469]|11)(?![0-9_])", scope: constant.numeric.integer.month}
+  GD_MONTH_FEB: {regex: "0?2(?![0-9_])", scope: constant.numeric.integer.month}
+  GD_DAY_31: {regex: "(?:0?[1-9]|[12][0-9]|3[01])(?![0-9_])", scope: constant.numeric.integer.day}
+  GD_DAY_30: {regex: "(?:0?[1-9]|[12][0-9]|30)(?![0-9_])", scope: constant.numeric.integer.day}
+  GD_DAY_28: {regex: "(?:0?[1-9]|1[0-9]|2[0-8])(?![0-9_])", scope: constant.numeric.integer.day}
+  GD_DAY_29: {regex: "29(?![0-9_])", scope: constant.numeric.integer.day}
+  # Month names (gantt/time/MonthUtils.java:60-78: the first three letters, then letters).
+  GD_NAME_31: {regex: "(?:jan|mar|may|jul|aug|oct|dec)\\p{L}*", ci: true, scope: constant.language.month}
+  GD_NAME_30: {regex: "(?:apr|jun|sep|nov)\\p{L}*", ci: true, scope: constant.language.month}
+  GD_NAME_FEB: {regex: "feb\\p{L}*", ci: true, scope: constant.language.month}
+  # Shape A's `UBrexUpto(〴D, month)`: one non-digit, then non-digits up to the first month
+  # name (TimeResolution.java:54); the generated form, ending before the month.
+  GD_UPTO_MONTH:
+    regex: "[^0-9_](?:(?!(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\\p{L}*)[^0-9_])*(?=(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\\p{L}*)"
+    ci: true
+
+  # A: DD <text> MONTH <sep> YYYY (TimeResolution.java:48-58, DayPattern.java:89-94).
+  GD_DATE_A_OK:
+    alt:
+      - seq: [{ref: GD_DAY_31}, {ref: GD_UPTO_MONTH}, {ref: GD_NAME_31}, {ref: GD_SEP}, {ref: GD_YEAR}]
+      - seq: [{ref: GD_DAY_30}, {ref: GD_UPTO_MONTH}, {ref: GD_NAME_30}, {ref: GD_SEP}, {ref: GD_YEAR}]
+      - seq: [{ref: GD_DAY_28}, {ref: GD_UPTO_MONTH}, {ref: GD_NAME_FEB}, {ref: GD_SEP}, {ref: GD_YEAR}]
+      - seq: [{ref: GD_DAY_29}, {ref: GD_UPTO_MONTH}, {ref: GD_NAME_FEB}, {ref: GD_SEP}, {ref: GD_YEAR_LEAP}]
+  # B: YYYY <sep> MM <sep> DD (TimeResolution.java:60-71, DayPattern.java:96-101).
+  GD_DATE_B_OK:
+    alt:
+      - seq: [{ref: GD_YEAR}, {ref: GD_SEP}, {ref: GD_MONTH_31}, {ref: GD_SEP}, {ref: GD_DAY_31}]
+      - seq: [{ref: GD_YEAR}, {ref: GD_SEP}, {ref: GD_MONTH_30}, {ref: GD_SEP}, {ref: GD_DAY_30}]
+      - seq: [{ref: GD_YEAR}, {ref: GD_SEP}, {ref: GD_MONTH_FEB}, {ref: GD_SEP}, {ref: GD_DAY_28}]
+      - seq: [{ref: GD_YEAR_LEAP}, {ref: GD_SEP}, {ref: GD_MONTH_FEB}, {ref: GD_SEP}, {ref: GD_DAY_29}]
+  # C: MONTH <sep> DD <sep> YYYY (TimeResolution.java:73-85, DayPattern.java:103-108).
+  GD_DATE_C_OK:
+    alt:
+      - seq: [{ref: GD_NAME_31}, {ref: GD_SEP}, {ref: GD_DAY_31}, {ref: GD_SEP}, {ref: GD_YEAR}]
+      - seq: [{ref: GD_NAME_30}, {ref: GD_SEP}, {ref: GD_DAY_30}, {ref: GD_SEP}, {ref: GD_YEAR}]
+      - seq: [{ref: GD_NAME_FEB}, {ref: GD_SEP}, {ref: GD_DAY_28}, {ref: GD_SEP}, {ref: GD_YEAR}]
+      - seq: [{ref: GD_NAME_FEB}, {ref: GD_SEP}, {ref: GD_DAY_29}, {ref: GD_SEP}, {ref: GD_YEAR_LEAP}]
+  GD_DATE_ABSOLUTE_OK:
+    alt: [{ref: GD_DATE_A_OK}, {ref: GD_DATE_B_OK}, {ref: GD_DATE_C_OK}]
+  # A count Integer.parseInt accepts, ending a digit run.
+  GD_COUNT_OK:
+    seq:
+      - {ref: JAVA_INT}
+      - {regex: "(?![0-9_])"}
+  # ComplementDate.any() (:62-64, :83): absolute, `N day(s) after start`, `D+N`.
+  GD_DATE_ANY_OK:
+    alt:
+      - {ref: GD_DATE_ABSOLUTE_OK}
+      - seq:
+          - {ref: GD_COUNT_OK}
+          - {ref: SPACES}
+          - {literal: day, ci: true}
+          - opt: {literal: s, ci: true}
+          - {ref: SPACES}
+          - {literal: after, ci: true}
+          - {ref: SPACES}
+          - {literal: start, ci: true}
+      - seq:
+          - {regex: "[d]", ci: true}
+          - {literal: +, ci: true}
+          - {ref: GD_COUNT_OK}

@@ -1,0 +1,7 @@
+' salt: CommandAnything
+@startsalt
+sprite $s {
+FFF
+{
+}
+@endsalt

@@ -1,0 +1,6 @@
+' salt: CommandAnything
+@startsalt
+page 0x1
+{
+}
+@endsalt

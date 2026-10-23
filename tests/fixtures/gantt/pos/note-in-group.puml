@@ -1,0 +1,9 @@
+' gantt: CommandNoteBottom, CommandGroupStart
+@startgantt
+group [G]
+note bottom
+end
+end note
+end group
+[A] -> [B]
+@endgantt

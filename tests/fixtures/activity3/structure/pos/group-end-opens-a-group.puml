@@ -1,0 +1,14 @@
+' activity3: CommandPartition3, CommandCloseGroup3, CommandCloseGroupLegacy3
+@startuml
+group G
+:a;
+group end
+:b;
+}
+group end;
+}
+}
+group H
+:c;
+groupend
+@enduml

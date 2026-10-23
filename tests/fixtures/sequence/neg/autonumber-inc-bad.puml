@@ -1,0 +1,6 @@
+' sequence: CommandAutonumberIncrement
+@startuml
+Alice -> Bob : x
+autonumber 1.1
+autonumber inc AB
+@enduml

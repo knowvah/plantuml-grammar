@@ -1,0 +1,7 @@
+' timing: CommandAtTime
+' gap: no clock table: getClockValue returns null (TimingDiagram.java:372-375)
+@startuml
+clock "c" as C with period 10
+robust "R" as R
+@D*2
+@enduml

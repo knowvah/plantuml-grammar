@@ -1,0 +1,4 @@
+' meta: CommandEBnfSingleLine
+@startebnf
+a = b ; . ignored ;
+@endebnf

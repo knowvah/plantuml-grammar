@@ -1,0 +1,5 @@
+@startuml
+!function $f($a)
+!return $a + 1
+a -> b
+@enduml

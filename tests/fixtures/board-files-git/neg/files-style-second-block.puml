@@ -1,0 +1,10 @@
+' board-files-git: FilesStyleBlock, FilesEntry, FilesStyleOpen, FilesStyleLine
+@startfiles
+<style>
+root { FontColor red }
+</style>
+/a
+<style>
+*
+</style>
+@endfiles

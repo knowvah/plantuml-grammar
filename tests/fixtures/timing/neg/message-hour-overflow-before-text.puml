@@ -1,0 +1,5 @@
+' timing: CommandTimeMessage
+@startuml
+robust "R" as R
+R@0 -> R@5:0:99999999999
+@enduml

@@ -1,0 +1,8 @@
+' board-files-git: FilesStyleUnterminated, FilesUnterminatedOpenEnd
+' gap: in an unterminated block an unclosed comment is judged at the end of its chunk, not of the body
+' jar: reject
+@startfiles
+<style>
+/* x
+*/ *
+@endfiles

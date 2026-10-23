@@ -1,0 +1,5 @@
+' gantt: NaturalGanttDayOfWeekUnmatched
+@startgantt
+[A] lasts 5 days
+saturday are closed and foo
+@endgantt

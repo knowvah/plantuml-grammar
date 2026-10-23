@@ -1,0 +1,9 @@
+' common: CommandTitle, CommandSkinParamMultilines
+' factory: GanttDiagramFactory
+@startgantt
+title Plan
+skinparam {
+  ArrowColor red
+}
+printscale weekly
+@endgantt

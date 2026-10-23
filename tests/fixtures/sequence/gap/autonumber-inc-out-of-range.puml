@@ -1,0 +1,7 @@
+' sequence: CommandAutonumberIncrement
+' gap: inc position beyond the current dotted number (AutoNumber state)
+@startuml
+Alice -> Bob : x
+autonumber 1.1
+autonumber inc C
+@enduml

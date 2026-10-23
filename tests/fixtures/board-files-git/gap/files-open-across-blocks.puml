@@ -1,0 +1,12 @@
+' board-files-git: FilesStyleBlockOpenOnward, FilesStyleContinued
+' gap: a quote open at `</style>` continues into the next style block; approximated as accepted from that block on
+' jar: reject
+@startfiles
+<style>
+"x
+</style>
+/a
+<style>
+" ,
+</style>
+@endfiles

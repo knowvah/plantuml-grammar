@@ -1,0 +1,7 @@
+' mindmap-wbs: CommandMindMapOrgmode
+' gap: Bad indentation: level 1 is not a multiple of the first child's level 2 (mindmap/MindMap.java:129-135)
+@startmindmap
+* a
+*** b
+** c
+@endmindmap

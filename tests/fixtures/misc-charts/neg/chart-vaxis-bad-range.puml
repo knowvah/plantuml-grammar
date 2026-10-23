@@ -1,0 +1,4 @@
+' misc-charts: ChartVAxisFails
+@startchart
+v-axis . --> 5
+@endchart

@@ -1,0 +1,7 @@
+' activity3: CommandIf2, CommandKill3, CommandEndif3
+' gap: kill on an empty then-branch (InstructionList.java:169-171 via InstructionIf.kill :201-214); per-branch emptiness is state
+@startuml
+if (a) then
+detach
+endif
+@enduml

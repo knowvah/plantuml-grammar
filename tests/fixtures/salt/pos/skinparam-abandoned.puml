@@ -1,0 +1,6 @@
+' salt: CommandAnything, SaltSkinParamBodyInconsistent, SaltSkinParamAbandonedLine
+@startsalt
+skinparam foo {
+[OK]
+}
+@endsalt

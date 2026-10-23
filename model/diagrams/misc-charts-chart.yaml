@@ -1,0 +1,336 @@
+# Charts (T30, `@startchart`, ChartDiagramFactory). Upstream pin 97a5992; paths are
+# relative to src/main/java/net/sourceforge/plantuml/.
+#
+# chart/ChartDiagramFactory.java:65-79: ten chart commands, then the common block. No final
+# check (ChartDiagram keeps the core/AbstractDiagram.java:161-171 defaults).
+#
+# Execute-time errors with a syntactic cause (the rule is narrowed in place, then a reject
+# of the upstream shape follows it): number formats, `spacing` > 0, tick lists, the
+# annotation Y position and unknown series colors (misc-charts-chart-values,
+# misc-charts-colors).
+#
+# Series format (chart/ChartDiagram.java:193-255). A coordinate series (line/scatter data
+# with `(`) fails while the h-axis has no explicit range (autoScale, :209-212), and every
+# series must use the format of the first one (:214-221, :236-243). States: `main` (no
+# range, no series), `chart_range` (an h-axis range was set, no series), `chart_index` and
+# `chart_coord` (the first series' format). Transitions are interpreter-only head entries
+# (`emit: false`, rejects); chart commands come first upstream, so heads keep the order.
+# Not modelled (gap fixtures): x outside the h-axis range and min == max (numeric, :209,
+# :223-229), categorical h-axis labels set after the range (:203-206).
+schema_version: 1
+id: misc-charts-chart
+layer: diagram
+diagram: CHART
+factory: ChartDiagramFactory
+include: [gen-chart-diagram, common, misc-charts-chart-values]
+
+overrides:
+  CommandChartHAxis: {parts: {ref: CH_HAXIS_OK}}
+  CommandChartVAxis: {parts: {ref: CH_VAXIS_OK}}
+  CommandChartBar: {parts: {ref: CH_BAR_OK}}
+  CommandChartLine: {parts: {ref: CH_LINE_OK}}
+  CommandChartArea: {parts: {ref: CH_AREA_OK}}
+  CommandChartScatter: {parts: {ref: CH_SCATTER_OK}}
+  CommandChartAnnotation: {parts: {ref: CH_ANNOTATION_OK}}
+
+insert_after:
+  CommandChartHAxis:
+    - command: ChartHAxisFails
+      provenance:
+        class: net.sourceforge.plantuml.chart.command.CommandChartHAxis
+        file: src/main/java/net/sourceforge/plantuml/chart/command/CommandChartHAxis.java
+        line: 91
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartHAxis.java:102-133
+          - src/main/java/net/sourceforge/plantuml/core/AbstractDiagram.java:173-180
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_HAXIS_WIDE}
+  CommandChartVAxis:
+    - command: ChartVAxisFails
+      provenance:
+        class: net.sourceforge.plantuml.chart.command.CommandChartVAxis
+        file: src/main/java/net/sourceforge/plantuml/chart/command/CommandChartVAxis.java
+        line: 97
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartVAxis.java:110-147
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartVAxis.java:219-252
+          - src/main/java/net/sourceforge/plantuml/core/AbstractDiagram.java:173-180
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_VAXIS_WIDE}
+  CommandChartBar:
+    - command: ChartBarFails
+      provenance:
+        class: net.sourceforge.plantuml.chart.command.CommandChartBar
+        file: src/main/java/net/sourceforge/plantuml/chart/command/CommandChartBar.java
+        line: 91
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartBar.java:98-112
+          - src/main/java/net/sourceforge/plantuml/core/AbstractDiagram.java:173-180
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_BAR_WIDE}
+  CommandChartLine:
+    - command: ChartLineFails
+      provenance:
+        class: net.sourceforge.plantuml.chart.command.CommandChartLine
+        file: src/main/java/net/sourceforge/plantuml/chart/command/CommandChartLine.java
+        line: 94
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartLine.java:105-129
+          - src/main/java/net/sourceforge/plantuml/core/AbstractDiagram.java:173-180
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_LINE_WIDE}
+  CommandChartArea:
+    - command: ChartAreaFails
+      provenance:
+        class: net.sourceforge.plantuml.chart.command.CommandChartArea
+        file: src/main/java/net/sourceforge/plantuml/chart/command/CommandChartArea.java
+        line: 94
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartArea.java:101-115
+          - src/main/java/net/sourceforge/plantuml/core/AbstractDiagram.java:173-180
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_AREA_WIDE}
+  CommandChartScatter:
+    - command: ChartScatterFails
+      provenance:
+        class: net.sourceforge.plantuml.chart.command.CommandChartScatter
+        file: src/main/java/net/sourceforge/plantuml/chart/command/CommandChartScatter.java
+        line: 98
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartScatter.java:110-134
+          - src/main/java/net/sourceforge/plantuml/core/AbstractDiagram.java:173-180
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_SCATTER_WIDE}
+  CommandChartAnnotation:
+    - command: ChartAnnotationFails
+      provenance:
+        class: net.sourceforge.plantuml.chart.command.CommandChartAnnotation
+        file: src/main/java/net/sourceforge/plantuml/chart/command/CommandChartAnnotation.java
+        line: 93
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartAnnotation.java:110-115
+          - src/main/java/net/sourceforge/plantuml/core/AbstractDiagram.java:173-180
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_ANNOTATION_WIDE}
+
+contexts:
+  # Index-based series that decide the format (ChartDiagram.java:236-246).
+  chart_to_index:
+    - command: ChartFirstIndexBar
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartBar.java:120
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CH_BAR_OK}
+      set: chart_index
+    - command: ChartFirstIndexArea
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartArea.java:129
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CH_AREA_OK}
+      set: chart_index
+    - command: ChartFirstIndexLine
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartLine.java:143
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CH_LINE_INDEX_OK}
+      set: chart_index
+    - command: ChartFirstIndexScatter
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartScatter.java:164
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CH_SCATTER_INDEX_OK}
+      set: chart_index
+  main:
+    - command: ChartHAxisRange
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 151
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/command/CommandChartHAxis.java:125-129
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CH_HAXIS_RANGE_OK}
+      set: chart_range
+    - command: ChartCoordinateLineWithoutRange
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 209
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:209-212
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_LINE_COORD_WIDE}
+    - command: ChartCoordinateScatterWithoutRange
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 209
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:209-212
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_SCATTER_COORD_WIDE}
+    - include: chart_to_index
+    - include: gen-chart-diagram#main
+  chart_range:
+    - command: ChartFirstCoordinateLine
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 195
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:224-234
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CH_LINE_COORD_OK}
+      set: chart_coord
+    - command: ChartFirstCoordinateScatter
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 195
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:224-234
+      kind: single
+      trim: false
+      emit: false
+      parts: {ref: CH_SCATTER_COORD_OK}
+      set: chart_coord
+    - include: chart_to_index
+    - include: gen-chart-diagram#main
+  chart_index:
+    - command: ChartCoordinateLineAfterIndex
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 214
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:214-221
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_LINE_COORD_WIDE}
+    - command: ChartCoordinateScatterAfterIndex
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 214
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:214-221
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_SCATTER_COORD_WIDE}
+    - include: gen-chart-diagram#main
+  chart_coord:
+    - command: ChartIndexBarAfterCoordinate
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:236-243
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_BAR_WIDE}
+    - command: ChartIndexAreaAfterCoordinate
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:236-243
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_AREA_WIDE}
+    - command: ChartIndexLineAfterCoordinate
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:236-243
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_LINE_INDEX_WIDE}
+    - command: ChartIndexScatterAfterCoordinate
+      provenance:
+        class: net.sourceforge.plantuml.chart.ChartDiagram
+        file: src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/chart/ChartDiagram.java:236-243
+      kind: single
+      trim: false
+      reject: true
+      parts: {ref: CH_SCATTER_INDEX_WIDE}
+    - include: gen-chart-diagram#main

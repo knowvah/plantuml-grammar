@@ -1,0 +1,6 @@
+' activity3: CommandWhile3, CommandEndif3
+@startuml
+while (a)
+:x;
+endif
+@enduml

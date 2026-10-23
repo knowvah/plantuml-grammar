@@ -1,0 +1,19 @@
+schema_version: 1
+id: b
+layer: shared
+include: [c]
+variables:
+  PAINTED:
+    seq:
+      - literal: color
+        ci: true
+      - ref: COLOR
+contexts:
+  common:
+    - command: CommandPaint
+      provenance: {class: x.CommandPaint, file: a/B.java, line: 10, engine: IRegex}
+      kind: single
+      parts:
+        ref: PAINTED
+  main:
+    - include: common

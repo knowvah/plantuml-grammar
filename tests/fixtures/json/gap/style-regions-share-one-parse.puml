@@ -1,0 +1,12 @@
+' json: JsonStyle, JsonStyleError
+' jar: accepted
+' gap: all regions feed one StyleParser run (StyleExtractor.java:133-137); a parsing exception in region 1 hides the error in region 2
+@startjson
+<style>
+{
+</style>
+<style>
+*
+</style>
+{"a": 1}
+@endjson

@@ -1,0 +1,72 @@
+' style: { alone
+@startuml
+<style>
+{
+</style>
+class Foo
+@enduml
+
+' style: { after a closed rule
+@startuml
+<style>
+root {
+}
+{
+</style>
+class Foo
+@enduml
+
+' style: depth selector alone
+@startuml
+<style>
+:depth(1)
+</style>
+class Foo
+@enduml
+
+' style: depth selector with { on the next line
+@startuml
+<style>
+:depth(1)
+{
+}
+</style>
+class Foo
+@enduml
+
+' style: selector list without {
+@startuml
+<style>
+a, b
+c
+</style>
+class Foo
+@enduml
+
+' style: selector list broken after the comma
+@startuml
+<style>
+a,
+b {
+}
+</style>
+class Foo
+@enduml
+
+' style: star between name and comma
+@startuml
+<style>
+a *, b {
+}
+</style>
+class Foo
+@enduml
+
+' style: tab ends a stereotype string
+@startuml
+<style>
+.foo	bar {
+}
+</style>
+class Foo
+@enduml

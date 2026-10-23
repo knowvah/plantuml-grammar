@@ -1,0 +1,4 @@
+@startuml
+!theme
+a -> b
+@enduml

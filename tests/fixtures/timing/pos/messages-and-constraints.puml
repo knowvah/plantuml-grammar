@@ -1,0 +1,15 @@
+' timing: CommandTimeMessage, CommandConstraint, CommandAtTime
+@startuml
+robust "Web Browser" as WB
+concise "Web User" as WU
+@0 as :start
+WU is Idle
+WB is Idle
+@100
+WU -> WB : URL
+WU@100 <-> @+150 : {150 ms}
+@:start+300
+WB is Waiting
+WB@:start -[#red]> WU@:start+300 : back
+@200 <-> @:start+250
+@enduml

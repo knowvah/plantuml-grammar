@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandScaleDirection
+@startpacketdiag
+scale_direction = up
+0-7: A
+@endpacketdiag

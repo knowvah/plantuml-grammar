@@ -1,0 +1,11 @@
+' class: GroupAllowMixing, ElementNeedsAllowMixing
+' jar: accepted
+' gap: allowmixing is global upstream (ClassDiagram flag) but the model's group contexts cannot hand it back to the root when the group closes
+@startuml
+class A {
+}
+package P {
+  allowmixing
+}
+rectangle R
+@enduml

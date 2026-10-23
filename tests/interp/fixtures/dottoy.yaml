@@ -1,0 +1,10 @@
+schema_version: 1
+id: dottoy
+layer: diagram
+diagram: DOT
+contexts:
+  main:
+    - command: CommandDigraph
+      provenance: {class: toy.CommandDigraph}
+      kind: opaque
+      parts: {regex: "digraph\\s*\\w*\\s*\\{"}

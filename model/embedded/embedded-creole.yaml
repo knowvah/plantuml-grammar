@@ -1,0 +1,16 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# PSystemBasicFactory.createSystem (command/PSystemBasicFactory.java:74-102): every body
+# line goes to executeLine, which never refuses here, so any non-empty body is accepted
+# (D4: opaque, not parsed). An empty body is rejected (:89-90).
+
+schema_version: 1
+id: embedded-creole
+layer: diagram
+diagram: CREOLE
+factory: PSystemCreoleFactory
+contexts:
+  main:
+    - command: PSystemCreoleFactory
+      provenance: {class: net.sourceforge.plantuml.klimt.creole.legacy.PSystemCreoleFactory, file: src/main/java/net/sourceforge/plantuml/klimt/creole/legacy/PSystemCreoleFactory.java, line: 55}
+      kind: opaque
+      parts: {regex: ".*"}

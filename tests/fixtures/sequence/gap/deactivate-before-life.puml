@@ -1,0 +1,6 @@
+' sequence: CommandActivate
+' gap: deactivate with no initial life (SequenceDiagram.java:381-384): state
+@startuml
+participant Alice
+deactivate Alice
+@enduml

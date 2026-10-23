@@ -1,0 +1,5 @@
+' sequence: CommandIgnoreNewpage
+@startuml
+Alice -> Bob : x
+ignore newpages
+@enduml

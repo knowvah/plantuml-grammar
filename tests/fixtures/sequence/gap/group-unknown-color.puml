@@ -1,0 +1,8 @@
+' sequence: CommandGrouping
+' gap: unknown color names are NoSuchColorException at execution
+@startuml
+Alice -> Bob : x
+alt#zzzz x
+Alice -> Bob
+end
+@enduml

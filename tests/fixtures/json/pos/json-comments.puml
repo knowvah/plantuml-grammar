@@ -1,0 +1,7 @@
+' json: JsonCommentLine, JsonMemberLine, JsonText
+@startjson
+{
+// a comment before a name
+"a": 1 // after a value
+}
+@endjson

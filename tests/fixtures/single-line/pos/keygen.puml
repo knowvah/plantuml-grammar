@@ -1,0 +1,4 @@
+' single-line: single-line-version
+@startuml
+keygen
+@enduml

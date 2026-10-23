@@ -1,0 +1,7 @@
+' timing: CommandConstraint
+' gap: no time-label table: `Unknown time label` (CommandConstraint.java:130-132)
+@startuml
+robust "R" as R
+@0 as :on
+R@:on <-> @:off
+@enduml

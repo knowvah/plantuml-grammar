@@ -1,0 +1,13 @@
+schema_version: 1
+id: multiline_plain
+layer: diagram
+diagram: JSON
+# a plain-line factory: `{{ ... }}` is not one unit, so an end line inside it closes
+factory: JsonDiagramFactory
+contexts:
+  main:
+    - command: PlainNote
+      provenance: {class: toy.PlainNote}
+      kind: multiline
+      parts: {literal: "note", ci: false}
+      end: {regex: "end ?note", ci: false}

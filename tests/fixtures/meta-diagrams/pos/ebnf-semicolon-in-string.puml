@@ -1,0 +1,4 @@
+' meta: CommandEBnfSingleLine
+@startebnf
+a = "x;y" , 'p;q' , ? r;s ? ;
+@endebnf

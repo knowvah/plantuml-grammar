@@ -1,0 +1,151 @@
+# `@startebnf` (T32, family meta-diagrams). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/ unless stated.
+#
+# Commands. PSystemEbnfFactory.initCommandsList (ebnf/PSystemEbnfFactory.java:55-63) is
+# the common block, then UBrexCommandComment `(* .. *)`, CommandCommentMultilines2
+# `(** .. **)`, CommandCommentMultilines `(* .. *)`, CommandEBnfSingleLine `id = ... ;`
+# and UBrexCommandEbnfMultilines (`id =` up to the first line ending in `;`).
+# CommandNoteMultilines exists but is not registered.
+#
+# The rule bodies are parsed while commands are matched. Both rule commands hand the text
+# to PSystemEbnf.addBlocLines (ebnf/PSystemEbnf.java:74-83): CommandEBnfSingleLine passes
+# `id + "=" + line` (CommandEBnfSingleLine.java:104-117), the multiline command passes
+# all its lines (UBrexCommandEbnfMultilines.java:82-86), trimmed and concatenated WITHOUT
+# a separator, empty lines skipped (utils/CharInspectorImpl.java:50-79). The tokenizer
+# (ebnf/EbnfExpression.java:69-129) reads up to the first `;` outside strings and
+# comments and clears every token at a char it does not know (:122-124), and an empty
+# expression is "Unparsable expression" (PSystemEbnf.java:78-79), an EXECUTION_ERROR
+# (command/PSystemCommandFactory.java:180-187). It knows: Java whitespace
+# (Character.isWhitespace), `-`, letters/digits/`_`/`-` runs (Character.isLetterOrDigit
+# per UTF-16 char, :266-268), `*`, `(* .. *)` comments (to `*)` or the end, :248-264),
+# `, | = ( ) [ ] { } }-`, and `".."`, `'..'`, `?..?` strings. A string that is not closed
+# reads past the end, and CharInspectorImpl.jump throws (:68-69), caught by
+# command/ProtectedCommand.java:54-77. Everything after the first `;` is ignored, and a
+# NUL char ends the text like `;`. Oracle-verified (tests/fixtures/meta-diagrams/
+# {pos,neg}/ebnf-*): `. + / : # \ $ @ < > ! ~ ^ % &`, superscript digits (No) and
+# astral letters are rejected, `é`, tabs and an unclosed `(*` are fine.
+#
+# Model.
+# * EbnfRuleUnparsable (before CommandEBnfSingleLine, reject, interpreter-only): the
+#   line matches the generated regex and the text upstream tokenizes - with the split
+#   Java's greedy match picks, rebuilt in a lookahead and replayed with backreferences -
+#   is unparsable. CommandEBnfSingleLine's narrowed parts (EBNF_LINE) then only add
+#   structure: for the interpreter every line they could refuse is rejected before.
+# * EbnfRuleMultilines (before UBrexCommandEbnfMultilines, `join`, interpreter-only): the
+#   lines up to the FIRST line ending in `;` (UBrexCommandMultilines2.java:77-107, END at
+#   UBrexCommandEbnfMultilines.java:55; a one-line block is only OK_PARTIAL, :100-101),
+#   joined with U+E100, which the tokenizer treats as an empty line boundary
+#   (EBNF_WS_JOINED). Smallest k wins, so k is the first END line. EbnfRuleMultilines-
+#   Unparsable then rejects the start line: either the body is unparsable (execution
+#   error) or no END line follows (the command never completes and no later command
+#   matches, PSystemCommandFactory.java:169-175, :236-240).
+# * UBrexCommandEbnfMultilines stays for the emitters (they drop joins and rejects) and
+#   pushes `ebnf_rule_body` so TextMate highlights the body; the interpreter never reaches
+#   it (the reject before it takes every start line).
+# Known approximations: Java `.` and `\s` in the generated rules (translator-wide); the
+# interpreter-only leaves use Python's Unicode tables for Character.isLetterOrDigit and
+# isWhitespace.
+schema_version: 1
+id: meta-diagrams-ebnf
+layer: diagram
+diagram: EBNF
+factory: PSystemEbnfFactory
+include: [gen-psystem-ebnf, common]
+
+variables:
+  # ---- interpreter-only leaves (composed; tests/families/test_meta_diagrams_ebnf.py
+  # checks them against a port of EbnfExpression) ----
+  EBNF_SINGLE_UNPARSABLE: {regex: "(?=(?P<ebca>(?:[\\s\\xa0]*\\(\\*(?:.*[^\\s\\xa0].*)\\*\\)[\\s\\xa0]*)?)[\\p{L}\\p{N}_][-\\p{L}\\p{N}_]*(?P<ebmid>(?:[\\s\\xa0]*\\(\\*(?:.*[^\\s\\xa0].*)\\*\\)[\\s\\xa0]*)?[\\s\\xa0]*=[\\s\\xa0]*).*;\\Z)(?P=ebca)(?:[-\\p{L}\\p{N}_]*?(?:[\\p{Nl}\\p{No}]|[\U00010000-\U0010ffff])|[\\p{L}\\p{N}_][-\\p{L}\\p{N}_]*(?P=ebmid)(?!(?:[\\t-\\r\\x1c-\\x1f \u1680\u2000-\u2006\u2008-\u200a\u2028\u2029\u205f\u3000]|(?:(?![\U00010000-\U0010ffff])[\\p{L}\\p{Nd}_-])+|\\*|\\(\\*(?:(?!\\*\\))[^\\x00])*\\*\\)|\\((?!\\*)|[,|=)\\[\\]{}]|\"[^\"]*\"|'[^']*'|\\?[^?]*\\?)*+(?:[;\\x00][\\s\\S]*|\\Z|\\(\\*(?:(?!\\*\\))[^\\x00])*(?:\\x00[\\s\\S]*)?\\Z)))[\\s\\S]*"}
+  EBNF_MULTILINE_PARSABLE: {regex: "(?=(?:[\\t-\\r\\x1c-\\x1f \u1680\u2000-\u2006\u2008-\u200a\u2028\u2029\u205f\u3000\ue100]|(?:(?![\U00010000-\U0010ffff])[\\p{L}\\p{Nd}_-])+|\\*|\\(\\*(?:(?!\\*\\))[^\\x00])*\\*\\)|\\((?!\\*)|[,|=)\\[\\]{}]|\"[^\"]*\"|'[^']*'|\\?[^?]*\\?)*+(?:[;\\x00][\\s\\S]*|\\Z|\\(\\*(?:(?!\\*\\))[^\\x00])*(?:\\x00[\\s\\S]*)?\\Z))(?:(?![\U00010000-\U0010ffff])[\\p{L}\\p{Nd}_])(?:(?![\U00010000-\U0010ffff])[-\\p{L}\\p{Nd}_])*[ ]*=[^\ue100]*(?:\ue100(?:[^\ue100]*[^;\ue100])?)*\ue100[^\ue100]*;"}
+  # ---- emitter view: one EbnfExpression token, with scopes ----
+  EBNF_TOKEN:
+    alt:
+      - {regex: "[\\t\\x0b\\f\\x1c-\\x1f \u1680\u2000-\u2006\u2008-\u200a\u2028\u2029\u205f\u3000]+(?![\\t\\x0b\\f\\x1c-\\x1f \u1680\u2000-\u2006\u2008-\u200a\u2028\u2029\u205f\u3000])"}
+      - {regex: '[\p{L}\p{Nd}_-]+(?![\p{L}\p{Nd}_-])', scope: variable.other.ebnf}
+      - {regex: '\(\*(?:(?!\*\)).)*\*\)', scope: comment.block.ebnf}
+      - {regex: '"[^"]*"', scope: string.quoted.double.ebnf}
+      - {regex: "'[^']*'", scope: string.quoted.single.ebnf}
+      - {regex: '\?[^?]*\?', scope: string.other.special-sequence.ebnf}
+      - {regex: '[,|=]', scope: keyword.operator.ebnf}
+      - {regex: '\*', scope: keyword.operator.repetition.ebnf}
+      - {regex: '\((?!\*)|\)|\[|\]|\{|\}', scope: punctuation.definition.group.ebnf}
+  # The rule text after `=`: tokens up to the first `;`, the rest ignored; or an `(*`
+  # comment left open up to the end of the line (EbnfExpression.java:248-264).
+  EBNF_LINE:
+    seq:
+      - star: {ref: EBNF_TOKEN}
+      - alt:
+          - seq:
+              - {literal: ';', ci: false, scope: punctuation.terminator.ebnf}
+              - opt: {regex: '.*;', scope: comment.line.ignored.ebnf}
+          - {regex: '\x00.*;'}
+          - {regex: '\(\*(?:(?!\*\)).)*;', scope: comment.block.ebnf}
+  EBNF_COMMENT_OPT:
+    opt:
+      seq:
+        - {regex: "[\\s\_]*", ci: true}
+        - {regex: '\(\*(?:.*[^\s\xa0].*)\*\)', ci: true, scope: comment.block.ebnf}
+        - {regex: "[\\s\_]*", ci: true}
+
+overrides:
+  CommandEBnfSingleLine:
+    parts:
+      seq:
+        - {ref: EBNF_COMMENT_OPT}
+        - {regex: '([\p{L}\p{Nd}_][-\p{L}\p{Nd}_]*)', ci: true, name: ID, scope: entity.name.function.ebnf}
+        - {ref: EBNF_COMMENT_OPT}
+        - {regex: "[\\s\_]*", ci: true}
+        - {regex: (=), ci: true, name: EQUALS, scope: keyword.operator.definition.ebnf}
+        - {regex: "[\\s\_]*", ci: true}
+        - {ref: EBNF_LINE}
+  UBrexCommandEbnfMultilines:
+    parts:
+      seq:
+        - {regex: '[_\p{L}\p{Nd}][\-_\p{L}\p{Nd}]*', ci: true, scope: entity.name.function.ebnf}
+        - {regex: '[ ]*', ci: true}
+        - {literal: '=', ci: true, scope: keyword.operator.definition.ebnf}
+        # A start line ending in  always goes to CommandEBnfSingleLine first (same ID,
+        # blanks and `=`), so the multiline never starts there; the narrowing says so
+        # for consumers without ordered choice.
+        - {regex: '(?:[\s\S]*[^;\s])?', ci: true}
+    push: ebnf_rule_body
+  UBrexCommandComment:
+    parts:
+      seq:
+        - star: {regex: '[ ]'}
+        - {regex: '\(\*[\s\S]*\*\)', ci: true, scope: comment.block.ebnf}
+        - star: {regex: '[ ]'}
+
+insert_before:
+  CommandEBnfSingleLine:
+    - command: EbnfRuleUnparsable
+      provenance: {class: net.sourceforge.plantuml.ebnf.PSystemEbnf, file: src/main/java/net/sourceforge/plantuml/ebnf/PSystemEbnf.java, line: 78, also: ['src/main/java/net/sourceforge/plantuml/ebnf/CommandEBnfSingleLine.java:104-117', 'src/main/java/net/sourceforge/plantuml/ebnf/EbnfExpression.java:69-129']}
+      kind: single
+      reject: true
+      parts: {ref: EBNF_SINGLE_UNPARSABLE}
+  UBrexCommandEbnfMultilines:
+    - command: EbnfRuleMultilines
+      provenance: {class: net.sourceforge.plantuml.ebnf.PSystemEbnf, file: src/main/java/net/sourceforge/plantuml/ebnf/PSystemEbnf.java, line: 74, also: ['src/main/java/net/sourceforge/plantuml/ebnf/UBrexCommandEbnfMultilines.java:55-86', 'src/main/java/net/sourceforge/plantuml/command/UBrexCommandMultilines2.java:77-107', 'src/main/java/net/sourceforge/plantuml/utils/CharInspectorImpl.java:50-79']}
+      kind: multiline
+      join: {max_lines: 100000}
+      emit: false
+      parts: {ref: EBNF_MULTILINE_PARSABLE}
+    - command: EbnfRuleMultilinesUnparsable
+      provenance: {class: net.sourceforge.plantuml.ebnf.PSystemEbnf, file: src/main/java/net/sourceforge/plantuml/ebnf/PSystemEbnf.java, line: 78, also: ['src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:236-240', 'src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:54-77']}
+      kind: single
+      reject: true
+      parts: {regex: '[_\p{L}\p{Nd}][\-_\p{L}\p{Nd}]*[ ]*=[\s\S]*', ci: true}
+
+contexts:
+  # Emitter view of a multiline rule body (TextMate nests it inside the multiline entry;
+  # the interpreter never enters it).
+  ebnf_rule_body:
+    - command: EbnfRuleBodyEnd
+      provenance: {class: net.sourceforge.plantuml.command.UBrexCommandMultilines2, file: src/main/java/net/sourceforge/plantuml/command/UBrexCommandMultilines2.java, line: 102}
+      kind: single
+      parts: {seq: [{star: {ref: EBNF_TOKEN}}, {regex: '.*;'}]}
+      pop: true
+    - command: EbnfRuleBodyLine
+      provenance: {class: net.sourceforge.plantuml.ebnf.EbnfExpression, file: src/main/java/net/sourceforge/plantuml/ebnf/EbnfExpression.java, line: 69}
+      kind: single
+      parts: {seq: [{star: {ref: EBNF_TOKEN}}, {regex: '.*'}]}

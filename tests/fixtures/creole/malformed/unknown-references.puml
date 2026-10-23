@@ -1,0 +1,10 @@
+' creole: CREOLE_COLOR | <color:nosuchcolor>x</color>
+' creole: CREOLE_SPRITE | <$nosuchsprite>
+' creole: CREOLE_OPENICON | <&nosuchicon>
+' creole: CREOLE_EMOJI | <:nosuchemoji:>
+' creole: CREOLE_IMG | <img:missing.png>
+@startuml
+note as N
+  <color:nosuchcolor>x</color> <$nosuchsprite> <&nosuchicon> <:nosuchemoji:> <img:missing.png>
+end note
+@enduml

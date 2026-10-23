@@ -1,0 +1,4 @@
+' gantt: CommandGanttArrow
+@startgantt
+A -> B
+@endgantt

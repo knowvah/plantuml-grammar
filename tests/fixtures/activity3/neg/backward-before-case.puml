@@ -1,0 +1,7 @@
+' activity3: CommandSwitch, CommandBackward3
+@startuml
+switch (x)
+backward :y;
+case (a)
+endswitch
+@enduml

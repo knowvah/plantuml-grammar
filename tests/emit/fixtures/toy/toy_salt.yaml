@@ -1,0 +1,14 @@
+schema_version: 1
+id: toy_salt
+layer: diagram
+diagram: SALT
+contexts:
+  main:
+    - command: CommandSaltWidget
+      provenance: {class: toy.CommandSaltWidget}
+      kind: single
+      parts:
+        seq:
+          - {literal: "[", ci: false}
+          - {regex: "\\w+"}
+          - {literal: "]", ci: false}

@@ -1,0 +1,9 @@
+' board-files-git: FilesStyleBlock
+@startfiles
+<style>
+{{
+FontColor
+,*/
+</style>
+/a
+@endfiles

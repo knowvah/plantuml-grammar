@@ -1,0 +1,6 @@
+' mindmap-wbs: CommandWBSItemNew_44
+' gap: Bad tree structure: level 2 under the root (wbs/WBSDiagram.java:213-230)
+@startwbs
+* a
+*** b
+@endwbs

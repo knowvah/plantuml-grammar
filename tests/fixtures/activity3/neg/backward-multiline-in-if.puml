@@ -1,0 +1,7 @@
+' activity3: CommandIf2, CommandBackwardLong3
+@startuml
+if (a) then
+backward :x
+y;
+endif
+@enduml

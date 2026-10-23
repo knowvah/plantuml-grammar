@@ -1,0 +1,6 @@
+' salt: CommandAnything
+@startsalt
+scale 0
+{
+}
+@endsalt

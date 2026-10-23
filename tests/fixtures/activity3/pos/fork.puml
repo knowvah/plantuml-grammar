@@ -1,0 +1,19 @@
+' activity3: CommandFork3, CommandForkAgain3, CommandForkEnd3
+@startuml
+fork
+:a;
+fork again
+:b;
+end fork
+fork;
+:c;
+forkend
+fork
+:d;
+fork again
+:e;
+end merge
+fork <<x>>
+:f;
+end fork {and}
+@enduml

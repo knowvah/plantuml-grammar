@@ -1,0 +1,10 @@
+' json: JsonText, JsonStyleContent
+' jar: rejected
+' gap: an unclosed <style> after content is not checked; the error join needs the closing </style> line
+@startjson
+{"a": 1}
+<style>
+*
+foo {
+}
+@endjson

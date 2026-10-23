@@ -1,0 +1,7 @@
+' common: CommandSkin
+' factory: SequenceDiagramFactory
+' gap: semantic: skin resource lookup (TitledDiagram.loadSkin)
+@startuml
+skin nosuchskinxyz
+Alice -> Bob : hello
+@enduml

@@ -1,0 +1,9 @@
+' mindmap-wbs: CommandMindMapPlus
+@startmindmap
++ root
+++ right
++++ deeper
+-- left
+--- deeper
++- left too
+@endmindmap

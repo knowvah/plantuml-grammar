@@ -1,0 +1,8 @@
+' activity3: CommandWhile3, CommandBreak, CommandKill3, CommandWhileEnd3
+' gap: InstructionBreak.kill returns false (InstructionBreak.java:75-77)
+@startuml
+while (a)
+break
+kill
+endwhile
+@enduml

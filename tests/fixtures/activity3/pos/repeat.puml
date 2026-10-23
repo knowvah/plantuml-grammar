@@ -1,0 +1,13 @@
+' activity3: CommandRepeat3, CommandActivity3, CommandBackward3, CommandRepeatWhile3
+@startuml
+repeat :foo;
+:x;
+repeat while (a) is (yes) not (no)
+#red:repeat
+:y;
+(in) backward :z; (out)
+repeat while (b) -> label;
+repeat
+:w;
+repeat while (c) -[#red]-> foo
+@enduml

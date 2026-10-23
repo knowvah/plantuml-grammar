@@ -1,0 +1,7 @@
+' style: custom property at the end
+@startuml
+<style>
+--x
+</style>
+class Foo
+@enduml

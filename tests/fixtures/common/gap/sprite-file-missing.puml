@@ -1,0 +1,7 @@
+' common: CommandSpriteFile
+' factory: SequenceDiagramFactory
+' gap: semantic: file system (CommandSpriteFile.java:121-122)
+@startuml
+sprite foo nosuchfile.png
+Alice -> Bob : hello
+@enduml

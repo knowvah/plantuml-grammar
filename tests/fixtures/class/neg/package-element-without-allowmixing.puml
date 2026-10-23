@@ -1,0 +1,7 @@
+' class: PackageElementNeedsAllowMixing
+@startuml
+class A {
+}
+package com.example
+class B
+@enduml

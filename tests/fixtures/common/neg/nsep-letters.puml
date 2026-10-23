@@ -1,0 +1,6 @@
+' common: CommandNamespaceSeparator
+' factory: ClassDiagramFactory
+@startuml
+set namespaceSeparator abc
+class A.B
+@enduml

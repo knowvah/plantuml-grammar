@@ -1,0 +1,8 @@
+' json: JsonText, JsonStyleContent
+' jar: rejected
+' gap: an unclosed <style> after content is not checked; StyleParser still runs on the rest of the block, which a join cannot delimit
+@startjson
+{"a": 1}
+<style>
+*
+@endjson

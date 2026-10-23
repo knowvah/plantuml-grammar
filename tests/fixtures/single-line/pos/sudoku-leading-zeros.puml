@@ -1,0 +1,4 @@
+' single-line: single-line-sudoku
+@startuml
+sudoku 0000000000000000000001
+@enduml

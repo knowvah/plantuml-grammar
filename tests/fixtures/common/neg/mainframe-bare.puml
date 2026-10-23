@@ -1,0 +1,6 @@
+' common: CommandMainframe
+' factory: SequenceDiagramFactory
+@startuml
+mainframe
+Alice -> Bob : hello
+@enduml

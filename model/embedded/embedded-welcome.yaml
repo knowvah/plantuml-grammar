@@ -1,0 +1,28 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# PSystemWelcomeFactory.createSystem (eggs/PSystemWelcomeFactory.java:50-56) accepts
+# only a source of exactly two lines: @startuml immediately followed by its end line
+# (comments are already removed by the preprocessor). It is a PSystemFactory, not a
+# command factory, so an empty body is its only accepted input: `main` accepts nothing,
+# `empty` (see tools/interp/engine.py) rejects any blank line and accepts the end line.
+# `empty_needs_end`: a preprocessor-truncated block (`@startuml` and no end line) is one
+# line long, which the factory refuses (:52); the interpreter refuses it too.
+
+schema_version: 1
+id: embedded-welcome
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemWelcomeFactory
+empty_needs_end: true
+contexts:
+  main: []
+  empty:
+    - command: PSystemWelcomeBlankLine
+      provenance: {class: net.sourceforge.plantuml.eggs.PSystemWelcomeFactory, file: src/main/java/net/sourceforge/plantuml/eggs/PSystemWelcomeFactory.java, line: 52}
+      kind: single
+      parts: {regex: ""}
+      set: dead
+    - command: PSystemWelcomeFactory
+      provenance: {class: net.sourceforge.plantuml.eggs.PSystemWelcomeFactory, file: src/main/java/net/sourceforge/plantuml/eggs/PSystemWelcomeFactory.java, line: 52}
+      kind: single
+      parts: {regex: "[@\\\\]end.*"}
+  dead: []

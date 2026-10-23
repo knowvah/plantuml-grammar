@@ -1,0 +1,9 @@
+' activity3: CommandSwitch, CommandCase, CommandIf2
+@startuml
+switch (x)
+case (a)
+if (y) then
+case (b)
+endif
+endswitch
+@enduml

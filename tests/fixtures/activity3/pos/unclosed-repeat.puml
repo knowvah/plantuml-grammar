@@ -1,0 +1,5 @@
+' activity3: CommandRepeat3, CommandActivity3
+@startuml
+repeat
+:x;
+@enduml

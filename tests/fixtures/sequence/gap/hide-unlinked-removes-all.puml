@@ -1,0 +1,6 @@
+' sequence: CommandHideUnlinked
+' gap: hide unlinked removes every unlinked participant, leaving none (SequenceDiagram.java:597-598, :591-593)
+@startuml
+participant Alice
+hide unlinked
+@enduml

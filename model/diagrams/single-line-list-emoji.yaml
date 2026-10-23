@@ -1,0 +1,17 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+# goLowerCase(line) equals `emoji` or starts with `emoji ` (:49-50).
+schema_version: 1
+id: single-line-list-emoji
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemListEmojiFactory
+include: [embedded-list-emoji, single-line-base]
+overrides:
+  PSystemListEmojiFactory:
+    provenance: {class: net.sourceforge.plantuml.emoji.PSystemListEmojiFactory, file: src/main/java/net/sourceforge/plantuml/emoji/PSystemListEmojiFactory.java, line: 50, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "[eE][mM][oO][jJ][iI](?: [\\s\\S]*)?"}
+    set: sl_done
+    gives: single_line

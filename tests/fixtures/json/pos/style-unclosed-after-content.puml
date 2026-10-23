@@ -1,0 +1,8 @@
+' json: JsonText, JsonStyleContent
+' After content the swallowed @endjson line hides the missing end (JsonDiagramFactory.java:78-82).
+@startjson
+{"a": 1}
+<style>
+foo {
+}
+@endjson

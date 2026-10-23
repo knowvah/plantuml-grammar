@@ -1,0 +1,8 @@
+' gantt: NaturalGanttTask
+@startgantt
+[A] lasts 5 days
+[B] requires 2 weeks and 3 days
+[C] lasts 1 month, 2 days
+[D] requires 4 hours
+[E] lasts 2 days.
+@endgantt

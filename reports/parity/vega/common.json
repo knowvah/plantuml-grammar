@@ -1,0 +1,107 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "CRASH",
+      "kind": "diagram_mismatch",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "BPM",
+      "path": "crash/crash-not-crashing.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "CRASH",
+      "kind": "diagram_mismatch",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "BPM",
+      "path": "crash/crash-when-drawing.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SEQUENCE",
+      "kind": "diagram_mismatch",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "CLASS",
+      "path": "preproc/eval.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SEQUENCE",
+      "kind": "diagram_mismatch",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "CLASS",
+      "path": "preproc/upper.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "DESCRIPTION",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "DESCRIPTION",
+      "path": "sub/includesub-same-file.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "DESCRIPTION",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "DESCRIPTION",
+      "path": "sub/repro1.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "ACTIVITY",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "ACTIVITY",
+      "path": "sub/repro2.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "vega",
+  "family": "common",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 301,
+    "diagram_mismatch": 4,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 294,
+    "raw_fr": 3,
+    "timeout": 0
+  }
+}

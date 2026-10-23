@@ -1,0 +1,8 @@
+' board-files-git: CommandStyleMultilinesCSS, CommandBoardPlus, BoardRelease
+@startboard
+<style>
+board { FontColor red }
+</style>
+A
++b
+@endboard

@@ -1,0 +1,9 @@
+' nwdiag-packet: CommandProperty, NwNetworkOpenAtRoot, NwGroupOpenAtRoot
+@startnwdiag
+network n {
+  description = first
+}
+group {
+  description = grp
+}
+@endnwdiag

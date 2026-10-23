@@ -1,0 +1,4 @@
+' misc-charts: ChartAnnotationFails
+@startchart
+annotation "x" at (a, b)
+@endchart

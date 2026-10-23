@@ -1,0 +1,17 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+# String.equalsIgnoreCase (:52).
+schema_version: 1
+id: single-line-rip
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemRIPFactory
+include: [embedded-rip, single-line-base]
+overrides:
+  PSystemRIPFactory:
+    provenance: {class: net.sourceforge.plantuml.eggs.PSystemRIPFactory, file: src/main/java/net/sourceforge/plantuml/eggs/PSystemRIPFactory.java, line: 52, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "[jJ][eE][aA][nN] [cC][aA][nN][oO][uU][eE][tT]"}
+    set: sl_done
+    gives: single_line

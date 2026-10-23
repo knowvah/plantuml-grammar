@@ -1,0 +1,9 @@
+' json: JsonStyleError
+' An unclosed /* comment swallows </style>: the last token is read with no next token (StyleParser.java:104 NPE).
+@startjson
+<style>
+node { BackgroundColor red }
+x* /* c // d
+</style>
+[1]
+@endjson

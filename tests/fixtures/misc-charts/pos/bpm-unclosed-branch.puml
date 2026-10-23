@@ -1,0 +1,8 @@
+' misc-charts: CommandNewBranch, BpmBranchElse
+@startbpm
+:a;
+new branch
+:b;
+else
+:c;
+@endbpm

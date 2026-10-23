@@ -1,0 +1,81 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "FlowDiagramFactory",
+  "factoryOrder": 37,
+  "diagramType": "FLOW",
+  "commands": [
+    {
+      "order": 0,
+      "class": "net.sourceforge.plantuml.flowdiagram.CommandLineSimple",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": "ORIENTATION", "pattern": "([nsew])", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": "ID_DEST", "pattern": "(\\w+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "LABEL", "pattern": "[%g](.*)[%g]", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 1,
+      "class": "net.sourceforge.plantuml.flowdiagram.CommandLink",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": "ORIENTATION", "pattern": "([nsew])", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": "ID_DEST", "pattern": "(\\w+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    }
+  ],
+  "unreachable": []
+}

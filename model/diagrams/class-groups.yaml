@@ -1,0 +1,131 @@
+# Groups (package, namespace, together) and `allowmixing` in class diagrams (T18,
+# included by `class`, which defines the contexts named here). Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/ unless they start with
+# net/atmp/ (src/main/java/net/atmp/).
+#
+# Group stack. CucaDiagram keeps a stack of open groups that starts with the root
+# (net/atmp/CucaDiagram.java:132, :344-374). CommandPackage, CommandPackageWithUSymbol,
+# CommandNamespace, CommandNamespace2 (gotoGroup) and CommandTogether (gotoTogether)
+# push it; `}` (command/CommandEndPackage.java:67-71) pops it and fails only when it
+# is empty. So a `}` with no open group pops the root: that is accepted, but every
+# later command that needs the current group fails (an extra `}` fails at once). The
+# model mirrors this with contexts: openers push `class_group`, whose `}` pops; a
+# `}` at the root moves to `class_orphan`, which rejects every line except the
+# commands that never touch a group (checked one by one against the jar: titles,
+# header/footer/caption/mainframe, skin/skinparam, scale, minwidth, page, rotate,
+# newpage, layout_new_line, direction, allowmixing, pragma, assume, sprites, styles,
+# `set separator`, `hide/show footbox`, `hide <visibility> members`, `hide empty
+# description`; legends, notes, links, hide/show of entities fail).
+#
+# allowmixing. CommandCreateElementFull2 in NORMAL_KEYWORD mode (`rectangle X`, `state
+# X`, ...) fails unless `allowmixing` was executed before it
+# (classdiagram/command/CommandCreateElementFull2.java:197-198;
+# classdiagram/command/CommandAllowMixing.java). `allowmixing` switches the root to
+# `main_mixing`. At the root without it, `ElementNeedsAllowMixing` rejects the
+# element line before the generated rule sees it. It sits at the head of `main`, so
+# lines that an earlier upstream rule takes (`entity|interface|circle` classes, a
+# `package` whose `{` is on the next line) are left to the generated order.
+# Known gaps: inside a group the element line is accepted without `allowmixing` (the
+# openers' push target cannot depend on the mixing state), and `allowmixing` written
+# inside a group is forgotten when the group closes.
+schema_version: 1
+id: class-groups
+layer: shared
+include: [shared, gen-shared, class-decl]
+
+variables:
+  # CommandAllowMixing.java:55 (no state change in these contexts; see header).
+  CG_ALLOW_MIXING:
+    seq:
+      - {literal: allow, ci: true, scope: keyword.other.allowmixing}
+      - {regex: "_?", ci: true, scope: keyword.other.allowmixing}
+      - {literal: mixing, ci: true, scope: keyword.other.allowmixing}
+  # CommandCreateElementFull2.getRegexConcat (:83, NORMAL_KEYWORD), the generated shape.
+  CG_ELEMENT_FULL2:
+    seq:
+      - regex: "(?:state|person|artifact|actor/|actor|folder|card|file|package|rectangle|hexagon|label|node|frame|cloud|action|process|database|queue|stack|storage|agent|usecase/|usecase|component|boundary|control|entity|interface|circle|collections|port|portin|portout)"
+        ci: true
+        scope: storage.type.element
+      - {ref: SPACE_SOME}
+      - alt: [{ref: CODE1}, {ref: DISPLAY2}]
+      - {ref: SPACE_ANY}
+      - {ref: TAGS1}
+      - seq:
+          - {ref: SPACE_ANY}
+          - opt: {regex: "\\<\\<.+?\\>\\>", ci: true, scope: entity.other.attribute-name.stereotype}
+          - {ref: SPACE_ANY}
+      - {ref: TAGS2}
+      - {ref: SPACE_ANY}
+      - opt: {ref: URL}
+      - {ref: SPACE_ANY}
+      - {ref: COLOR}
+  # CommandPackageWithUSymbol: the generated shape.
+  CG_PACKAGE_USYMBOL: {"seq": [{"regex": "(package|rectangle|hexagon|node|artifact|folder|file|frame|cloud|action|process|database|storage|component|card|queue|stack)", "ci": true}, {"regex": "[\\s\u00a0]+", "ci": true}, {"alt": [{"seq": [{"regex": "([\"\u201c\u201d\ue121].+?[\"\u201c\u201d\ue121])", "ci": true}, {"opt": {"seq": [{"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "(\\<\\<.+\\>\\>)", "ci": true}]}}, {"regex": "[\\s\u00a0]*", "ci": true}, {"literal": "as", "ci": true}, {"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "([^#\\s\u00a0{}]+)", "ci": true}]}, {"seq": [{"regex": "([^#\\s\u00a0{}\"\u201c\u201d\ue121]+)", "ci": true}, {"opt": {"seq": [{"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "(\\<\\<.+\\>\\>)", "ci": true}]}}, {"regex": "[\\s\u00a0]*", "ci": true}, {"literal": "as", "ci": true}, {"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "([\"\u201c\u201d\ue121].+?[\"\u201c\u201d\ue121])", "ci": true}]}, {"seq": [{"regex": "([^#\\s\u00a0{}\"\u201c\u201d\ue121]+)", "ci": true}, {"opt": {"seq": [{"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "(\\<\\<.+\\>\\>)", "ci": true}]}}, {"regex": "[\\s\u00a0]*", "ci": true}, {"literal": "as", "ci": true}, {"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "([^#\\s\u00a0{}\"\u201c\u201d\ue121]+)", "ci": true}]}, {"regex": "([\"\u201c\u201d\ue121][^\"\u201c\u201d\ue121]+[\"\u201c\u201d\ue121])", "ci": true}, {"regex": "([^#\\s\u00a0{}\"\u201c\u201d\ue121]*)", "ci": true}]}, {"regex": "[\\s\u00a0]*", "ci": true}, {"ref": "TAGS1"}, {"seq": [{"regex": "[\\s\u00a0]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true}}, {"regex": "[\\s\u00a0]*", "ci": true}]}, {"ref": "TAGS2"}, {"regex": "[\\s\u00a0]*", "ci": true}, {"opt": {"ref": "URL"}}, {"regex": "[\\s\u00a0]*", "ci": true}, {"ref": "COLOR"}, {"regex": "[\\s\u00a0]*", "ci": true}, {"literal": "{", "ci": true}]}
+  # CommandTogether: the generated shape.
+  CG_TOGETHER: {"seq": [{"literal": "together", "ci": true}, {"regex": "[\\s\u00a0]*", "ci": true}, {"literal": "{", "ci": true}]}
+  # CommandNamespace: the generated shape.
+  CG_NAMESPACE: {"seq": [{"literal": "namespace", "ci": true}, {"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "([\\p{L}\\p{N}_][-\\p{L}\\p{N}_.:\\\\/]*)", "ci": true}, {"seq": [{"regex": "[\\s\u00a0]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true}}, {"regex": "[\\s\u00a0]*", "ci": true}]}, {"opt": {"ref": "URL"}}, {"regex": "[\\s\u00a0]*", "ci": true}, {"ref": "COLOR"}, {"regex": "[\\s\u00a0]*", "ci": true}, {"literal": "{", "ci": true}]}
+  # CommandNamespace2: the generated shape.
+  CG_NAMESPACE2: {"seq": [{"literal": "namespace", "ci": true}, {"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "[\"\u201c\u201d\ue121]", "ci": true}, {"regex": "([^\"\u201c\u201d\ue121]+)", "ci": true}, {"regex": "[\"\u201c\u201d\ue121]", "ci": true}, {"regex": "[\\s\u00a0]+", "ci": true}, {"literal": "as", "ci": true}, {"regex": "[\\s\u00a0]+", "ci": true}, {"regex": "([\\p{L}\\p{N}_][-\\p{L}\\p{N}_.:\\\\/]*)", "ci": true}, {"seq": [{"regex": "[\\s\u00a0]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true}}, {"regex": "[\\s\u00a0]*", "ci": true}]}, {"opt": {"ref": "URL"}}, {"regex": "[\\s\u00a0]*", "ci": true}, {"ref": "COLOR"}, {"regex": "[\\s\u00a0]*", "ci": true}, {"literal": "{", "ci": true}]}
+  # CommandPackage with an empty NAME and no AS fails ("Error in name",
+  # command/CommandPackage.java:155-158). NAME `[^#%s{}]*` is greedy, so it is empty
+  # exactly when `#` or `{` follows the spaces after `package`.
+  CG_PACKAGE_EMPTY_NAME:
+    seq:
+      - opt: {ref: VISIBILITY_CHAR}
+      - {ref: SPACE_ANY}
+      - {literal: package, ci: true, scope: storage.type.package}
+      - {ref: SPACE_SOME}
+      - {regex: "(?=[#{])", ci: true}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+      - {ref: CD_BLOCK_OPEN}
+  # Lines that CreateClass / CreateClassMultilines / CommandPackage take first upstream.
+  CG_NOT_EARLIER_RULE:
+    regex: "(?!(?:entity|interface|circle|package)[\\s ])"
+    ci: true
+  CG_PACKAGE_ELEMENT:
+    seq: [{regex: "(?=package[\\s\u00a0])", ci: true}, {ref: CG_ELEMENT_FULL2}]
+  # Any line except the commands that never touch the group stack (see header).
+  CG_ORPHAN_UNSAFE:
+    regex: "(?!(?:(?:title|header|footer|caption|mainframe|skinparam|skinparamlocked|skin|scale|minwidth|page|rotate|newpage|layout_new_line|allow_?mixing|sprite|set)(?![\\p{L}\\p{N}_])|(?:left|top)[\\s ]+to[\\s ]|!pragma|!assume|<style|(?:hide|show)[\\s ]*footbox|(?:hide|show)[\\s ]+(?:(?:public|private|protected|package)(?![\\p{L}\\p{N}_])|[\\s ]+(?:member|attribute|field|method)|empty[\\s ]+description)))\\S.*"
+    ci: true
+
+overrides:
+  CommandPackage: {push: class_group}
+  CommandPackageWithUSymbol: {push: class_group}
+  CommandNamespace: {push: class_group}
+  CommandNamespace2: {push: class_group}
+  CommandTogether: {push: class_group}
+  # A `}` reaching the generated rule is at the root (a group context pops first).
+  CommandEndPackage: {set: class_orphan}
+  CommandAllowMixing: {set: main_mixing}
+
+insert_before:
+  CommandPackage:
+    - command: CommandPackageEmptyName
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/CommandPackage.java
+        line: 155
+        engine: IRegex
+      kind: single
+      reject: true
+      parts: {ref: CG_PACKAGE_EMPTY_NAME}
+
+insert_after:
+  CommandPackage:
+    - command: CommandPackageBracketNextLine
+      provenance:
+        class: net.sourceforge.plantuml.command.SingleLineCommand2
+        file: src/main/java/net/sourceforge/plantuml/command/SingleLineCommand2.java
+        line: 109
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/CommandPackage.java:97-100
+          - src/main/java/net/sourceforge/plantuml/command/SingleLineCommand2.java:84-85
+      kind: multiline
+      join: {max_lines: 1}
+      parts:
+        seq: [{ref: CD_PACKAGE_HEAD}, {ref: CD_JOINER}, {ref: CD_BLOCK_OPEN}]
+      push: class_group

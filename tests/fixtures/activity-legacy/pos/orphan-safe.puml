@@ -1,0 +1,9 @@
+' activity-legacy: ActivityEndGroupOrphan, ActivityOrphanUnsafe
+@startuml
+(*) --> A
+}
+title T
+skinparam backgroundColor white
+hide A
+note on link: n
+@enduml

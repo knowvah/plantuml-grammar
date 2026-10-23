@@ -1,0 +1,8 @@
+' misc-charts: ChenEndGroupUnbalanced
+@startchen
+entity A {
+  a {
+  }
+}
+}
+@endchen

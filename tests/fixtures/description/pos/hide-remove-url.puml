@@ -1,0 +1,10 @@
+' description: CommandHideShow2, CommandRemoveRestore, CommandUrl
+@startuml
+[A]
+[B]
+hide A
+remove B
+restore B
+url of A is [[http://example.com]]
+hide @unlinked
+@enduml

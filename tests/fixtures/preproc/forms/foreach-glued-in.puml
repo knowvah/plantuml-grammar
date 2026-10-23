@@ -1,0 +1,5 @@
+@startuml
+!foreach $xin [1]
+a -> b
+!endfor
+@enduml

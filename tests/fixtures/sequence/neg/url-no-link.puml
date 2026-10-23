@@ -1,0 +1,5 @@
+' sequence: CommandUrl
+@startuml
+Alice -> Bob : x
+url of Alice is
+@enduml

@@ -1,0 +1,6 @@
+' gantt: NaturalGanttTask
+@startgantt
+[task1] lasts 1 week
+[task2] starts 20 days after [task1]'s end and lasts 3 days
+Separator just 2 days after [task1]'s end
+@endgantt

@@ -1,0 +1,154 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "BpmDiagramFactory",
+  "factoryOrder": 8,
+  "diagramType": "BPM",
+  "commands": [
+    {
+      "order": 0,
+      "class": "net.sourceforge.plantuml.bpm.CommandDockedEvent",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": ":", "children": []},
+          {"t": "leaf", "name": "LABEL", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": "STYLE", "pattern": ";", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 1,
+      "class": "net.sourceforge.plantuml.bpm.CommandMerge",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "ID", "pattern": "([%pLN_.@]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ":?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\<\\+\\>", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 2,
+      "class": "net.sourceforge.plantuml.bpm.CommandResume",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "resume", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "ID", "pattern": "([%pLN_.@]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 3,
+      "class": "net.sourceforge.plantuml.bpm.CommandGoto",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "goto", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "ID", "pattern": "([%pLN_.@]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 4,
+      "class": "net.sourceforge.plantuml.bpm.CommandNewBranch",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "new", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "branch", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 5,
+      "class": "net.sourceforge.plantuml.bpm.CommandElseBranch",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "else", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 6,
+      "class": "net.sourceforge.plantuml.bpm.CommandEndBranch",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "end", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "branch", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    }
+  ],
+  "unreachable": []
+}

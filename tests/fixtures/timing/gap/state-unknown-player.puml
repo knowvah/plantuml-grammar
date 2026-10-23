@@ -1,0 +1,7 @@
+' timing: CommandChangeStateByPlayerCode
+' gap: no player table: `Unknown "X"` (CommandChangeStateByPlayerCode.java:102-103)
+@startuml
+robust "R" as R
+@0
+X is a
+@enduml

@@ -1,0 +1,164 @@
+# packetdiag (T27). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/packetdiag/ unless stated.
+#
+# Upstream. PacketDiagramFactory.initCommandsList (PacketDiagramFactory.java:75-85)
+# registers the common block (CommonCommands.addCommonCommands1) and eight single-line
+# commands; the generated model carries them in that order. `packetdiag {` and `}` are
+# no-ops (command/CommandPacketDiagStart.java:70-72, command/CommandPacketDiagEnd.java:
+# 71-73), so a packet body has no nesting.
+#
+# Line-local execution error. `scale_interval = N` parses `\d+` with Integer.parseInt and
+# fails on overflow (command/CommandScaleInterval.java:73-79): the rule is narrowed to
+# JAVA_INT (common) and followed by a reject of the generated shape. colwidth and
+# node_height take `\d{1,3}` and the field bounds `\d{1,7}`, which always parse.
+#
+# Final check. checkFinalError builds the layout (PacketDiagram.java:225-229, :374-382).
+# adjustColWidth shrinks colWidth to the summed width of the first row (:387-392);
+# getFullIndicatorInterval is then colWidth itself when it is below 4 (:260-262), and
+# adjustIndicators computes `i % fullLengthInterval` over `limit(colWidth + 1)` (:394-405).
+# A first-row sum of 0 divides by zero; a sum of -2 or less makes `limit` negative
+# (IllegalArgumentException); -1 passes. Both throws escape createSystem and become an
+# execution error (PSystemBuilder.java:275-281). A field's width is `len` (default 1) for
+# `N:` and `*` fields and B - A + 1 for `A-B` (command/CommandNumRange.java:113-138); the
+# `len` value is the last `len=` that NwDiagram.toSet finds in the bracket (nwdiag/
+# NwDiagram.java:288-303), and an unparsable value means 1 (CommandNumRange.java:90-102).
+# A row fills up when the running sum reaches colWidth or a field overflows it
+# (adjustLayout :411-458), which needs a positive width, so with non-negative widths the
+# check fails exactly when every field of the block has width 0.
+#
+# Model. Upstream sees the whole field list; a line grammar sees one line. `main` is the
+# state before the first field. Its head entry PacketFirstField takes the first field
+# (any width) and pushes `packet_body` with `require_pop`; nothing pops it, so at the end
+# of the block the interpreter backtracks to that line (docs/grammar-guide.md,
+# "Unterminated bodies and rejected lines") after the whole body was validated once. On
+# the retry, PacketZeroWidthRow (a `join`) takes a zero-width first field only when a
+# field of non-zero width follows later in the block, and PacketZeroWidthOnly rejects a
+# zero-width first field otherwise. Every other first field reaches the generated
+# CommandNumRange, which (like every field after it) sets `packet_body`, where the head
+# entries no longer apply. Emitters see PacketFirstField and the generated rules; they
+# drop the reject and skip the join (every path through its parts needs U+E100).
+#
+# PK_ZERO_FIELD and PK_NONZERO_FIELD are built from a formula: an `A-B` range with
+# B = A - 1 (conditional groups for the borrow digit and the run of trailing zeros), or
+# an `N:`/`*` field whose bracket is a clean `toSet` list (words, `name=value` items,
+# blank or comma separators) ending its `len` items with a zero value. They are sound:
+# tests/families/test_nwdiag_packet.py checks them against an arithmetic reference.
+# Undetected zero widths (other bracket syntax) and negative widths are gaps
+# (tests/fixtures/nwdiag-packet/gap): they can only cause false accepts.
+schema_version: 1
+id: nwdiag-packet-packet
+layer: diagram
+diagram: PACKET
+factory: PacketDiagramFactory
+include: [gen-packet-diagram, common]
+
+variables:
+  PK_SPACE: {regex: "[\\s\_]*", ci: true}
+  PK_FIELD_RANGE:
+    alt:
+      - {regex: '(\d{1,7})(?::)?', ci: true, name: RANGE_UNIT, scope: constant.numeric.integer}
+      - {regex: '(\d{1,7})(?:-(\d{1,7}))(?::)?', ci: true, name: RANGE, scope: constant.numeric.integer}
+      - {literal: "*", ci: true, scope: keyword.operator.wildcard}
+  # CommandNumRange.java:77-88, as generated.
+  PK_FIELD:
+    seq:
+      - {ref: PK_SPACE}
+      - {ref: PK_FIELD_RANGE}
+      - {regex: '\s+(.*?)', ci: true, name: DESC, scope: string.unquoted.packet-field}
+      - {regex: '(?:\s*\[(.*?)\])?', ci: true, name: ATTRIBUTE, scope: meta.attribute}
+      - {ref: PK_SPACE}
+  PK_ZERO_FIELD: {regex: "[ \\t]*(?:(?=[0-9]{1,7}-[0-9]{1,7}(?![0-9]))0*(?:(?P<pkzp>[1-9][0-9]*))?(?:(?P<pkzd1>1)|(?P<pkzd2>2)|(?P<pkzd3>3)|(?P<pkzd4>4)|(?P<pkzd5>5)|(?P<pkzd6>6)|(?P<pkzd7>7)|(?P<pkzd8>8)|(?P<pkzd9>9))(?:(?P<pkzk6>0{6})|(?P<pkzk5>0{5})|(?P<pkzk4>0{4})|(?P<pkzk3>0{3})|(?P<pkzk2>0{2})|(?P<pkzk1>0{1})|)-0*(?(pkzp)(?P=pkzp))(?(pkzd1)(?(pkzp)0|0?)|(?(pkzd2)1|(?(pkzd3)2|(?(pkzd4)3|(?(pkzd5)4|(?(pkzd6)5|(?(pkzd7)6|(?(pkzd8)7|(?(pkzd9)8|)))))))))(?(pkzk6)9{6}|(?(pkzk5)9{5}|(?(pkzk4)9{4}|(?(pkzk3)9{3}|(?(pkzk2)9{2}|(?(pkzk1)9{1}|)))))):?[ \\t]+[^\ue100]*|(?:[0-9]{1,7}:?|\\*)[ \\t]+[^\\[\ue100]*\\[[ \\t,]*(?:(?:[A-Za-z0-9_]+[ \\t]*=[ \\t]*(?:\"[^\"\ue100]*\"|[^\\s,\"\ue100][^\\s,\ue100]*)|[A-Za-z0-9_]+(?![A-Za-z0-9_]|\\s*=))[ \\t,]+)*len[ \\t]*=[ \\t]*(?:\"[+-]?0+\"|[+-]?0+)(?:[ \\t,]+(?:(?!len[ \\t]*=)[A-Za-z0-9_]+[ \\t]*=[ \\t]*(?:\"[^\"\ue100]*\"|[^\\s,\"\ue100][^\\s,\ue100]*)|[A-Za-z0-9_]+(?![A-Za-z0-9_]|\\s*=)))*[ \\t,]*\\][ \\t]*)"}
+  PK_NONZERO_FIELD: {regex: "(?!(?:[ \\t]*(?:(?=[0-9]{1,7}-[0-9]{1,7}(?![0-9]))0*(?:(?P<pknp>[1-9][0-9]*))?(?:(?P<pknd1>1)|(?P<pknd2>2)|(?P<pknd3>3)|(?P<pknd4>4)|(?P<pknd5>5)|(?P<pknd6>6)|(?P<pknd7>7)|(?P<pknd8>8)|(?P<pknd9>9))(?:(?P<pknk6>0{6})|(?P<pknk5>0{5})|(?P<pknk4>0{4})|(?P<pknk3>0{3})|(?P<pknk2>0{2})|(?P<pknk1>0{1})|)-0*(?(pknp)(?P=pknp))(?(pknd1)(?(pknp)0|0?)|(?(pknd2)1|(?(pknd3)2|(?(pknd4)3|(?(pknd5)4|(?(pknd6)5|(?(pknd7)6|(?(pknd8)7|(?(pknd9)8|)))))))))(?(pknk6)9{6}|(?(pknk5)9{5}|(?(pknk4)9{4}|(?(pknk3)9{3}|(?(pknk2)9{2}|(?(pknk1)9{1}|)))))):?[ \\t]+[^\ue100]*|(?:[0-9]{1,7}:?|\\*)[ \\t]+[^\\[\ue100]*\\[[ \\t,]*(?:(?:[A-Za-z0-9_]+[ \\t]*=[ \\t]*(?:\"[^\"\ue100]*\"|[^\\s,\"\ue100][^\\s,\ue100]*)|[A-Za-z0-9_]+(?![A-Za-z0-9_]|\\s*=))[ \\t,]+)*len[ \\t]*=[ \\t]*(?:\"[+-]?0+\"|[+-]?0+)(?:[ \\t,]+(?:(?!len[ \\t]*=)[A-Za-z0-9_]+[ \\t]*=[ \\t]*(?:\"[^\"\ue100]*\"|[^\\s,\"\ue100][^\\s,\ue100]*)|[A-Za-z0-9_]+(?![A-Za-z0-9_]|\\s*=)))*[ \\t,]*\\][ \\t]*))$)[\\s\u00a0]*(?:\\d{1,7}:?|\\d{1,7}-\\d{1,7}:?|\\*)\\s+[^\ue100]*"}
+  PK_ANY_LINE: {regex: "[^\ue100]*"}
+  PK_JOINER: {regex: "\ue100"}
+
+overrides:
+  # CommandNumRange.java:143 (each field is added to the list the final check lays out).
+  CommandNumRange: {set: packet_body}
+  # command/CommandScaleInterval.java:73-79: Integer.parseInt over `\d+`.
+  CommandScaleInterval:
+    parts:
+      seq:
+        - {literal: scale_interval, ci: true, scope: keyword.other.packet}
+        - {ref: PK_SPACE}
+        - {literal: "=", ci: true}
+        - {ref: PK_SPACE}
+        - {ref: JAVA_INT}
+        - {regex: ";?", ci: true}
+        - {ref: PK_SPACE}
+
+insert_after:
+  CommandScaleInterval:
+    - command: CommandScaleIntervalError
+      provenance:
+        class: net.sourceforge.plantuml.packetdiag.command.CommandScaleInterval
+        file: src/main/java/net/sourceforge/plantuml/packetdiag/command/CommandScaleInterval.java
+        line: 77
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/packetdiag/command/CommandScaleInterval.java:62-70
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {literal: scale_interval, ci: true}
+          - {ref: PK_SPACE}
+          - {literal: "=", ci: true}
+          - {ref: PK_SPACE}
+          - {regex: "[0-9]+;?", ci: true}
+          - {ref: PK_SPACE}
+
+contexts:
+  main:
+    - command: PacketFirstField
+      provenance:
+        class: net.sourceforge.plantuml.packetdiag.PacketDiagram
+        file: src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java
+        line: 226
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/packetdiag/command/CommandNumRange.java:77-88
+          - src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:145-154
+      kind: single
+      parts: {ref: PK_FIELD}
+      push: packet_body
+      require_pop: true
+    - command: PacketZeroWidthRow
+      provenance:
+        class: net.sourceforge.plantuml.packetdiag.PacketDiagram
+        file: src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java
+        line: 411
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java:474-487
+          - src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java:387-392
+      kind: multiline
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - {ref: PK_ZERO_FIELD}
+          - {ref: PK_JOINER}
+          - star:
+              seq:
+                - {ref: PK_ANY_LINE}
+                - {ref: PK_JOINER}
+          - {ref: PK_NONZERO_FIELD}
+      set: packet_body
+    - command: PacketZeroWidthOnly
+      provenance:
+        class: net.sourceforge.plantuml.packetdiag.PacketDiagram
+        file: src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java
+        line: 401
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java:260-262
+          - src/main/java/net/sourceforge/plantuml/packetdiag/PacketDiagram.java:387-392
+          - src/main/java/net/sourceforge/plantuml/packetdiag/command/CommandNumRange.java:113-138
+          - src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java:288-303
+          - src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-281
+      kind: single
+      reject: true
+      parts: {ref: PK_ZERO_FIELD}
+    - include: gen-packet-diagram#main
+  packet_body:
+    - include: gen-packet-diagram#main

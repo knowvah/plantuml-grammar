@@ -1,0 +1,13 @@
+' activity3: CommandSwitch, CommandStart3, CommandCircleSpot3, CommandArrow3, CommandIf2, CommandEndif3, CommandCase, CommandEndSwitch
+@startuml
+switch (x)
+start
+(A)
+-> lbl;
+if (a) then
+:x;
+endif
+case (a)
+:y;
+endswitch
+@enduml

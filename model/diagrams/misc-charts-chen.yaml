@@ -1,0 +1,308 @@
+# Chen EER diagrams (T30, `@startchen`, ChenEerDiagramFactory). Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# cheneer/ChenEerDiagramFactory.java:63-73: the common block, CommandRankDir, then the six
+# chen commands. No final check (ChenEerDiagram, AbstractEntityDiagram and CucaDiagram keep
+# the core/AbstractDiagram.java:161-171 defaults), so unclosed `{` bodies are accepted.
+#
+# Owner stack. `entity|relationship X {` and an attribute ending in `{` push an owner
+# (cheneer/ChenEerDiagram.java:52-62); `}` pops it and fails on an empty stack ("Unbalanced
+# brackets", :70-76, command/CommandEndGroup.java:69-73); an attribute fails without an
+# owner (:89-94, CommandCreateAttribute.java:101-105). The stack is lexical, so it maps to
+# contexts: `main` (empty stack) and `chen_owner`. The generated CommandCreateAttribute and
+# CommandEndGroup are removed and re-added as tail entries per context (no line matches both
+# an attribute or `}` and a later chen command: their names never contain `-`/`=`), citing
+# ChenEerDiagram so the remove keys spare them.
+#
+# Execute-time errors with a syntactic cause (each a reject of the generated shape right
+# after an interpreter-only narrowed copy; the emitters keep the generated rule, because
+# the narrowed Colors spec repeats the 154-name color table six times):
+# * TYPE is matched case-insensitively but switched on case-sensitively, so `Entity X {`
+#   throws IllegalStateException (CommandCreateEntity.java:100-109, ProtectedCommand.java:
+#   65-76);
+# * every COLOR slot is a Colors spec that must resolve (misc-charts-colors).
+# Not modelled (name tables, gap fixtures): "Bad name" when a name changes type
+# (CommandCreateEntity.java:124-127), "Attribute already exists" (CommandCreateAttribute.java:
+# 120-126), "No such entity" in links and subclasses (CommandAssociate.java:100-110).
+schema_version: 1
+id: misc-charts-chen
+layer: diagram
+diagram: CHEN_EER
+factory: ChenEerDiagramFactory
+include: [gen-chen-eer-diagram, common, misc-charts-colors]
+
+variables:
+  CE_DISPLAY_AS:
+    opt:
+      seq:
+        - {regex: "[\"“”]([^\"“”]+)[\"“”]", ci: true, name: DISPLAY, scope: string.quoted.double}
+        - {ref: SPACE_SOME}
+        - {literal: as, ci: true, scope: keyword.other.as}
+        - {ref: SPACE_SOME}
+  CE_ENTITY_REST:
+    seq:
+      - {ref: SPACE_SOME}
+      - {ref: CE_DISPLAY_AS}
+      - {regex: '([\p{L}\p{N}_.]+)', ci: true, name: CODE, scope: entity.name.type}
+      - {ref: SPACE_ANY}
+      - {regex: '(<<.+>>)?', ci: true, name: STEREO, scope: entity.other.stereotype}
+      - {ref: SPACE_ANY}
+  CE_ENTITY_OK:
+    seq:
+      - {regex: '(entity|relationship)', ci: false, name: TYPE, scope: storage.type}
+      - {ref: CE_ENTITY_REST}
+      - {ref: MC_COLORS_OK}
+      - {ref: SPACE_ANY}
+      - {literal: '{', ci: true, scope: punctuation.section.block.begin}
+  CE_ENTITY_WIDE:
+    seq:
+      - {regex: '(entity|relationship)', ci: true, name: TYPE, scope: storage.type}
+      - {ref: CE_ENTITY_REST}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+      - {literal: '{', ci: true, scope: punctuation.section.block.begin}
+  CE_ATTRIBUTE_HEAD:
+    seq:
+      - {ref: SPACE_ANY}
+      - {ref: CE_DISPLAY_AS}
+      - {regex: "([\\p{L}\\p{N}\\s _.:]+)", ci: true, name: CODE, scope: variable.other.member}
+      - {ref: SPACE_ANY}
+      - {regex: '(<<.*>>)?', ci: true, name: STEREO, scope: entity.other.stereotype}
+      - {ref: SPACE_ANY}
+  CE_ATTRIBUTE_BRACE: {regex: '(\{)', ci: true, name: COMPOSITE, scope: punctuation.section.block.begin}
+  CE_ATTRIBUTE_PLAIN_OK:
+    seq: [{ref: CE_ATTRIBUTE_HEAD}, {ref: MC_COLORS_OK}, {ref: SPACE_ANY}]
+  CE_ATTRIBUTE_OWNER_OK:
+    seq: [{ref: CE_ATTRIBUTE_HEAD}, {ref: MC_COLORS_OK}, {ref: SPACE_ANY}, {ref: CE_ATTRIBUTE_BRACE}]
+  CE_ATTRIBUTE_PLAIN:
+    seq: [{ref: CE_ATTRIBUTE_HEAD}, {ref: COLOR}, {ref: SPACE_ANY}]
+  CE_ATTRIBUTE_OWNER:
+    seq: [{ref: CE_ATTRIBUTE_HEAD}, {ref: COLOR}, {ref: SPACE_ANY}, {ref: CE_ATTRIBUTE_BRACE}]
+  CE_ATTRIBUTE_WIDE:
+    seq: [{ref: CE_ATTRIBUTE_HEAD}, {ref: COLOR}, {ref: SPACE_ANY}, {regex: '(\{)?', ci: true, name: COMPOSITE}]
+  CE_NAME1: {regex: '([\p{L}\p{N}_.-]+)', ci: true, name: NAME1, scope: entity.name.type}
+  CE_NAME2: {regex: '([\p{L}\p{N}_.-]+)', ci: true, name: NAME2, scope: entity.name.type}
+  CE_PARTICIPATION: {regex: '([-=])', ci: true, name: PARTICIPATION, scope: keyword.operator.arrow}
+  CE_ASSOCIATE_HEAD:
+    seq:
+      - {ref: CE_NAME1}
+      - {ref: SPACE_ANY}
+      - {ref: CE_PARTICIPATION}
+      - opt: {regex: "([\\p{L}\\p{N}]+|\\([\\p{L}\\p{N}]+,[\\s ]*[\\p{L}\\p{N}]+\\))", ci: true, name: CARDINALITY, scope: constant.numeric}
+      - {regex: '([-=])', ci: true, name: PARTICIPATION2, scope: keyword.operator.arrow}
+      - {ref: SPACE_ANY}
+      - {ref: CE_NAME2}
+      - {ref: SPACE_ANY}
+  CE_SIMPLE_SUBCLASS_HEAD:
+    seq:
+      - {ref: CE_NAME1}
+      - {ref: SPACE_ANY}
+      - {ref: CE_PARTICIPATION}
+      - {regex: '([<>])', ci: true, name: DIRECTION, scope: keyword.operator.arrow}
+      - {regex: '([-=])', ci: true, name: PARTICIPATION2, scope: keyword.operator.arrow}
+      - {ref: SPACE_ANY}
+      - {ref: CE_NAME2}
+      - {ref: SPACE_ANY}
+  CE_MULTI_SUBCLASS_HEAD:
+    seq:
+      - {regex: '([\p{L}\p{N}_.-]+)', ci: true, name: SUPERCLASS, scope: entity.name.type}
+      - {ref: SPACE_ANY}
+      - {ref: CE_PARTICIPATION}
+      - {literal: '>', ci: true, scope: keyword.operator.arrow}
+      - {regex: '([-=])', ci: true, name: PARTICIPATION2, scope: keyword.operator.arrow}
+      - {ref: SPACE_ANY}
+      - {regex: '([doU])', ci: true, name: SYMBOL, scope: keyword.other}
+      - {ref: SPACE_ANY}
+      - {literal: '{', ci: true}
+      - {regex: (.+), ci: true, name: SUBCLASSES, scope: entity.name.type}
+      - {literal: '}', ci: true}
+      - {ref: SPACE_ANY}
+  CE_END_GROUP: {literal: '}', ci: true, scope: punctuation.section.block.end}
+
+overrides:
+  CommandCreateEntity: {push: chen_owner}
+  CommandCreateAttribute: {remove: true}
+  CommandEndGroup: {remove: true}
+
+insert_before:
+  CommandCreateEntity:
+    - command: ChenEntityChecked
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.command.CommandCreateEntity
+        file: src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateEntity.java
+        line: 97
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateEntity.java:134-136
+      kind: single
+      emit: false
+      parts: {ref: CE_ENTITY_OK}
+      push: chen_owner
+    - command: ChenEntityFails
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.command.CommandCreateEntity
+        file: src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateEntity.java
+        line: 100
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      reject: true
+      parts: {ref: CE_ENTITY_WIDE}
+  CommandAssociate:
+    - command: ChenAssociateChecked
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.command.CommandAssociate
+        file: src/main/java/net/sourceforge/plantuml/cheneer/command/CommandAssociate.java
+        line: 119
+        engine: IRegex
+      kind: single
+      emit: false
+      parts:
+        seq: [{ref: CE_ASSOCIATE_HEAD}, {ref: MC_COLORS_OK}]
+    - command: ChenAssociateFails
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.command.CommandAssociate
+        file: src/main/java/net/sourceforge/plantuml/cheneer/command/CommandAssociate.java
+        line: 119
+        engine: IRegex
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: CE_ASSOCIATE_HEAD}, {ref: COLOR}]
+  CommandSimpleSubclass:
+    - command: ChenSimpleSubclassChecked
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.command.CommandSimpleSubclass
+        file: src/main/java/net/sourceforge/plantuml/cheneer/command/CommandSimpleSubclass.java
+        line: 122
+        engine: IRegex
+      kind: single
+      emit: false
+      parts:
+        seq: [{ref: CE_SIMPLE_SUBCLASS_HEAD}, {ref: MC_COLORS_OK}]
+    - command: ChenSimpleSubclassFails
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.command.CommandSimpleSubclass
+        file: src/main/java/net/sourceforge/plantuml/cheneer/command/CommandSimpleSubclass.java
+        line: 122
+        engine: IRegex
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: CE_SIMPLE_SUBCLASS_HEAD}, {ref: COLOR}]
+  CommandMultiSubclass:
+    - command: ChenMultiSubclassChecked
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.command.CommandMultiSubclass
+        file: src/main/java/net/sourceforge/plantuml/cheneer/command/CommandMultiSubclass.java
+        line: 114
+        engine: IRegex
+      kind: single
+      emit: false
+      parts:
+        seq: [{ref: CE_MULTI_SUBCLASS_HEAD}, {ref: MC_COLORS_OK}]
+    - command: ChenMultiSubclassFails
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.command.CommandMultiSubclass
+        file: src/main/java/net/sourceforge/plantuml/cheneer/command/CommandMultiSubclass.java
+        line: 114
+        engine: IRegex
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: CE_MULTI_SUBCLASS_HEAD}, {ref: COLOR}]
+
+contexts:
+  main:
+    - include: gen-chen-eer-diagram#main
+    - command: ChenAttributeWithoutOwner
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.ChenEerDiagram
+        file: src/main/java/net/sourceforge/plantuml/cheneer/ChenEerDiagram.java
+        line: 89
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateAttribute.java:101-105
+      kind: single
+      reject: true
+      parts: {ref: CE_ATTRIBUTE_WIDE}
+    - command: ChenEndGroupUnbalanced
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.ChenEerDiagram
+        file: src/main/java/net/sourceforge/plantuml/cheneer/ChenEerDiagram.java
+        line: 70
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandEndGroup.java:69-73
+      kind: single
+      reject: true
+      parts: {ref: CE_END_GROUP}
+  chen_owner:
+    - include: gen-chen-eer-diagram#main
+    - command: ChenAttributeOwnerChecked
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.ChenEerDiagram
+        file: src/main/java/net/sourceforge/plantuml/cheneer/ChenEerDiagram.java
+        line: 60
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateAttribute.java:141-143
+      kind: single
+      emit: false
+      parts: {ref: CE_ATTRIBUTE_OWNER_OK}
+      push: chen_owner
+    - command: ChenAttributeChecked
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.ChenEerDiagram
+        file: src/main/java/net/sourceforge/plantuml/cheneer/ChenEerDiagram.java
+        line: 89
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateAttribute.java:99-118
+      kind: single
+      emit: false
+      parts: {ref: CE_ATTRIBUTE_PLAIN_OK}
+    - command: ChenAttributeFails
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.ChenEerDiagram
+        file: src/main/java/net/sourceforge/plantuml/cheneer/ChenEerDiagram.java
+        line: 89
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateAttribute.java:118
+      kind: single
+      reject: true
+      parts: {ref: CE_ATTRIBUTE_WIDE}
+    - command: ChenAttributeOwner
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.ChenEerDiagram
+        file: src/main/java/net/sourceforge/plantuml/cheneer/ChenEerDiagram.java
+        line: 60
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateAttribute.java:69-86
+      kind: single
+      parts: {ref: CE_ATTRIBUTE_OWNER}
+      push: chen_owner
+    - command: ChenAttribute
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.ChenEerDiagram
+        file: src/main/java/net/sourceforge/plantuml/cheneer/ChenEerDiagram.java
+        line: 89
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandCreateAttribute.java:69-86
+      kind: single
+      parts: {ref: CE_ATTRIBUTE_PLAIN}
+    - command: ChenEndGroup
+      provenance:
+        class: net.sourceforge.plantuml.cheneer.ChenEerDiagram
+        file: src/main/java/net/sourceforge/plantuml/cheneer/ChenEerDiagram.java
+        line: 70
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/cheneer/command/CommandEndGroup.java:55-59
+      kind: single
+      parts: {ref: CE_END_GROUP}
+      pop: true

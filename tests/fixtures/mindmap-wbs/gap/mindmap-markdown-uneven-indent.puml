@@ -1,0 +1,7 @@
+' mindmap-wbs: CommandMindMapOrgmode
+' gap: getSmartLevel counts leading blanks (mindmap/MindMapDiagram.java:136-157): levels 2 then 3 fail the multiplier check; the multiplier is cross-line state the model does not track
+@startmindmap
+* root
+  * child1
+   * child2
+@endmindmap

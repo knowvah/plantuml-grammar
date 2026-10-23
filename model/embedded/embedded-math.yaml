@@ -1,0 +1,16 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# PSystemBasicFactory.createSystem (command/PSystemBasicFactory.java:74-102): every body
+# line goes to executeLine, which never refuses here, so any non-empty body is accepted
+# (D4: opaque, not parsed). An empty body is rejected (:89-90).
+
+schema_version: 1
+id: embedded-math
+layer: diagram
+diagram: MATH
+factory: PSystemMathFactory
+contexts:
+  main:
+    - command: PSystemMathFactory
+      provenance: {class: net.sourceforge.plantuml.math.PSystemMathFactory, file: src/main/java/net/sourceforge/plantuml/math/PSystemMathFactory.java, line: 55}
+      kind: opaque
+      parts: {regex: ".*"}

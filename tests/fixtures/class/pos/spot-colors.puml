@@ -1,0 +1,10 @@
+' class: CommandCreateClass, CommandCreateClassMultilines
+@startuml
+class A <<(F, Red)>>
+class B <<(F, FF0000)>>
+class C <<(F, f00)>>
+class D <<(F, transparent)>>
+class E <<(F,#ab12cd)>> {
+}
+class G <<(X, d)>>
+@enduml

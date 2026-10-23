@@ -1,0 +1,23 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# D4 opaque body (ditaa): the lines are not parsed. Refines embedded-ditaa with the
+# PSystemBasicFactory line accounting of single-line-basic. The body entry becomes a
+# per-line `single` catch-all (the interpreter's `opaque` swallowed the rest of the block,
+# so noise-only bodies were accepted; emitters already treat `opaque` as `single`). It
+# matches only non-empty trimmed lines; "" lines are skipped and non-empty blank lines are
+# basic_lead's.
+schema_version: 1
+id: single-line-ditaa
+layer: diagram
+diagram: DITAA
+factory: PSystemDitaaFactory
+include: [embedded-ditaa, single-line-basic]
+overrides:
+  PSystemDitaaFactory:
+    provenance: {class: net.sourceforge.plantuml.ditaa.PSystemDitaaFactory, file: src/main/java/net/sourceforge/plantuml/ditaa/PSystemDitaaFactory.java, line: 119, also: [src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:94]}
+    kind: single
+    parts: {regex: "[\\s\\S]+"}
+    gives: basic_line
+contexts:
+  main:
+    - include: basic_lead
+    - include: embedded-ditaa#main

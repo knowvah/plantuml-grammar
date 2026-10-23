@@ -1,0 +1,42 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "DESCRIPTION",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "DESCRIPTION",
+      "path": "sub/includesub-same-file.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "DESCRIPTION",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "DESCRIPTION",
+      "path": "sub/repro1.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "vega",
+  "family": "description",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 10,
+    "diagram_mismatch": 0,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 10,
+    "raw_fr": 2,
+    "timeout": 0
+  }
+}

@@ -1,0 +1,8 @@
+' sequence: CommandActivate
+' gap: a second activate of the same participant on one message (SequenceDiagram.java:401-408): state
+@startuml
+Alice -> Bob
+activate Bob
+deactivate Bob
+activate Bob
+@enduml

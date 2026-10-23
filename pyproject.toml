@@ -1,0 +1,40 @@
+[project]
+name = "plantuml-grammar"
+version = "0.0.0"
+description = "PlantUML command model extracted from the upstream sources, its interpreter and generated grammars"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0",
+    "jsonschema>=4.23",
+    "regex>=2024.11.6",
+]
+
+[dependency-groups]
+dev = [
+    "pcre2>=0.7.1",
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "corpus: needs the PlantUML jar and corpora (run in family tasks)",
+]
+
+[tool.coverage.run]
+source = ["tools"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["plans", "build", "node_modules"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

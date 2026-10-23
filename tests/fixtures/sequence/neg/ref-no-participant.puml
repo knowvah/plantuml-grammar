@@ -1,0 +1,5 @@
+' sequence: CommandReferenceOverSeveral
+@startuml
+Alice -> Bob : x
+ref over : x
+@enduml

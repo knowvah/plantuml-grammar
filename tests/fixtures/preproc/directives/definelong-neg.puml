@@ -1,0 +1,5 @@
+@startuml
+!definelong ARROW($x)
+$x -> b
+a -> b
+@enduml

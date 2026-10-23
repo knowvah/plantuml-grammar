@@ -1,0 +1,4 @@
+' gantt: CommandWeekNumberStrategy
+@startgantt
+weeks starts on monday and must have at least 2147483648 days
+@endgantt

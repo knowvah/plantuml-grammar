@@ -1,0 +1,13 @@
+' timing: CommandUseDateFormat, CommandAtTime, CommandChangeStateByTime
+@startuml
+use date format "YY-MM-dd 'at' HH:mm XXX"
+robust "R" as R
+@2019/07/02
+R is a
+@2019/07/04
+R is b
+@1:00:00
+R is c
+@2147483647:0:0
+R is d
+@enduml

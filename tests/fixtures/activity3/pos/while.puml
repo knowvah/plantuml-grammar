@@ -1,0 +1,13 @@
+' activity3: CommandWhile3, CommandWhileEnd3, CommandBackward3, CommandActivity3
+@startuml
+while (a) is (yes)
+:x;
+endwhile (no)
+while (b)
+:y;
+backward :z;
+while end
+#red:while (c)
+:w;
+end while
+@enduml

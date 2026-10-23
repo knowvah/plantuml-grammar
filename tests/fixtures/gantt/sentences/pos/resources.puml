@@ -1,0 +1,11 @@
+' gantt: NaturalGanttResource
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+{Alice} is off on 2020-01-05
+{Alice} is off from 2020-01-06 to 2020-01-07
+{Bob} is off on saturday
+{Bob} is on 2020-01-04
+they is off on monday
+{Carl} is off before 2020-01-01
+@endgantt

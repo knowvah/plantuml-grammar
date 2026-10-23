@@ -1,0 +1,6 @@
+' common: CommandSpriteFile
+' factory: SequenceDiagramFactory
+@startuml
+sprite foo "x.png"
+Alice -> Bob : hello
+@enduml

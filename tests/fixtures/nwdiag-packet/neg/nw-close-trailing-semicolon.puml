@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandEndSomething
+@startnwdiag
+network n {
+};
+@endnwdiag

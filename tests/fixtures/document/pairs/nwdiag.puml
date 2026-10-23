@@ -1,0 +1,6 @@
+@startnwdiag
+nwdiag {
+  network n {
+  }
+}
+@endnwdiag

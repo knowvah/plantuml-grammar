@@ -1,0 +1,4 @@
+' misc-charts: ChartHAxisFails
+@startchart
+h-axis [a, b] spacing 000
+@endchart

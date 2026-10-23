@@ -1,0 +1,4 @@
+' nwdiag-packet: CommandComment
+@startnwdiag
+/ not a comment
+@endnwdiag

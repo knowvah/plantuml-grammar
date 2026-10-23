@@ -1,0 +1,8 @@
+' gantt: NaturalGanttTask
+@startgantt
+Project starts 2020-01-01
+[K] lasts 10 days and pauses on 2020-01-05 to 2020-01-06
+[K] pauses on monday
+[K] pauses 2020-01-07
+[K] pauses D+3 to D+4
+@endgantt

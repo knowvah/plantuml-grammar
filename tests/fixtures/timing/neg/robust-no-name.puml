@@ -1,0 +1,4 @@
+' timing: CommandRobustConcise
+@startuml
+robust "R" as
+@enduml

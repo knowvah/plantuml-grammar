@@ -1,0 +1,5 @@
+' sequence: FactorySequenceNoteAcrossCommand_1
+@startuml
+Alice -> Bob : x
+note accross : typo
+@enduml

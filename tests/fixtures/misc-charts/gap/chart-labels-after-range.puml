@@ -1,0 +1,7 @@
+' misc-charts: ChartFirstCoordinateLine
+' gap: categorical h-axis labels set after the range fail coordinate series (ChartDiagram.java:203-206); not tracked
+@startchart
+h-axis 0 --> 5
+h-axis [a]
+line [(1,2)]
+@endchart

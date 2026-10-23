@@ -1,0 +1,16 @@
+schema_version: 1
+id: seq
+layer: diagram
+diagram: SEQUENCE
+factory: SeqFactory
+include: [gen-seq]
+overrides:
+  CommandWide:
+    parts:
+      seq:
+        - {literal: wide, ci: true}
+        - {regex: "\\s+(?:alpha|beta)"}
+  CommandGone: {remove: true}
+contexts:
+  main:
+    - include: gen-seq#main

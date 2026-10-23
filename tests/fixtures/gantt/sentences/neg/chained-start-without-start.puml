@@ -1,0 +1,4 @@
+' gantt: NaturalGanttTaskNeedsStart
+@startgantt
+[A] lasts 2 days and is colored in red and starts the 2nd of january 2020
+@endgantt

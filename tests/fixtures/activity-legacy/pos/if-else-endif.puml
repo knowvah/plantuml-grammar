@@ -1,0 +1,9 @@
+' activity-legacy: ActivityIfFirst, ActivityElse, ActivityEndifRoot
+@startuml
+(*) --> if "Some Test" then
+  -->[true] "activity 1"
+else
+  ->[false] "activity 2"
+endif
+--> (*)
+@enduml

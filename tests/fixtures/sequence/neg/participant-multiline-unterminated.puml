@@ -1,0 +1,7 @@
+' sequence: CommandParticipantMultilines
+@startuml
+participant Alice
+Alice -> Bob : x
+participant P [
+  body
+@enduml

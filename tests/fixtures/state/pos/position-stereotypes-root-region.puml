@@ -1,0 +1,7 @@
+' state: StateConcurrentAtRoot, CommandCreateState
+@startuml
+state A
+--
+state X <<exitpoint>>
+state Y <<inputPin>>
+@enduml

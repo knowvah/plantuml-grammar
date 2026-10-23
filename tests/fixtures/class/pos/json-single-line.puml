@@ -1,0 +1,9 @@
+' class: CommandCreateJsonSingleLine
+@startuml
+json A true
+json B -12
+json C null
+json D "text"
+json E ["a", 1, false]
+json F {"a": [1, 2], "b": {"c": "d"}}
+@enduml

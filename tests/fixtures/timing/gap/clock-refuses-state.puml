@@ -1,0 +1,7 @@
+' timing: CommandAtPlayer, CommandChangeStateByTime
+' gap: player kinds: PlayerClock.setState throws (PlayerClock.java:74-76)
+@startuml
+clock "c" as C with period 10
+@C
+0 is high
+@enduml

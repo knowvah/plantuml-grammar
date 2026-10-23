@@ -1,0 +1,6 @@
+' class: GroupStackEmpty
+@startuml
+class A
+}
+}
+@enduml

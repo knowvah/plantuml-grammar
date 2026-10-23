@@ -1,0 +1,5 @@
+' sequence: CommandExoArrowLeft
+@startuml
+Alice -> Bob : x
+[->
+@enduml

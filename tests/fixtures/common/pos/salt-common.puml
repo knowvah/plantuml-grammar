@@ -1,0 +1,9 @@
+' common: CommandTitle, CommandScale
+' factory: PSystemSaltFactory
+@startsalt
+title Form
+scale 2
+{
+  Login | "me"
+}
+@endsalt

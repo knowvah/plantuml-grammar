@@ -1,0 +1,6 @@
+' misc-charts: ChartHAxisRange
+' gap: min == max is a numeric comparison (ChartDiagram.java:209)
+@startchart
+h-axis 5 --> 5.0
+line [(5,2)]
+@endchart

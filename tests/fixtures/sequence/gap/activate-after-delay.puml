@@ -1,0 +1,7 @@
+' sequence: CommandActivate
+' gap: activate right after a delay (SequenceDiagram.java:368-369): state
+@startuml
+Alice -> Bob : x
+...
+activate Alice
+@enduml

@@ -1,0 +1,8 @@
+' activity3: CommandIf4, CommandElseIf3, CommandEndif3
+@startuml
+if (x) is (1) then
+:a;
+elseif (x) equals (2) then
+:b;
+endif
+@enduml

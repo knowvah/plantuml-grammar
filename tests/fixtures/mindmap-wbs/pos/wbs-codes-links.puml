@@ -1,0 +1,10 @@
+' mindmap-wbs: CommandWBSItemNew_44, CommandWBSLink, WBSLinkUnknownColor
+@startwbs
+* root
+**(a) A
+**(b) B
+a -> b
+a .> b #red-blue
+b --> a #Red : label
+a -> b <<st>>
+@endwbs

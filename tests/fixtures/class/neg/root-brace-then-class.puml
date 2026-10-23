@@ -1,0 +1,8 @@
+' class: CommandEndPackage, GroupStackEmpty
+@startuml
+class A {
+  class Inner {
+  }
+}
+class B
+@enduml

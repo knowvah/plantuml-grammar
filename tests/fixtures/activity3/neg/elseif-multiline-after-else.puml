@@ -1,0 +1,10 @@
+' activity3: CommandIf2, CommandElse3, CommandDecoratorMultine_91
+@startuml
+if (a) then
+:x;
+else
+:y;
+(foo) elseif (b
+c) then
+endif
+@enduml

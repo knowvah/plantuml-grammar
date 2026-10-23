@@ -1,0 +1,8 @@
+' misc-charts: ChenAttributeChecked
+' gap: a second attribute of the same owner and name fails (CommandCreateAttribute.java:120-126); the model keeps no attribute table
+@startchen
+entity A {
+  a
+  a
+}
+@endchen

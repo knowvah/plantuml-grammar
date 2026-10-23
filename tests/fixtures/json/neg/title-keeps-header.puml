@@ -1,0 +1,6 @@
+' json: JsonTitle, JsonSkinparamUnclosed
+@startjson
+title x
+skinparam x {
+foo
+@endjson

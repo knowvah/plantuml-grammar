@@ -1,0 +1,7 @@
+' timing: CommandChangeStateByPlayerCode
+' gap: unknown color name (klimt/color/HColorSet.java:69-73)
+@startuml
+robust "R" as R
+@0
+R is a #notacolor
+@enduml

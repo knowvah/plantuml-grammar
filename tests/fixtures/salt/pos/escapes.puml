@@ -1,0 +1,7 @@
+' salt: CommandAnything
+@startsalt
+{#
+a \| b | a\{b\}c
+[[http://x.com\{tip\}]]
+}
+@endsalt

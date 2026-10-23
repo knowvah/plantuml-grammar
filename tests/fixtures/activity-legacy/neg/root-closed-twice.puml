@@ -1,0 +1,6 @@
+' activity-legacy: ActivityEndGroupOrphan, ActivityOrphanUnsafe
+@startuml
+(*) --> A
+}
+}
+@enduml

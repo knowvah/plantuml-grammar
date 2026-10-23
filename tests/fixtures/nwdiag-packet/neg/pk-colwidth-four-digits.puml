@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandColWidth
+@startpacketdiag
+colwidth = 1000
+0-7: A
+@endpacketdiag

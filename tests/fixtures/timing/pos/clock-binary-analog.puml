@@ -1,0 +1,18 @@
+' timing: CommandClock, CommandBinary, CommandAnalog, CommandTicks, CommandPixelHeight
+@startuml
+clock "Clock_0" as C0 with period 50
+clock "Clock_1" as C1 with period 50 pulse 15 offset 10
+binary "Enable" as EN
+analog "Voltage" between 0 and 5 as V
+V ticks num on multiple 1
+V is 200 pixels height
+C0 ticks every 2
+
+@0
+EN is low
+V is 0
+
+@C0*2
+EN is high
+V is 4.5
+@enduml

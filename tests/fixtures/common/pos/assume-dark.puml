@@ -1,0 +1,6 @@
+' common: CommandAssumeTransparent
+' factory: SequenceDiagramFactory
+@startuml
+!assume transparent dark
+Alice -> Bob : hello
+@enduml

@@ -1,0 +1,6 @@
+@startuml
+!function $f()
+!return 1
+!endfunction
+a -> b
+@enduml

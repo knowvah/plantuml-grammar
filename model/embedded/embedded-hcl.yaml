@@ -1,0 +1,20 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# HclDiagramFactory.createSystem is not a command factory: any Exception is caught (:81-83) and a JsonDiagram is still returned (:84-93).
+# Any body, including an empty one, is accepted without parsing (D4).
+
+schema_version: 1
+id: embedded-hcl
+layer: diagram
+diagram: HCL
+factory: HclDiagramFactory
+contexts:
+  main:
+    - command: HclDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.hcl.HclDiagramFactory, file: src/main/java/net/sourceforge/plantuml/hcl/HclDiagramFactory.java, line: 81}
+      kind: opaque
+      parts: {regex: ".*"}
+  empty:
+    - command: HclDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.hcl.HclDiagramFactory, file: src/main/java/net/sourceforge/plantuml/hcl/HclDiagramFactory.java, line: 81}
+      kind: opaque
+      parts: {regex: ".*"}

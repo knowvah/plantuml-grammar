@@ -1,0 +1,5 @@
+' single-line: embedded-egg
+' gap: PSystemEggFactory accepts a line whose letters, as a base-26 key, XOR-decode a ciphertext into printable text (eggs/SentenceDecoder.java:47-66); not a regular language
+@startuml
+lxvbbhmpwzheywejzcwlsinqaejckxncaba
+@enduml

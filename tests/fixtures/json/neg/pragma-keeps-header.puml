@@ -1,0 +1,7 @@
+' json: JsonPragma, JsonSkinparamUnclosed
+' !pragma lines are header lines, so the skinparam block is still in the header (StyleExtractor.java:78-79).
+@startjson
+!pragma layout smetana
+skinparam x {
+foo
+@endjson

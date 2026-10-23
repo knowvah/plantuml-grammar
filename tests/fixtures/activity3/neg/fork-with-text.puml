@@ -1,0 +1,6 @@
+' activity3: CommandFork3
+@startuml
+fork x
+:a;
+end fork
+@enduml

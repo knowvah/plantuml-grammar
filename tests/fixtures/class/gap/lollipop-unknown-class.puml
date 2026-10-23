@@ -1,0 +1,5 @@
+' class: CommandLinkLollipop
+' gap: entity state: CommandLinkLollipop.java:183-186 needs an existing class
+@startuml
+foo --(( bar
+@enduml

@@ -1,0 +1,7 @@
+' activity-legacy: ActivityNoteOnLinkLongFirst
+@startuml
+note on link
+n
+end note
+(*) --> A
+@enduml

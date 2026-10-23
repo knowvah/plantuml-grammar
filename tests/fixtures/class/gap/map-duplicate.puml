@@ -1,0 +1,10 @@
+' class: CommandCreateMap
+' gap: entity state: CommandCreateMap.java:165-166 fails when the map already exists
+@startuml
+map M {
+ a => b
+}
+map M {
+ a => b
+}
+@enduml

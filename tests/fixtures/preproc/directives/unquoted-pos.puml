@@ -1,0 +1,6 @@
+@startuml
+!unquoted procedure p()
+a -> b
+!endprocedure
+a -> b
+@enduml

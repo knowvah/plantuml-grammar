@@ -1,0 +1,25 @@
+# Classifications for the `nwdiag-packet` family (T27). Upstream pin 97a5992; `cite`
+# paths are relative to the upstream repository root. FR is 0 on every corpus (vega 62
+# blocks, pdiff 68, plantuml-ts has no nwdiag or packetdiag block). The one remaining false
+# accept needs the set of element names per group, which a line grammar does not keep.
+cases:
+  # `group { app; db; }` then `group { router; db; }`: "Element already in another group."
+  pdiff:dbhum/t_or/torazi-09-gago377.puml#0:
+    class: semantic
+    note: "element already in some group: addElement checks the names of every group (gap/nw-element-in-two-groups)"
+    cite: src/main/java/net/sourceforge/plantuml/nwdiag/NwDiagram.java:240-242
+  # `4-3: ...` alone: a first row of width 0 divides by zero in adjustIndicators.
+  # `* A [len = 0]` alone: same final check.
+exclusions:
+  CommandGroup: >-
+    modeled by the per-state head entries NwGroupOpenAtRoot (main, push nw_group),
+    NwGroupOpenInNetwork (nw_network, push nw_group) and NwGroupInGroup (nw_group, reject)
+    in model/diagrams/nwdiag-packet-nwdiag.yaml, which cite NwDiagram.openGroup
+    (NwDiagram.java:122-131) and CommandGroup.java:53-66; the generated entry is removed
+    because one entry cannot act differently per state
+  CommandNetwork: >-
+    modeled by the per-state head entries NwNetworkOpenAtRoot (main, push nw_network),
+    NwNetworkInNetwork (nw_network, reject) and NwNetworkInGroup (nw_group, reject) in
+    model/diagrams/nwdiag-packet-nwdiag.yaml, which cite NwDiagram.openNetwork
+    (NwDiagram.java:133-147) and CommandNetwork.java:53-66; the generated entry is removed
+    because one entry cannot act differently per state

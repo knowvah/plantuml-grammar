@@ -1,0 +1,6 @@
+' sequence: CommandGrouping
+@startuml
+Alice -> Bob : x
+altx
+end
+@enduml

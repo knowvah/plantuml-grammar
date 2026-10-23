@@ -1,0 +1,27 @@
+' sequence: CommandActivate, CommandDeactivateShort, CommandActivate2, CommandReturn, CommandAutoactivate
+@startuml
+participant A
+participant B
+A -> B : call
+activate B #FFBBBB
+B -> B : self
+activate B #DarkSalmon #blue
+B --> A : done
+deactivate B
+deactivate B
+create D
+A -> D : new
+destroy D
+A -> B : again
+B ++ #gold
+B --
+autoactivate on
+A -> B : x
+return y
+autoactivate off
+A -> B : z
+activate B
+deactivate
+A -> B : w
+& return parallel
+@enduml

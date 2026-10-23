@@ -1,0 +1,5 @@
+' activity3: CommandDecoratorMultine_55
+@startuml
+if (multi
+:x;
+@enduml

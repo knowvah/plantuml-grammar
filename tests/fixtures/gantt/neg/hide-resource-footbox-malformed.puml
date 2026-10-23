@@ -1,0 +1,5 @@
+' gantt: CommandHideResourceFootbox
+@startgantt
+[A] -> [B]
+hide resource footboxes
+@endgantt

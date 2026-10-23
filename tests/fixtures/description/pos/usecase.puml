@@ -1,0 +1,11 @@
+' description: CommandCreateElementFull, CommandPackageWithUSymbol, CommandLinkElement
+@startuml
+actor User
+rectangle System {
+  usecase "Login" as UC1
+  usecase "Logout" as UC2
+}
+User --> UC1
+User --> UC2
+UC1 .> UC2 : include
+@enduml

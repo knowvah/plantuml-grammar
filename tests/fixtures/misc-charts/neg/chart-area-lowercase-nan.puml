@@ -1,0 +1,4 @@
+' misc-charts: ChartAreaFails
+@startchart
+area [nan]
+@endchart

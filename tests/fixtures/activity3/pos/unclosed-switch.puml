@@ -1,0 +1,6 @@
+' activity3: CommandSwitch, CommandCase, CommandActivity3
+@startuml
+switch (x)
+case (a)
+:x;
+@enduml

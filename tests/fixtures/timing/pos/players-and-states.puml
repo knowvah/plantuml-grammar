@@ -1,0 +1,19 @@
+' timing: CommandRobustConcise, CommandChangeStateByTime, CommandChangeStateByPlayerCode, CommandAtTime
+@startuml
+robust "Web Browser" as WB
+concise "Web User" as WU
+compact rectangle "Rect" as RC <<box>> #pink
+
+@0
+WU is Idle
+WB is Idle
+RC is {hidden}
+
+@100
+WU is Waiting #lightblue : starts
+WB is Processing
+
+@+300
+WB is "Waiting response"
+RC is {x,y}
+@enduml

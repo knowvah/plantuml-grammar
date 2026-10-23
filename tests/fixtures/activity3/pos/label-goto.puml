@@ -1,0 +1,6 @@
+' activity3: CommandLabel, CommandActivity3, CommandGoto
+@startuml
+label sp_lab0
+:a;
+goto sp_lab0
+@enduml

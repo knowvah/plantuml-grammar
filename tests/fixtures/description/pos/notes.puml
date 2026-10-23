@@ -1,0 +1,15 @@
+' description: CommandFactoryNoteOnEntity_1, CommandFactoryNote_1, CommandFactoryNoteOnEntity_2_61, CommandFactoryNoteOnLink_2, CommandFactoryNote_2_52
+@startuml
+[A] --> [B]
+note left of A : on entity
+note "floating" as N1
+note right of [B]
+  multi
+  line
+end note
+note on link : link note
+note as N2
+  body
+end note
+N1 .. A
+@enduml

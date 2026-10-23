@@ -1,0 +1,429 @@
+# `@startjson` diagrams (T29). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/. Refines the T13 base `embedded-json`
+# (its `main` and `empty` are shadowed here). `@startyaml`/`@starthcl` stay opaque (D4).
+#
+# Upstream. JsonDiagramFactory is a PSystemAbstractFactory, not a command factory
+# (jsondiagram/JsonDiagramFactory.java:61), so `common` is not included.
+# * StyleExtractor (jsondiagram/StyleExtractor.java:63-101) walks the preprocessed block,
+#   @startjson and @endjson included, and keeps a list of "data" lines. Blank lines are
+#   dropped (:66-68). A trimmed line equal to `<style>` (case-sensitive) starts a region
+#   that runs to the first trimmed `</style>` line, in any state (:69-75, :105-111).
+#   While the list holds only @startjson (the "header"), trimmed lines starting with
+#   `!assume `, `!pragma `, `hide `, `scale `, `title `, `skin `, `skinparam ` are taken
+#   out (:76-97); a `skinparam` line containing `{` swallows lines up to a trimmed `}`
+#   line (:91-96). Every other line is added to the list as is, untrimmed (:98-99).
+# * The factory (JsonDiagramFactory.java:73-96) skips the first list line, stops before
+#   the last one (normally @endjson, :77-82), turns a line starting with `#highlight `
+#   into a Highlighted (:83-87, yaml/Highlighted.java:64-76), drops any other `#` line,
+#   and joins the rest with "\n" (:88-91, text/BackSlash.java:48) for Json.parse (:93).
+# * JsonParser (json/JsonParser.java): RFC 8259 values with two leniencies only: a `//`
+#   comment up to the end of the line is allowed inside an object before a member name
+#   (:230-232) and after a member value (:245-247), and skipComment needs the second `/`
+#   (:256-263). No block comments, no trailing commas (a name or value must follow `,`:
+#   :202-208, :228-248, :265-270), keys and strings double-quoted only (:265-270,
+#   :311-328), no control characters in strings (:319-320), escapes `\" \/ \\ \b \f \n \r
+#   \t \uXXXX` (:330-368), case-sensitive `true`/`false`/`null` (:272-298), numbers
+#   without `+` or leading zeros (:370-412), whitespace = space, tab, LF, CR (:501-503),
+#   nesting at most 1000 (:39, :193-195, :219-221), and text after the value is
+#   "Unexpected character" (:144-149). Every such error is a ParseException, and the
+#   factory catches it (:94-96): the diagram then renders "Your data does not sound like
+#   JSON data" (JsonDiagram.java:116-122). So the JSON text never decides acceptance
+#   (oracle-verified: garbage, trailing commas, unquoted keys, single quotes, trailing
+#   text, 5000-deep nesting are all accepted).
+# * What the jar rejects: exceptions other than ParseException escape createSystem and
+#   PSystemBuilder turns any Throwable into an error (PSystemBuilder.java:275-280),
+#   reported at the @end line:
+#   - NoSuchElementException (JsonDiagramFactory.java:79): a header `<style>` or
+#     `skinparam ... {` region that never closes swallows @endjson, leaving only
+#     @startjson in the list. After a content line the same region only swallows the
+#     last list line, which is harmless.
+#   - IllegalStateException from Highlighted.build (Highlighted.java:69-71): after
+#     `#highlight `, the trimmed rest must match `^([^<>]+)(<<.*>>)?$` (:50).
+#   - IllegalStateException / NullPointerException from StyleParser (style/parser/
+#     StyleParser.java:104-113, :116, :121, :153-172) on the style regions. A
+#     StyleParsingException (:141, :170, :213, :215, `skin` loading) is caught and only
+#     logged (JsonDiagramFactory.java:99-104), so such bodies are accepted.
+#
+# Model. `main` is the header state, `json_content` the state after the first list line
+# (`set`). Failures use `needs: json_throws`, a flag no entry gives, so the attempt fails
+# at the @end line exactly like the jar; those entries are `emit: false` (emitters see
+# only the accepting entries). The JSON lines themselves always pass: `JsonMemberLine`,
+# `JsonCommentLine` and `JsonText` give emitters line-level structure only. The class
+# family's JSON grammar (class-objects CO_JSON_*) is not reused: it reads joined lines as
+# concatenated with nothing between them (CommandCreateJson) and never allows `//`, while
+# here lines are joined with "\n", and acceptance does not depend on it anyway.
+# * Style regions (grammar in `json-style`): `JsonStyleError` is a `join` over exactly
+#   one closed region (its last joined line is the first `</style>`, so `style`'s
+#   END-line conventions hold) whose
+#   parts are the valid StyleParser statements of `style` (STYLE_STATEMENT, T33) followed
+#   by the first statement that throws IllegalStateException or reads a missing token
+#   (an unclosed `/*`, `/'`, quote or `@` token swallows `</style>` and the last newline;
+#   a `//` comment leaves `</style>` as the next STRING). Fuzzed against the jar: 1,800
+#   random regions, no disagreement outside the gaps below. `JsonStyle` (header) pushes
+#   the region with `require_pop`, so an unclosed one backtracks to `JsonStyleUnclosed`.
+#   After content, `JsonStyleContent` pushes without `require_pop`. `JsonStyleStructure`
+#   is the emitter view (multiline + end + push of style's `style_body`, as T33
+#   recommends); the interpreter never reaches it.
+# * `skinparam ... {` in the header: the same push / require_pop / unclosed pattern; the
+#   push is emitted too, and its body line never matches a lone `}`, so a grammar cannot
+#   run a block past its first `}`.
+# * `JsonText` in `main` (the first data line) excludes the header keywords, so a grammar
+#   has one header/content split; the interpreter takes those lines earlier anyway.
+# Known gaps (fixtures in tests/fixtures/json/gap):
+# * Unclosed `<style>` after content: StyleParser still runs on the rest of the block,
+#   but a join cannot see the end of the body, so its errors are accepted here.
+# * A `{{` line inside a style region: the interpreter glues `{{ ... }}` units in every
+#   join (tools/interp/scan.py unit_end, a command-factory rule), so the error join
+#   cannot end at `</style>` and the region is accepted.
+# * All style regions of a block form one StyleParser run (StyleExtractor.java:133-137):
+#   here each region is checked alone, so a StyleParsingException in an earlier region
+#   that hides a later IllegalStateException is rejected here; a statement spanning two
+#   regions is not modelled.
+# * An unclosed `<style>` after content also drops the last list line, so a bad
+#   `#highlight` right before it is never built (accepted upstream, rejected here).
+schema_version: 1
+id: json
+layer: diagram
+diagram: JSON
+factory: JsonDiagramFactory
+include: [embedded-json, json-style]
+
+variables:
+  JSON_ANY: {regex: ".*"}
+  # A Java String.trim() blank inside one line (chars <= U+0020 except line breaks).
+  JSON_BLANKS: {regex: "[\\x00-\\x09\\x0b\\x0c\\x0e-\\x20]*"}
+  # ---- header lines (StyleExtractor.java:76-97) ----
+  JSON_SKINPARAM_KEYWORD: {literal: "skinparam ", ci: false, scope: keyword.other.skinparam.json}
+  JSON_SKINPARAM_BLOCK:
+    seq:
+      - {ref: JSON_SKINPARAM_KEYWORD}
+      - {regex: "[^{\\n\\r]*", scope: variable.parameter.skinparam.json}
+      - {literal: "{", ci: false, scope: punctuation.section.block.begin.json}
+      - {ref: JSON_ANY}
+  JSON_BLOCK_CLOSE: {literal: "}", ci: false, scope: punctuation.section.block.end.json}
+  # A body line other than the closing `}` (that one always pops first). Excluding it
+  # keeps a grammar from running a block past its first `}` (upstream stops there, :93-94).
+  JSON_SKINPARAM_LINE:
+    seq:
+      - {regex: "(?!\\}[ \\t]*(?:\\r?\\n|$))[^\\s]+", scope: support.type.property-name.skinparam.json}
+      - {regex: "[^\\n\\r]*", scope: string.unquoted.skinparam.json}
+  # ---- data lines (JsonDiagramFactory.java:83-91) ----
+  JSON_HIGHLIGHT_KEYWORD: {literal: "#highlight ", ci: false, scope: keyword.other.highlight.json}
+  # Highlighted.java:67-71: the trimmed rest matches ^([^<>]+)(<<.*>>)?$ (Java `.`
+  # excludes the line terminators \n \r U+0085 U+2028 U+2029).
+  JSON_HIGHLIGHT_LINE:
+    seq:
+      - {ref: JSON_HIGHLIGHT_KEYWORD}
+      - {ref: JSON_BLANKS}
+      - {regex: "(?=[^\\x00-\\x20])[^<>\\n\\r]+", scope: string.unquoted.path.json}
+      - opt: {regex: "<<[^\\n\\r\u0085  ]*>>", scope: entity.name.type.stereotype.json}
+      - {ref: JSON_BLANKS}
+  JSON_HIGHLIGHT_ANY:
+    seq: [{ref: JSON_HIGHLIGHT_KEYWORD}, {ref: JSON_ANY}]
+  JSON_HASH_LINE: {regex: "#.*", scope: comment.line.number-sign.json}
+  JSON_LINE_COMMENT: {regex: "//.*", scope: comment.line.double-slash.json}
+  # JsonParser.java:265-270 (name), :311-328 (string), :237 (`:`).
+  JSON_MEMBER:
+    seq:
+      - {regex: "\"(?:[^\"\\\\\\x00-\\x1f]|\\\\.)*\"", scope: support.type.property-name.json}
+      - {regex: "[ \\t]*"}
+      - {literal: ":", ci: false, scope: punctuation.separator.dictionary.key-value.json}
+      - {regex: ".*", scope: meta.structure.dictionary.value.json}
+  JSON_TEXT: {regex: ".+", scope: meta.structure.json}
+  # The first data line ends the header (StyleExtractor.java:98-99). It is never a line
+  # the header entries always take; excluding them keeps the header/content split
+  # unambiguous for a grammar (the interpreter reaches this entry only after them anyway).
+  JSON_TEXT_FIRST: {regex: "(?!(?:!assume |!pragma |hide |scale |title |skin |skinparam |<style>[ \\t]*(?:\\r?\\n|$)))[^\\n\\r]+", scope: meta.structure.json}
+
+contexts:
+  main:
+    - command: JsonStyleError
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 112
+        also:
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:172
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:133-137
+          - src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-280
+      kind: multiline
+      join: {max_lines: 100000}
+      parts: {ref: JSON_STYLE_ERROR_REGION}
+      emit: false
+      needs: json_throws
+      push: json_swallow
+    - command: JsonStyle
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 69
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:105-111]
+      kind: single
+      parts: {ref: JSON_STYLE_OPEN}
+      emit: false
+      push: json_style_region
+      require_pop: true
+    - command: JsonStyleUnclosed
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java
+        line: 79
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:70-75
+          - src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-280
+      kind: single
+      parts: {ref: JSON_STYLE_OPEN}
+      emit: false
+      needs: json_throws
+      push: json_swallow
+    - command: JsonStyleStructure
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 69
+      kind: multiline
+      parts: {ref: JSON_STYLE_OPEN}
+      end: {ref: JSON_STYLE_CLOSE}
+      push: style_body
+    - command: JsonAssume
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 76}
+      kind: single
+      parts:
+        seq: [{literal: "!assume ", ci: false, scope: keyword.control.directive.json}, {ref: JSON_ANY}]
+    - command: JsonPragma
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 78}
+      kind: single
+      parts:
+        seq: [{literal: "!pragma ", ci: false, scope: keyword.control.directive.json}, {ref: JSON_ANY}]
+    - command: JsonHide
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 80}
+      kind: single
+      parts:
+        seq: [{literal: "hide ", ci: false, scope: keyword.other.hide.json}, {ref: JSON_ANY}]
+    - command: JsonScale
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 82
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagram.java:91-99]
+      kind: single
+      parts:
+        seq: [{literal: "scale ", ci: false, scope: keyword.other.scale.json}, {regex: ".*", scope: constant.numeric.scale.json}]
+    - command: JsonTitle
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 84}
+      kind: single
+      parts:
+        seq: [{literal: "title ", ci: false, scope: keyword.other.title.json}, {regex: ".*", scope: string.unquoted.title.json}]
+    - command: JsonSkin
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 86}
+      kind: single
+      parts:
+        seq: [{literal: "skin ", ci: false, scope: keyword.other.skin.json}, {regex: ".*", scope: string.unquoted.skin.json}]
+    - command: JsonSkinparamBlock
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 91
+      kind: single
+      parts: {ref: JSON_SKINPARAM_BLOCK}
+      push: json_skinparam_body
+      require_pop: true
+    - command: JsonSkinparamUnclosed
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java
+        line: 79
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:91-96
+          - src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-280
+      kind: single
+      parts: {ref: JSON_SKINPARAM_BLOCK}
+      emit: false
+      needs: json_throws
+      push: json_swallow
+    - command: JsonSkinparam
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 88}
+      kind: single
+      parts:
+        seq: [{ref: JSON_SKINPARAM_KEYWORD}, {regex: "[^{\\n\\r]*", scope: variable.parameter.skinparam.json}]
+    - command: JsonHighlight
+      provenance:
+        class: net.sourceforge.plantuml.yaml.Highlighted
+        file: src/main/java/net/sourceforge/plantuml/yaml/Highlighted.java
+        line: 64
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:83-87]
+      kind: single
+      trim: false
+      parts: {ref: JSON_HIGHLIGHT_LINE}
+      set: json_content
+    - command: JsonHighlightError
+      provenance:
+        class: net.sourceforge.plantuml.yaml.Highlighted
+        file: src/main/java/net/sourceforge/plantuml/yaml/Highlighted.java
+        line: 71
+        also:
+          - src/main/java/net/sourceforge/plantuml/yaml/Highlighted.java:50
+          - src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-280
+      kind: single
+      trim: false
+      parts: {ref: JSON_HIGHLIGHT_ANY}
+      emit: false
+      needs: json_throws
+      set: json_content
+    - command: JsonHashLine
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory, file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java, line: 83}
+      kind: single
+      trim: false
+      parts: {ref: JSON_HASH_LINE}
+      set: json_content
+    - command: JsonCommentLine
+      provenance:
+        class: net.sourceforge.plantuml.json.JsonParser
+        file: src/main/java/net/sourceforge/plantuml/json/JsonParser.java
+        line: 256
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:89-90]
+      kind: single
+      parts: {ref: JSON_LINE_COMMENT}
+      set: json_content
+    - command: JsonMemberLine
+      provenance:
+        class: net.sourceforge.plantuml.json.JsonParser
+        file: src/main/java/net/sourceforge/plantuml/json/JsonParser.java
+        line: 234
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:89-90]
+      kind: single
+      parts: {ref: JSON_MEMBER}
+      set: json_content
+    - command: JsonText
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java
+        line: 89
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:93-96]
+      kind: single
+      parts: {ref: JSON_TEXT_FIRST}
+      set: json_content
+  json_content:
+    - command: JsonStyleError
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 112
+        also:
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:172
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:133-137
+          - src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-280
+      kind: multiline
+      join: {max_lines: 100000}
+      parts: {ref: JSON_STYLE_ERROR_REGION}
+      emit: false
+      needs: json_throws
+      push: json_swallow
+    - command: JsonStyleContent
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 69
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:78-82]
+      kind: single
+      parts: {ref: JSON_STYLE_OPEN}
+      emit: false
+      push: json_style_region
+    - command: JsonStyleStructure
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 69
+      kind: multiline
+      parts: {ref: JSON_STYLE_OPEN}
+      end: {ref: JSON_STYLE_CLOSE}
+      push: style_body
+    - command: JsonHighlight
+      provenance:
+        class: net.sourceforge.plantuml.yaml.Highlighted
+        file: src/main/java/net/sourceforge/plantuml/yaml/Highlighted.java
+        line: 64
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:83-87]
+      kind: single
+      trim: false
+      parts: {ref: JSON_HIGHLIGHT_LINE}
+    - command: JsonHighlightError
+      provenance:
+        class: net.sourceforge.plantuml.yaml.Highlighted
+        file: src/main/java/net/sourceforge/plantuml/yaml/Highlighted.java
+        line: 71
+        also:
+          - src/main/java/net/sourceforge/plantuml/yaml/Highlighted.java:50
+          - src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-280
+      kind: single
+      trim: false
+      parts: {ref: JSON_HIGHLIGHT_ANY}
+      emit: false
+      needs: json_throws
+    - command: JsonHashLine
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory, file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java, line: 83}
+      kind: single
+      trim: false
+      parts: {ref: JSON_HASH_LINE}
+    - command: JsonCommentLine
+      provenance:
+        class: net.sourceforge.plantuml.json.JsonParser
+        file: src/main/java/net/sourceforge/plantuml/json/JsonParser.java
+        line: 256
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:89-90]
+      kind: single
+      parts: {ref: JSON_LINE_COMMENT}
+    - command: JsonMemberLine
+      provenance:
+        class: net.sourceforge.plantuml.json.JsonParser
+        file: src/main/java/net/sourceforge/plantuml/json/JsonParser.java
+        line: 234
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:89-90]
+      kind: single
+      parts: {ref: JSON_MEMBER}
+    - command: JsonText
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java
+        line: 89
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:93-96]
+      kind: single
+      parts: {ref: JSON_TEXT}
+  # Inside a style region (interpreter): only a trimmed `</style>` ends it (:109-111).
+  json_style_region:
+    - command: JsonStyleRegionEnd
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 110}
+      kind: single
+      parts: {ref: JSON_STYLE_CLOSE}
+      pop: true
+    - command: JsonStyleRegionLine
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 71}
+      kind: single
+      parts: {ref: JSON_ANY}
+  # Inside a header `skinparam ... {` region: a trimmed `}` line ends it (:92-96).
+  json_skinparam_body:
+    - command: JsonSkinparamClose
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 93}
+      kind: single
+      parts: {ref: JSON_BLOCK_CLOSE}
+      pop: true
+    - command: JsonSkinparamLine
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 95}
+      kind: single
+      parts: {ref: JSON_SKINPARAM_LINE}
+  # The rest of a block whose region swallowed @endjson, or after an error.
+  json_swallow:
+    - command: JsonSwallowedLine
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.StyleExtractor, file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java, line: 74}
+      kind: single
+      parts: {ref: JSON_ANY}
+  # Empty body: Json.parse("") throws ParseException, which is caught (:93-96).
+  empty:
+    - command: JsonEmptyBody
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java
+        line: 93
+        also: [src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java:94-96]
+      kind: single
+      parts: {ref: JSON_ANY}

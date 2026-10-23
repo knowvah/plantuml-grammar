@@ -1,0 +1,15 @@
+' description: CommandCreateElementFull
+@startuml
+[Comp]
+(Use)
+:Act:
+() Iface2
+(Biz)/
+:BizAct:/
+[C2] as c2
+"Long name" as LN
+actor :Bob: as bob
+usecase (Login) as UC1
+component Comp3 as "Display"
+node "Display4" as n4 <<srv>> #lightblue
+@enduml

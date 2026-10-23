@@ -1,0 +1,7 @@
+' description: GroupStackEmpty, CommandLinkElement
+' gap: the orphan safe list is by first word; `hide --> x` is a link (CommandLinkElement precedes CommandHideShow2), which fails without a group
+@startuml
+[c]
+}
+hide --> x
+@enduml

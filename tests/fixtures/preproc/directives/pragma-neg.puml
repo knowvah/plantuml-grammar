@@ -1,0 +1,4 @@
+@startuml
+!pragma
+a -> b
+@enduml

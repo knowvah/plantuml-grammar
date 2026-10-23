@@ -1,0 +1,109 @@
+' style: bare word at the end
+@startuml
+<style>
+Foo
+</style>
+class Foo
+@enduml
+
+' style: property without value
+@startuml
+<style>
+root {
+LineColor
+}
+</style>
+class Foo
+@enduml
+
+' style: colon without value
+@startuml
+<style>
+root {
+LineColor:
+}
+</style>
+class Foo
+@enduml
+
+' style: semicolon instead of value
+@startuml
+<style>
+root {
+LineColor ;
+}
+</style>
+class Foo
+@enduml
+
+' style: value followed by {
+@startuml
+<style>
+root {
+LineColor red {
+}
+</style>
+class Foo
+@enduml
+
+' style: { on the line after a value
+@startuml
+<style>
+root {
+LineColor red
+{
+}
+</style>
+class Foo
+@enduml
+
+' style: star as value
+@startuml
+<style>
+root {
+LineColor *
+}
+</style>
+class Foo
+@enduml
+
+' style: colon at the end of a value
+@startuml
+<style>
+root {
+Foo a :
+}
+</style>
+class Foo
+@enduml
+
+' style: @ inside a value
+@startuml
+<style>
+root {
+LineColor @red
+}
+</style>
+class Foo
+@enduml
+
+' style: comment joins the value with a selector
+@startuml
+<style>
+root {
+LineColor red // comment
+foo {
+}
+}
+</style>
+class Foo
+@enduml
+
+' style: word then star at the end
+@startuml
+<style>
+root
+*
+</style>
+class Foo
+@enduml

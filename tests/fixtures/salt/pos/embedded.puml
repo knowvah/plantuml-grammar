@@ -1,0 +1,8 @@
+' salt: CommandAnything
+@startsalt
+{
+{{
+A -> B
+}}
+}
+@endsalt

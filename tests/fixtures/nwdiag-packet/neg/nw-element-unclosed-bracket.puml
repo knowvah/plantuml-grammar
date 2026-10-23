@@ -1,0 +1,4 @@
+' nwdiag-packet: CommandElement
+@startnwdiag
+a [address = "x"
+@endnwdiag

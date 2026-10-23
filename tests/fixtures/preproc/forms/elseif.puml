@@ -1,0 +1,8 @@
+@startuml
+!if 0
+!elseif 1 == 1
+a -> b
+!else
+b -> a
+!endif
+@enduml

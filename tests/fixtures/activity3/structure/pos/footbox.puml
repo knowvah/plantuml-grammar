@@ -1,0 +1,8 @@
+' activity3: CommandFootboxIgnored
+@startuml
+hide footbox
+show footbox
+footbox
+hidefootbox
+:a;
+@enduml

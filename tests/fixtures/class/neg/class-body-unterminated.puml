@@ -1,0 +1,6 @@
+' class: CommandCreateClassMultilines
+@startuml
+class A {
+  + x
+  + y
+@enduml

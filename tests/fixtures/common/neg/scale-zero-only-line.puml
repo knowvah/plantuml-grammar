@@ -1,0 +1,5 @@
+' common: CommandScale
+' factory: SequenceDiagramFactory
+@startuml
+scale 0
+@enduml

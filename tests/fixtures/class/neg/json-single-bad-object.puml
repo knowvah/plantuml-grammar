@@ -1,0 +1,5 @@
+' class: CommandCreateJsonSingleLineError
+@startuml
+class X
+json J {"a":01}
+@enduml

@@ -1,0 +1,7 @@
+' class: CommandPackageBracketNextLine, GroupEnd
+@startuml
+package foo <<Node>>
+{
+class A
+}
+@enduml

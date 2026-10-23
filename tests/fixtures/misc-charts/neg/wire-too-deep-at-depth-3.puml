@@ -1,0 +1,7 @@
+' misc-charts: WireComponentAtLevel2, WireTooDeep3
+@startwire
+* a
+	* b
+		* c
+					* d
+@endwire

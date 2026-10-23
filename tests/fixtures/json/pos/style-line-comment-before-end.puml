@@ -1,0 +1,8 @@
+' json: JsonStyle, JsonText
+' After a // comment </style> is still the next token, so the declaration is complete.
+@startjson
+<style>
+foo // c
+</style>
+[1]
+@endjson

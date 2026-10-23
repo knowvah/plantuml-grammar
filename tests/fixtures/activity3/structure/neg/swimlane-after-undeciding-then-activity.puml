@@ -1,0 +1,7 @@
+' activity3: CommandSwimlane, CommandNote3, CommandActivity3
+@startuml
+title t
+note left: n
+:a;
+|A|
+@enduml

@@ -1,0 +1,5 @@
+' single-line: single-line-math
+@startmath
+skinparam a b
+x^2
+@endmath

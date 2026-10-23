@@ -1,0 +1,11 @@
+' json: JsonStyle, JsonText
+@startjson
+<style>
+jsonDiagram {
+  node {
+    BackGroundColor Khaki
+  }
+}
+</style>
+[1]
+@endjson

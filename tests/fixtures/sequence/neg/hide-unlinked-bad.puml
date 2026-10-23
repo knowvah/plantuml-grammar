@@ -1,0 +1,6 @@
+' sequence: CommandHideUnlinked
+@startuml
+autonumber
+Alice -> Bob : x
+hide unlinkd
+@enduml

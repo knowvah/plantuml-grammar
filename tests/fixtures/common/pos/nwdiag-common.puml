@@ -1,0 +1,10 @@
+' common: CommandCaption
+' factory: NwDiagramFactory
+@startnwdiag
+caption Net
+nwdiag {
+  network dmz {
+    web01;
+  }
+}
+@endnwdiag

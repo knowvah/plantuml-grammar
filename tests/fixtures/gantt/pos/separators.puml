@@ -1,0 +1,8 @@
+' gantt: CommandSeparator
+@startgantt
+[A] -> [B]
+-- Phase one --
+--
+--- x ---
+-- trailing --
+@endgantt

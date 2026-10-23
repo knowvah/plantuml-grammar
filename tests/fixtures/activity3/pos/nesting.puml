@@ -1,0 +1,28 @@
+' activity3: CommandSwitch, CommandCase, CommandRepeat3, CommandIf2, CommandWhile3, CommandFork3, CommandSplit3, CommandSplitEnd3, CommandForkEnd3, CommandWhileEnd3, CommandElse3, CommandEndif3, CommandBackward3, CommandRepeatWhile3, CommandEndSwitch
+@startuml
+start
+switch (s)
+case (one)
+repeat
+if (a) then
+while (b)
+fork
+split
+:x;
+split again
+:y;
+end split
+fork again
+:z;
+end fork
+endwhile
+else
+:no;
+endif
+backward :again;
+repeat while (c)
+case (two)
+:w;
+endswitch
+stop
+@enduml

@@ -1,0 +1,10 @@
+' description: CommandCreateElementMultilines_59, CommandCreateElementMultilines_60
+@startuml
+[X]
+component C as "first
+second"
+node N [
+line one
+line two
+]
+@enduml

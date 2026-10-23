@@ -1,0 +1,4 @@
+' refines: url-link | [[]]
+@startuml
+class A [[]]
+@enduml

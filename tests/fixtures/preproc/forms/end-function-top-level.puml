@@ -1,0 +1,5 @@
+@startuml
+!endfunction
+!END PROCEDURE
+a -> b
+@enduml

@@ -1,0 +1,425 @@
+# Gantt sentence grammar (T25): the 9 NaturalGanttCommand subjects, included by `gantt`.
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Upstream. GanttDiagramFactory registers one NaturalGanttCommand per subject between the
+# common block and CommandGanttArrow (gantt/GanttDiagramFactory.java:89, :112-122). Each
+# reads `SP? SUBJECT SP? PHRASE (AND PHRASE)* <rest>` (gantt-sentences-phrases), using the
+# generated `gantt-lang` shapes. Per subject, in that order:
+# * `NaturalGantt<S>Invalid` (reject): the sentence reaches a field whose parse fails
+#   (gantt-sentences-bad); the generated shapes are supersets, so these come first.
+# * `NaturalGantt<S>` (accept): the sentence, emitted to every grammar.
+# * `NaturalGantt<S>Unmatched` (reject): the isValid shape (subject and one phrase
+#   prefix, NaturalGanttCommand.java:125-144). The command owns the line, so whatever the
+#   accept entry refused (no phrase after ` and `, "No matching verb phrase", :120) fails
+#   here instead of reaching a later command.
+# Emitters drop the rejects and keep the shape-level sentences: they accept invalid dates
+# and numbers (the validated forms are too large for one PCRE2 regex).
+#
+# State, through the T24 hook (heads keyed by gantt.yaml's head ids):
+# * main (no task-like entry yet): a task sentence creates its task (SubjectTask.getMe ->
+#   GanttDiagram.getOrCreateTask, SubjectTask.java:442-461) and `set`s gantt_tasks; `it`
+#   fails, nothing has set it yet (SubjectTask.java:444-447).
+# * gantt_tasks, gantt_group_1, gantt_group: `project starts` fails, "Starting point must
+#   be set before task definition" (gantt/GanttDiagram.java:340-346).
+# * flags: an absolute `starts`/`ends` needs `project_start` ("No starting date for the
+#   project", SubjectTask.java:106-107; `project starts` is only legal before any task, so
+#   order-free is exact), which `project starts` gives; task sentences give `real_task`
+#   (gantt.yaml final check).
+# Gaps (reports/classify/gantt.yaml): task and day-name lookups; `it`/`they` after other
+# entries; working hours that parse to null; the 20-year limit (GanttDiagram.java:175-176).
+schema_version: 1
+id: gantt-sentences
+layer: shared
+include: [gantt-sentences-phrases, gantt-sentences-bad, gantt-lang]
+
+insert_before:
+  # The sentences, in their upstream place (GanttDiagramFactory.java:89, :112-122).
+  CommandGanttArrow:
+    # GanttDiagramFactory.java:113: NaturalGanttCommand(SubjectGantt.ME).
+    - command: NaturalGanttGanttInvalid
+      provenance:
+        class: net.sourceforge.plantuml.gantt.lang.SubjectGantt
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectGantt.java
+        line: 62
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectGantt.java:62-86
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:88-105
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:113
+      kind: single
+      reject: true
+      parts: {ref: GB_GANTT_INVALID}
+    - command: NaturalGanttGantt
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:113
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectGantt.java:62-86
+      kind: single
+      parts: {ref: GS_GANTT_SENTENCE}
+      gives: project_start
+    - command: NaturalGanttGanttUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:113
+      kind: single
+      reject: true
+      parts: {ref: GS_GANTT_CLAIM}
+    # GanttDiagramFactory.java:114: NaturalGanttCommand(SubjectToday.ME).
+    - command: NaturalGanttTodayInvalid
+      provenance:
+        class: net.sourceforge.plantuml.gantt.lang.SubjectToday
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectToday.java
+        line: 61
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectToday.java:61-92
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:88-105
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:114
+      kind: single
+      reject: true
+      parts: {ref: GB_TODAY_INVALID}
+    - command: NaturalGanttToday
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:114
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectToday.java:61-92
+      kind: single
+      parts: {ref: GS_TODAY_SENTENCE}
+    - command: NaturalGanttTodayUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:114
+      kind: single
+      reject: true
+      parts: {ref: GS_TODAY_CLAIM}
+    # GanttDiagramFactory.java:115: NaturalGanttCommand(SubjectTask.ME).
+    - command: NaturalGanttTaskInvalid
+      provenance:
+        class: net.sourceforge.plantuml.gantt.lang.SubjectTask
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java
+        line: 89
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java:89-481
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:88-105
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:115
+      kind: single
+      reject: true
+      parts: {ref: GB_TASK_INVALID}
+    # Interpreter-only: the absolute start/end needs `project starts` (flag); emitters keep
+    # NaturalGanttTask, which accepts the same lines.
+    - command: NaturalGanttTaskNeedsStart
+      provenance: &needs_start
+        class: net.sourceforge.plantuml.gantt.lang.SubjectTask
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java
+        line: 106
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java:172-173
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java:262-263
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java:305-306
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java:340-346
+      kind: single
+      emit: false
+      parts: {ref: GS_TASK_NEEDS_START}
+      needs: project_start
+      gives: real_task
+    - command: NaturalGanttTask
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:115
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java:89-481
+      kind: single
+      parts: {ref: GS_TASK_SENTENCE}
+      gives: real_task
+    - command: NaturalGanttTaskUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:115
+      kind: single
+      reject: true
+      parts: {ref: GS_TASK_CLAIM}
+    # GanttDiagramFactory.java:116: NaturalGanttCommand(SubjectResource.ME).
+    - command: NaturalGanttResourceInvalid
+      provenance:
+        class: net.sourceforge.plantuml.gantt.lang.SubjectResource
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectResource.java
+        line: 67
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectResource.java:67-192
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:88-105
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:116
+      kind: single
+      reject: true
+      parts: {ref: GB_RESOURCE_INVALID}
+    - command: NaturalGanttResource
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:116
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectResource.java:67-192
+      kind: single
+      parts: {ref: GS_RESOURCE_SENTENCE}
+    - command: NaturalGanttResourceUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:116
+      kind: single
+      reject: true
+      parts: {ref: GS_RESOURCE_CLAIM}
+    # GanttDiagramFactory.java:117: NaturalGanttCommand(SubjectDaysAsDates.ME).
+    - command: NaturalGanttDaysAsDatesInvalid
+      provenance:
+        class: net.sourceforge.plantuml.gantt.lang.SubjectDaysAsDates
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectDaysAsDates.java
+        line: 66
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectDaysAsDates.java:66-198
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:88-105
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:117
+      kind: single
+      reject: true
+      parts: {ref: GB_DAYS_INVALID}
+    - command: NaturalGanttDaysAsDates
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:117
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectDaysAsDates.java:66-198
+      kind: single
+      parts: {ref: GS_DAYS_SENTENCE}
+    - command: NaturalGanttDaysAsDatesUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:117
+      kind: single
+      reject: true
+      parts: {ref: GS_DAYS_CLAIM}
+    # GanttDiagramFactory.java:118: NaturalGanttCommand(SubjectDayOfWeek.ME).
+    - command: NaturalGanttDayOfWeek
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:118
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectDayOfWeek.java:62-106
+      kind: single
+      parts: {ref: GS_WEEKDAY_SENTENCE}
+    - command: NaturalGanttDayOfWeekUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:118
+      kind: single
+      reject: true
+      parts: {ref: GS_WEEKDAY_CLAIM}
+    # GanttDiagramFactory.java:119: NaturalGanttCommand(SubjectDayAsDate.ME).
+    - command: NaturalGanttDayAsDateInvalid
+      provenance:
+        class: net.sourceforge.plantuml.gantt.lang.SubjectDayAsDate
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectDayAsDate.java
+        line: 64
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectDayAsDate.java:64-142
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:88-105
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:119
+      kind: single
+      reject: true
+      parts: {ref: GB_DAY_INVALID}
+    - command: NaturalGanttDayAsDate
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:119
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectDayAsDate.java:64-142
+      kind: single
+      parts: {ref: GS_DAY_SENTENCE}
+    - command: NaturalGanttDayAsDateUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:119
+      kind: single
+      reject: true
+      parts: {ref: GS_DAY_CLAIM}
+    # GanttDiagramFactory.java:120: NaturalGanttCommand(SubjectSeparator.ME).
+    - command: NaturalGanttSeparatorInvalid
+      provenance:
+        class: net.sourceforge.plantuml.gantt.lang.SubjectSeparator
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectSeparator.java
+        line: 62
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectSeparator.java:62-110
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:88-105
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:120
+      kind: single
+      reject: true
+      parts: {ref: GB_SEPARATOR_INVALID}
+    - command: NaturalGanttSeparator
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:120
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectSeparator.java:62-110
+      kind: single
+      parts: {ref: GS_SEPARATOR_SENTENCE}
+    - command: NaturalGanttSeparatorUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:120
+      kind: single
+      reject: true
+      parts: {ref: GS_SEPARATOR_CLAIM}
+    # GanttDiagramFactory.java:121: NaturalGanttCommand(SubjectWorkingHours.ME).
+    - command: NaturalGanttWorkingHours
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 74
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:125-144
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:121
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectWorkingHours.java:62-93
+      kind: single
+      parts: {ref: GS_HOURS_SENTENCE}
+    - command: NaturalGanttWorkingHoursUnmatched
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.NaturalGanttCommand
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java
+        line: 120
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:107-118
+          - src/main/java/net/sourceforge/plantuml/gantt/GanttDiagramFactory.java:121
+      kind: single
+      reject: true
+      parts: {ref: GS_HOURS_CLAIM}
+  # --- main: before any task-like entry (T24 anchor GanttArrowWithoutTask) ------------
+  GanttArrowWithoutTask:
+    - command: GanttItWithoutTask
+      provenance:
+        class: net.sourceforge.plantuml.gantt.lang.SubjectTask
+        file: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java
+        line: 444
+        engine: UBrex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/NaturalGanttCommand.java:88-90]
+      kind: single
+      reject: true
+      parts: {ref: GS_IT_CLAIM}
+    - command: GanttFirstTaskSentenceInvalid
+      provenance: &first_task
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 275
+        engine: UBrex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java:442-461]
+      kind: single
+      reject: true
+      parts: {ref: GB_TASK_INVALID}
+    - command: GanttFirstTaskSentenceNeedsStart
+      provenance: *first_task
+      kind: single
+      emit: false
+      parts: {ref: GS_TASK_NEEDS_START}
+      set: gantt_tasks
+      needs: project_start
+      gives: real_task
+    # emit: false: the uniform NaturalGanttTask accepts the same lines in every grammar.
+    - command: GanttFirstTaskSentence
+      provenance: *first_task
+      kind: single
+      emit: false
+      parts: {ref: GS_TASK_SENTENCE}
+      set: gantt_tasks
+      gives: real_task
+  # --- task-like entries exist (T24 anchors of gantt_tasks, gantt_group_1, gantt_group)
+  GanttGroupAtRoot: &project_starts_late
+    - command: GanttProjectStartsAfterTask
+      provenance:
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 340
+        engine: UBrex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectGantt.java:69-78]
+      kind: single
+      reject: true
+      parts: {ref: GS_GANTT_CLAIM}
+  GanttGroupInFirstGroup: *project_starts_late
+  GanttGroupInGroup: *project_starts_late

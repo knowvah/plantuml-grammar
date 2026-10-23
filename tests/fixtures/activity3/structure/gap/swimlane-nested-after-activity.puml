@@ -1,0 +1,9 @@
+' activity3: CommandSwimlane, CommandIf4, CommandEndif3
+' gap: the swimlane strategy is tracked in the top-level frame only: bodies do not check it, so a late swimlane inside an if is accepted
+@startuml
+:pre;
+if (x) then
+|A|
+:a;
+endif
+@enduml

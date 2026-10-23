@@ -1,0 +1,4 @@
+@startuml
+!option
+a -> b
+@enduml

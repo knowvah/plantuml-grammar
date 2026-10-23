@@ -1,0 +1,19 @@
+' class: CommandCreateClassMultilines, ClassBodyField, ClassBodyMethod, ClassBodySeparator
+@startuml
+class Account {
+  - id : int
+  # balance : double
+  ~ owner : String
+  + {static} count : int
+  {abstract} + compute() : double
+  {field} looksLike(aMethod)
+  {method} looksLikeAField
+  -- operations --
+  + deposit(amount : double)
+  .. private ..
+  __ underlined __
+  == strong ==
+  ...
+  <b>creole</b> text
+}
+@enduml

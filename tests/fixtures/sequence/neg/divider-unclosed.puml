@@ -1,0 +1,5 @@
+' sequence: CommandDivider
+@startuml
+Alice -> Bob : x
+== x
+@enduml

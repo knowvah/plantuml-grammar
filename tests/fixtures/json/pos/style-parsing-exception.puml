@@ -1,0 +1,8 @@
+' json: JsonStyle, JsonText
+' StyleParsingException is caught (JsonDiagramFactory.java:100-104).
+@startjson
+<style>
+Prop red {
+</style>
+[1]
+@endjson

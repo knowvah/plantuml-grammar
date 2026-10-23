@@ -1,0 +1,4 @@
+' gantt: GanttItWithoutTask
+@startgantt
+it lasts 2 days
+@endgantt

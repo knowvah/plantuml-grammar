@@ -1,0 +1,10 @@
+' board-files-git: FilesStyleBlock
+' gap: FilesDiagram.java:71-76 parses the filesDiagram FontSize (Style.java:241-244), which depends on selector matching
+' jar: reject
+@startfiles
+<style>
+root {
+  FontSize 99999999999
+}
+</style>
+@endfiles

@@ -1,0 +1,6 @@
+' json: JsonText, JsonMemberLine
+' JsonParser errors are ParseException, caught by JsonDiagramFactory.java:94-96.
+@startjson
+{a: 'b', "c": 1,}
+trailing text
+@endjson

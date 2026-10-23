@@ -1,0 +1,6 @@
+' gantt: NaturalGanttDayAsDate
+' jar: rejected
+' gap: the 20-year limit is date arithmetic over the whole diagram (GanttDiagram.java:175-176); without `project starts` the span starts at 1970-01-01
+@startgantt
+2020-01-01 is colored in red
+@endgantt

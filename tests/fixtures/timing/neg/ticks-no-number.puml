@@ -1,0 +1,5 @@
+' timing: CommandTicks
+@startuml
+analog "A" as A
+A ticks every x
+@enduml

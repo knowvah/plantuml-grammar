@@ -1,0 +1,9 @@
+' activity3: CommandIf2, CommandElse3, CommandElseLegacy1
+@startuml
+if (a) then
+:x;
+else
+:z;
+else when y
+endif
+@enduml

@@ -1,0 +1,10 @@
+' activity3: CommandIf2, CommandElse3, CommandElseIf2
+@startuml
+if (a) then
+:x;
+else
+:y;
+elseif (b) then
+:z;
+endif
+@enduml

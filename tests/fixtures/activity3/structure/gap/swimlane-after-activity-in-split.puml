@@ -1,0 +1,9 @@
+' activity3: CommandSwimlane, CommandSplit3, CommandSplitEnd3
+' gap: the swimlane strategy is tracked in the top-level frame only: an undecided top-level split is treated as ALLOWED (split() does not decide, ActivityDiagram3.java:248-254)
+@startuml
+split
+:a;
+end split
+|A|
+:c;
+@enduml

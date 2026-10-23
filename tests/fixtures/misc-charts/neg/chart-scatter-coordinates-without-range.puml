@@ -1,0 +1,4 @@
+' misc-charts: ChartCoordinateScatterWithoutRange
+@startchart
+scatter [(1,2)]
+@endchart

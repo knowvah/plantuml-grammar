@@ -1,0 +1,345 @@
+# Execution errors of sequence commands that a line can show (T17), included by
+# `sequence`. Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/
+# plantuml/sequencediagram/ unless stated.
+#
+# Same pattern as `common-errors`: the generated regex matches first upstream and the
+# execute step then fails the factory (command/PSystemCommandFactory.java:180-187), so
+# no later command sees the line. Each command is narrowed to the lines its execute step
+# accepts, and a `reject` with the generated shape follows it (insert_after). Emitters
+# drop `reject` entries and keep the narrowed rule.
+# * CommandArrow: a message needs a dressing other than a bare `o`
+#   (command/CommandArrow.java:296-314, "Illegal sequence arrow"): `A -- B`, `A o- B`.
+#   Upstream's first match decides the dressings; `<`, `>`, `/`, `\` and `x` can only be
+#   consumed by a dressing, so a line has a valid first match iff some match is valid.
+#   Lines over 2000 characters skip CommandArrow upstream (see ARROW_LENGTH_LIMIT).
+# * `note accross` is matched and then refused (command/note/sequence/
+#   FactorySequenceNoteAcrossCommand.java:210-212), single and multiline.
+# * Integer.parseInt overflow: autonumber start (DottedNumber.java:62) and step
+#   (command/CommandAutonumber.java:116), autonumber resume (CommandAutonumberResume.java:
+#   114), autonewpage (CommandAutoNewpage.java:76), `||n||` (CommandHSpace.java:84).
+schema_version: 1
+id: sequence-errors
+layer: shared
+include: [common, gen-shared]
+
+variables:
+  # --- messages (command/CommandArrow.java:88-133) ------------------------------------
+  SEQ_PARALLEL: {regex: "(&[\\s\_]*)?", ci: true, scope: keyword.operator.parallel}
+  SEQ_ANCHOR: {regex: "(\\{([\\p{L}\\p{N}_]+)\\}[\\s\_]+)?", ci: true, scope: entity.name.label.anchor}
+  SEQ_PARTICIPANT:
+    alt:
+      - {regex: "([\\p{L}\\p{N}_.@]+)", ci: true, scope: variable.other.participant}
+      - {regex: "[\"“”]([^\"“”]+)[\"“”]", ci: true, scope: string.quoted.participant}
+      - {regex: "[\"“”]([^\"“”]+)[\"“”][\\s\_]*as[\\s\_]+([\\p{L}\\p{N}_.@]+)", ci: true, scope: variable.other.participant}
+      - {regex: "([\\p{L}\\p{N}_.@]+)[\\s\_]+as[\\s\_]*[\"“”]([^\"“”]+)[\"“”]", ci: true, scope: variable.other.participant}
+  # RegexConcat.protectSize(2000) (CommandArrow.java:133): a trimmed line longer than
+  # 2000 characters never matches CommandArrow (regex/RegexConcat.java:127-130).
+  # Emitters drop zero-width leaves, so they do not see this limit.
+  ARROW_LENGTH_LIMIT: {regex: "(?![\\s\\S]{2001})", ci: true}
+  ARROW_HEAD:
+    seq:
+      - {ref: ARROW_LENGTH_LIMIT}
+      - {ref: SEQ_PARALLEL}
+      - {ref: SEQ_ANCHOR}
+      - {ref: SEQ_PARTICIPANT}
+      - {ref: SEQ_ANCHOR}
+      - {ref: SPACE_ANY}
+  # ARROW_DRESSING1 (CommandArrow.java:99-104) and the ones that make it valid.
+  ARROW_DRESSING_LEFT:
+    opt:
+      alt:
+        - {regex: "[\\s\_][ox]", ci: true, scope: keyword.operator.arrow.head}
+        - {regex: "(?:[\\s\_][ox]|\\(\\d+\\))?<<?_?", ci: true, scope: keyword.operator.arrow.head}
+        - {regex: "(?:[\\s\_][ox])?//?", ci: true, scope: keyword.operator.arrow.head}
+        - {regex: "(?:[\\s\_][ox])?\\\\\\\\?", ci: true, scope: keyword.operator.arrow.head}
+  ARROW_DRESSING_LEFT_VALID:
+    alt:
+      - {regex: "[\\s\_]x", ci: true, scope: keyword.operator.arrow.head}
+      - {regex: "(?:[\\s\_][ox]|\\(\\d+\\))?<<?_?", ci: true, scope: keyword.operator.arrow.head}
+      - {regex: "(?:[\\s\_][ox])?//?", ci: true, scope: keyword.operator.arrow.head}
+      - {regex: "(?:[\\s\_][ox])?\\\\\\\\?", ci: true, scope: keyword.operator.arrow.head}
+  ARROW_BODY:
+    alt:
+      - seq:
+          - {regex: "(-+)", ci: true, scope: keyword.operator.arrow.body}
+          - {ref: ARROW_STYLE1}
+          - {regex: "(-*)", ci: true, scope: keyword.operator.arrow.body}
+      - seq:
+          - {regex: "(-*)", ci: true, scope: keyword.operator.arrow.body}
+          - {ref: ARROW_STYLE2}
+          - {regex: "(-+)", ci: true, scope: keyword.operator.arrow.body}
+  # ARROW_DRESSING2 (CommandArrow.java:112-117), its valid forms, and the bare `o`.
+  ARROW_DRESSING_RIGHT:
+    opt:
+      alt:
+        - {regex: "_?>>?(?:[ox][\\s\_]|\\(\\d+\\))?", ci: true, scope: keyword.operator.arrow.head}
+        - {regex: "//?(?:[ox][\\s\_])?", ci: true, scope: keyword.operator.arrow.head}
+        - {regex: "\\\\\\\\?(?:[ox][\\s\_])?", ci: true, scope: keyword.operator.arrow.head}
+        - {regex: "[ox][\\s\_]", ci: true, scope: keyword.operator.arrow.head}
+  ARROW_DRESSING_RIGHT_VALID:
+    alt:
+      - {regex: "_?>>?(?:[ox][\\s\_]|\\(\\d+\\))?", ci: true, scope: keyword.operator.arrow.head}
+      - {regex: "//?(?:[ox][\\s\_])?", ci: true, scope: keyword.operator.arrow.head}
+      - {regex: "\\\\\\\\?(?:[ox][\\s\_])?", ci: true, scope: keyword.operator.arrow.head}
+      - {regex: "x[\\s\_]", ci: true, scope: keyword.operator.arrow.head}
+  ARROW_DRESSING_RIGHT_BARE:
+    opt: {regex: "o[\\s\_]", ci: true, scope: keyword.operator.arrow.head}
+  ARROW_TAIL:
+    seq:
+      - {ref: SPACE_ANY}
+      - {ref: SEQ_PARTICIPANT}
+      - {regex: "((?:\\s&\\s[\\p{L}\\p{N}_.@]+)*)", ci: true, scope: variable.other.participant}
+      - {ref: SEQ_ANCHOR}
+      - {ref: SPACE_ANY}
+      - {regex: "(?:(\\+\\+|\\*\\*|!!|--|--\\+\\+|\\+\\+--)?)", ci: true, scope: keyword.operator.activation}
+      - {ref: SPACE_ANY}
+      - {regex: "(?:(#\\w+)?)", ci: true, scope: constant.other.color}
+      - {ref: SEQ_STEREO}
+      - opt: {ref: URL}
+      - {ref: SPACE_ANY}
+      - {regex: "(?::[\\s\_]*(.*))?", ci: true, scope: string.unquoted.message}
+
+  # --- notes across (command/note/sequence/FactorySequenceNoteAcrossCommand.java:74-103)
+  SEQ_STEREO:
+    seq:
+      - {ref: SPACE_ANY}
+      - opt: {regex: "(\\<\\<.+?\\>\\>)", ci: true, scope: entity.other.attribute-name.stereotype}
+      - {ref: SPACE_ANY}
+  NOTE_ACROSS_HEAD:
+    seq:
+      - {regex: "(/)?", ci: true, scope: keyword.operator.merge}
+      - {ref: SPACE_ANY}
+      - {regex: "(note|hnote|rnote)", ci: true, scope: keyword.other.note}
+      - {ref: SEQ_STEREO}
+  NOTE_ACROSS_TAIL:
+    seq:
+      - {ref: SEQ_STEREO}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+      - opt: {ref: URL}
+  NOTE_ACROSS_TEXT:
+    seq:
+      - {ref: SPACE_ANY}
+      - {literal: ":", ci: true, scope: punctuation.separator.note}
+      - {ref: SPACE_ANY}
+      - {regex: "(.*)", ci: true, scope: string.unquoted.note}
+  ACROSS: {literal: across, ci: true, scope: keyword.other.note-position}
+  ACROSS_ANY: {regex: "(accross|across)", ci: true, scope: keyword.other.note-position}
+
+  # --- numbers ----------------------------------------------------------------------
+  # DottedNumber.create (DottedNumber.java:55-66): every ASCII digit run is parsed.
+  AUTONUMBER_START:
+    seq:
+      - {ref: JAVA_INT}
+      - star:
+          seq:
+            - {regex: "[^\\p{L}\\p{N}\\s\_]+", ci: true, scope: punctuation.separator.autonumber}
+            - {ref: JAVA_INT}
+  AUTONUMBER_FORMAT:
+    regex: "[\"“”]([^\"“”]+)[\"“”]"
+    ci: true
+    scope: string.quoted.autonumber-format
+  AUTONUMBER_WORD: {literal: autonumber, ci: true, scope: keyword.other.autonumber}
+  RESUME_WORD: {literal: resume, ci: true, scope: keyword.other.autonumber}
+  DIGITS: {regex: "(\\d+)", ci: true, scope: constant.numeric.integer}
+  HSPACE_OPEN: {literal: "||", ci: true, scope: punctuation.definition.hspace}
+  HSPACE_CLOSE: {regex: "\\|+", ci: true, scope: punctuation.definition.hspace}
+  AUTONEWPAGE_WORD: {literal: autonewpage, ci: true, scope: keyword.other.newpage}
+
+overrides:
+  # SequenceDiagramFactory.java:111.
+  CommandArrow:
+    parts:
+      seq:
+        - {ref: ARROW_HEAD}
+        - alt:
+            - seq:
+                - {ref: ARROW_DRESSING_LEFT}
+                - {ref: ARROW_BODY}
+                - {ref: ARROW_DRESSING_RIGHT_VALID}
+            - seq:
+                - {ref: ARROW_DRESSING_LEFT_VALID}
+                - {ref: ARROW_BODY}
+                - {ref: ARROW_DRESSING_RIGHT_BARE}
+        - {ref: ARROW_TAIL}
+  # SequenceDiagramFactory.java:122.
+  FactorySequenceNoteAcrossCommand_1:
+    parts:
+      seq:
+        - {ref: NOTE_ACROSS_HEAD}
+        - {ref: ACROSS}
+        - {ref: NOTE_ACROSS_TAIL}
+        - {ref: NOTE_ACROSS_TEXT}
+  # SequenceDiagramFactory.java:137. No later command matches `note accross`, so the
+  # narrowed multiline alone makes the line fail, as the error does upstream.
+  FactorySequenceNoteAcrossCommand_2:
+    parts:
+      seq:
+        - {ref: NOTE_ACROSS_HEAD}
+        - {ref: ACROSS}
+        - {ref: NOTE_ACROSS_TAIL}
+  # SequenceDiagramFactory.java:146.
+  CommandAutonumber:
+    parts:
+      seq:
+        - {ref: AUTONUMBER_WORD}
+        - {ref: SPACE_ANY}
+        - opt: {ref: AUTONUMBER_START}
+        - opt:
+            seq:
+              - {ref: SPACE_SOME}
+              - {ref: JAVA_INT}
+        - opt:
+            seq:
+              - {ref: SPACE_SOME}
+              - {ref: AUTONUMBER_FORMAT}
+        - {ref: SPACE_ANY}
+  # SequenceDiagramFactory.java:148.
+  CommandAutonumberResume:
+    parts:
+      seq:
+        - {ref: AUTONUMBER_WORD}
+        - {ref: SPACE_SOME}
+        - {ref: RESUME_WORD}
+        - {ref: SPACE_ANY}
+        - opt:
+            seq:
+              - {ref: SPACE_SOME}
+              - {ref: JAVA_INT}
+        - opt:
+            seq:
+              - {ref: SPACE_SOME}
+              - {ref: AUTONUMBER_FORMAT}
+  # SequenceDiagramFactory.java:141.
+  CommandAutoNewpage:
+    parts:
+      seq:
+        - {ref: AUTONEWPAGE_WORD}
+        - {ref: SPACE_SOME}
+        - {ref: JAVA_INT}
+  # SequenceDiagramFactory.java:143.
+  CommandHSpace:
+    parts:
+      seq:
+        - {ref: HSPACE_OPEN}
+        - opt: {ref: JAVA_INT}
+        - {ref: HSPACE_CLOSE}
+
+insert_after:
+  CommandArrow:
+    - command: CommandArrowIllegal
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.command.CommandArrow
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandArrow.java
+        line: 314
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandArrow.java:296-313
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagramFactory.java:111
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: ARROW_HEAD}
+          - {ref: ARROW_DRESSING_LEFT}
+          - {ref: ARROW_BODY}
+          - {ref: ARROW_DRESSING_RIGHT}
+          - {ref: ARROW_TAIL}
+  FactorySequenceNoteAcrossCommand_1:
+    - command: FactorySequenceNoteAcrossCommandAccross
+      provenance:
+        class: net.sourceforge.plantuml.command.note.sequence.FactorySequenceNoteAcrossCommand$1
+        file: src/main/java/net/sourceforge/plantuml/command/note/sequence/FactorySequenceNoteAcrossCommand.java
+        line: 212
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/note/sequence/FactorySequenceNoteAcrossCommand.java:111
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagramFactory.java:122
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: NOTE_ACROSS_HEAD}
+          - {ref: ACROSS_ANY}
+          - {ref: NOTE_ACROSS_TAIL}
+          - {ref: NOTE_ACROSS_TEXT}
+  CommandAutonumber:
+    - command: CommandAutonumberOverflow
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.command.CommandAutonumber
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandAutonumber.java
+        line: 116
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/DottedNumber.java:62
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagramFactory.java:146
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: AUTONUMBER_WORD}
+          - {ref: SPACE_ANY}
+          - {regex: "(\\d(?:(?:[^\\p{L}\\p{N}\\s\_]+|\\d+)*\\d)?)?", ci: true, scope: constant.numeric.integer}
+          - opt:
+              seq:
+                - {ref: SPACE_SOME}
+                - {ref: DIGITS}
+          - opt:
+              seq:
+                - {ref: SPACE_SOME}
+                - {ref: AUTONUMBER_FORMAT}
+          - {ref: SPACE_ANY}
+  CommandAutonumberResume:
+    - command: CommandAutonumberResumeOverflow
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.command.CommandAutonumberResume
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandAutonumberResume.java
+        line: 114
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagramFactory.java:148]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: AUTONUMBER_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: RESUME_WORD}
+          - {ref: SPACE_ANY}
+          - opt:
+              seq:
+                - {ref: SPACE_SOME}
+                - {ref: DIGITS}
+          - opt:
+              seq:
+                - {ref: SPACE_SOME}
+                - {ref: AUTONUMBER_FORMAT}
+  CommandAutoNewpage:
+    - command: CommandAutoNewpageOverflow
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.command.CommandAutoNewpage
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandAutoNewpage.java
+        line: 76
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagramFactory.java:141]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: AUTONEWPAGE_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: DIGITS}
+  CommandHSpace:
+    - command: CommandHSpaceOverflow
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.command.CommandHSpace
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandHSpace.java
+        line: 84
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagramFactory.java:143]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: HSPACE_OPEN}
+          - {regex: "(\\d+)?", ci: true, scope: constant.numeric.integer}
+          - {ref: HSPACE_CLOSE}

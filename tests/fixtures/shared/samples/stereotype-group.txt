@@ -1,0 +1,19 @@
+<<a>> <<b>>
+<<a>><<b>>
+<<>>
+<<a<b>>
+APIG -u- APIGHTTP <<Protected>>
+:read file1; <<save>> <<color>>
+card  TakePicture <<action def>> {
+:Review Activity;<<task>><<#LightGreen>>
+Component -DOWN-> Participant1011<<v1.0>><<v1.1>> : text and line red
+node node3 <<shared node>> {
+rectangle "Backend_with_underscore_in_stereotype_name" <<backend_container>> as c2
+a -->> b <<bold>> : "stereotype bold"
+Cloud Dummy6i <<Cloud>>
+actor Bob << test >>
+entity main  <<lightskyblue>>
+BorderColor<<Green>> Green
+classe2 : +field5
+skinparam ParticipantBackgroundColor #3ec43e
+%lighten("toto", 50)

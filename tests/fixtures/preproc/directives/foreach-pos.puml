@@ -1,0 +1,5 @@
+@startuml
+!foreach $i in [1, 2]
+a -> b
+!endfor
+@enduml

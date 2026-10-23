@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandNumRange
+' gap: a first row summing to -2 or less fails in IntStream.limit (PacketDiagram.java:396), the model only detects all-zero rows
+@startpacketdiag
+* A [len=-2]
+@endpacketdiag

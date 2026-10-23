@@ -1,0 +1,5 @@
+@startuml
+class A
+@startmindmap
+* root
+@endmindmap

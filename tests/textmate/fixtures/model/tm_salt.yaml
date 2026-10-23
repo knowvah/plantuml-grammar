@@ -1,0 +1,15 @@
+schema_version: 1
+id: tm_salt
+layer: diagram
+diagram: SALT
+contexts:
+  main:
+    - command: CommandSaltWidget
+      provenance: {class: toy.CommandSaltWidget}
+      kind: opaque
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: "[", ci: false}
+          - {regex: "\\w+", scope: string.unquoted}
+          - {literal: "]", ci: false}

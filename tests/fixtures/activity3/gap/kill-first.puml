@@ -1,0 +1,5 @@
+' activity3: CommandKill3
+' gap: kill/detach on an empty instruction list fails (InstructionList.kill, InstructionList.java:169-171); emptiness of the current branch is state
+@startuml
+kill
+@enduml

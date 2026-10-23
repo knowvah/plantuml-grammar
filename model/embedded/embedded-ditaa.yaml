@@ -1,0 +1,20 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# PSystemBasicFactory.createSystem (command/PSystemBasicFactory.java:74-102): every body
+# line goes to executeLine, which never refuses here, so any non-empty body is accepted
+# (D4: opaque, not parsed). An empty body is rejected (:89-90).
+# initDiagram always returns a system for @startditaa (ditaa/PSystemDitaaFactory.java:58-85),
+# so executeLine (:88-121) adds every line. This model replaces gen-psystem-ditaa in
+# dispatch (it includes it, so it is the top model for PSystemDitaaFactory).
+
+schema_version: 1
+id: embedded-ditaa
+layer: diagram
+diagram: DITAA
+factory: PSystemDitaaFactory
+include: [gen-psystem-ditaa]
+contexts:
+  main:
+    - command: PSystemDitaaFactory
+      provenance: {class: net.sourceforge.plantuml.ditaa.PSystemDitaaFactory, file: src/main/java/net/sourceforge/plantuml/ditaa/PSystemDitaaFactory.java, line: 88}
+      kind: opaque
+      parts: {regex: ".*"}

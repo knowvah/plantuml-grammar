@@ -1,0 +1,5 @@
+' mindmap-wbs: CommandMindMapDirection
+@startmindmap
+* root
+lefty side
+@endmindmap

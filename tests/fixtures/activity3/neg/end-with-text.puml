@@ -1,0 +1,5 @@
+' activity3: CommandEnd3
+@startuml
+:a;
+end x
+@enduml

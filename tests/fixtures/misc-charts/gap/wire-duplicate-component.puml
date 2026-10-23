@@ -1,0 +1,6 @@
+' misc-charts: WireComponentAtLevel0
+' gap: a name already used by a sibling or a node on the path fails (WBlock.java:203-205); the model keeps no name table
+@startwire
+* a
+* a
+@endwire

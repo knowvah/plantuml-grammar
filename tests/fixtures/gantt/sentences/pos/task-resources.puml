@@ -1,0 +1,5 @@
+' gantt: NaturalGanttTask
+@startgantt
+[O] as [O2] on {R1} {R2:50%} lasts 4 days
+[Q] on {R1:007} {R3:} lasts 1 day
+@endgantt

@@ -1,0 +1,7 @@
+' nwdiag-packet: PacketFirstField, PacketZeroWidthRow, CommandNumRange
+@startpacketdiag
+4-3: empty
+title fields
+* B [len=0]
+0-15: data
+@endpacketdiag

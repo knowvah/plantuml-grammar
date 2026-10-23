@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandNodeHeight
+@startpacketdiag
+node_height = 1000
+0-7: A
+@endpacketdiag

@@ -1,0 +1,5 @@
+' timing: CommandPixelHeight
+@startuml
+robust "R" as R
+R is 2147483648 pixels height
+@enduml

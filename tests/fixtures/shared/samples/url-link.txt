@@ -1,0 +1,21 @@
+[[http://plantuml.com{tooltip} label]]
+[["http://a b"{tip} lbl]]
+[[{only tip}]]
+[[{tip} label]]
+[[target {tip {x}}]]
+[[]]
+participant Bob as "Long Bob" [[http://www.google.com]]
+ref over A : [[link with label]] with words on ref
+And even [[http://www.yahoo.fr{This \n is a \n tooltip} add a tooltip]] to the link.
+concern : Resource(Problem) 0..* [[[careplan-definitions.htm#CarePlan.concern]]]
+class Car [[http://plantuml.com]]
+Car -- Wheel : [[http://google.com test]]
+note right of Bob [[http://www.google.es]]
+class w [[/wiki/index.php/Webserver]]
+Bob -> Alice [[latex://resource-interaction]] : interact
+state "Connected" as Main_Connected [[{Main_Connected}]]  {
+'url of State1 is [[http://www.yahoo.com/State1]]
++ normalValue[x] : Range|string 0..1 [[[http://www/Observation/normalValue%5Bx%5D {Definition}]]]
+skinparam groupInheritance 3
+class VerticalDoubleSlit
++ Put(data uint)

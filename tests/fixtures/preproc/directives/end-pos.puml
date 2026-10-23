@@ -1,0 +1,6 @@
+@startuml
+!procedure $p()
+a -> b
+!end procedure
+a -> b
+@enduml

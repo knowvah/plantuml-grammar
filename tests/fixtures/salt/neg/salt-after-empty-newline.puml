@@ -1,0 +1,5 @@
+' salt: SaltEmptyDataLine, SaltNotNeeded
+@startsalt
+
+salt
+@endsalt

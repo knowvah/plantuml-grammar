@@ -1,0 +1,6 @@
+' activity3: CommandSwimlane
+@startuml
+- foo
+|B|
+:b;
+@enduml

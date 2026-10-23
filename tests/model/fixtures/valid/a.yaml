@@ -1,0 +1,24 @@
+schema_version: 1
+id: a
+layer: diagram
+diagram: CLASS
+include: [b]
+contexts:
+  main:
+    - include: b
+    - command: CommandCreateClass
+      provenance: {class: x.CommandCreateClass, file: a/A.java, line: 12, engine: IRegex}
+      kind: multiline
+      parts:
+        seq:
+          - opt: {literal: class, ci: true}
+          - star: {regex: "\\w+", name: id, scope: entity.name.class}
+          - alt: [{ref: COLOR}, {literal: "{", ci: false}]
+      push: body
+      end: {literal: "}", ci: false}
+  body:
+    - command: CommandMember
+      provenance: {class: x.CommandMember}
+      kind: opaque
+      parts: {plus: {regex: ".+"}}
+      pop: true

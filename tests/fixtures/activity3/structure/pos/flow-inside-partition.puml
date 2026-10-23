@@ -1,0 +1,12 @@
+' activity3: CommandPartition3, CommandCloseGroup3, CommandIf4, CommandEndif3, CommandRepeat3, CommandBackward3, CommandRepeatWhile3
+@startuml
+partition P {
+  if (x) then (yes)
+    :a;
+  endif
+  repeat
+    :b;
+    backward :c;
+  repeat while (more?)
+}
+@enduml

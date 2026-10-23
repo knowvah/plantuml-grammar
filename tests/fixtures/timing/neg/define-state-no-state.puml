@@ -1,0 +1,5 @@
+' timing: CommandDefineStateShort, CommandDefineStateLong
+@startuml
+robust "R" as R
+R has "x" as
+@enduml

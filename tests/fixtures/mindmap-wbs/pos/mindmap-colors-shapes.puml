@@ -1,0 +1,14 @@
+' mindmap-wbs: MindMapOrgmodeUnknownColor, MindMapPlusUnknownColor, CommandMindMapOrgmode, CommandMindMapPlus
+@startmindmap
+*[#red] root
+**[#FFF]_ a
+**[#automatic] b
+--[#Business] c
+**[#ffffffff] d
+**[#f] e
+** [#zzzz] a label
+**_[#zzzz] a label
+*+[#zzzz] a label
+**[#ä] a label
+++[#Transparent]_ f
+@endmindmap

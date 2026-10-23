@@ -1,0 +1,4 @@
+' meta: PSystemDefinitionFactory
+@startdef
+skinparam a b
+@enddef

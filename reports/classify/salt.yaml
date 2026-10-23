@@ -1,0 +1,7 @@
+# Classifications for the `salt` family (T28). Upstream pin 97a5992; `cite` paths are
+# relative to the upstream repository root.
+#
+# FR and FA are 0 on every corpus (vega 7 blocks, pdiff 51, plantuml-ts 0), so there is
+# nothing to classify. Every PSystemSaltFactory command is modeled (coverage 41/41), so
+# there are no exclusions.
+cases: {}

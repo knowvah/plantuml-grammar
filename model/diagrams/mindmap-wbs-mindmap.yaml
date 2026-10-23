@@ -1,0 +1,102 @@
+# MindMap diagrams (T26). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/mindmap/ unless stated.
+#
+# Upstream. MindMapDiagramFactory.initCommandsList (MindMapDiagramFactory.java:58-67)
+# registers the common block, CommandRankDir and five mindmap commands, all present in
+# the generated model in that order:
+# * CommandMindMapOrgmodeMultiline `**:text` ... `text;` (CommandMultilines2, start line
+#   matched trimmed, CommandMindMapOrgmodeMultiline.java:64-76), already `multiline` +
+#   `end` in the generated model;
+# * CommandMindMapOrgmode `*`/`#` markers (CommandMindMapOrgmode.java:58-65),
+#   CommandMindMapRoot `0 label` (CommandMindMapRoot.java:55-60), CommandMindMapPlus
+#   `+`/`-` markers (CommandMindMapPlus.java:58-65) and CommandMindMapDirection
+#   `left side`, `top direction`, ... (CommandMindMapDirection.java:56-66).
+# Markers, `[#color]`, the boxless `_`, a trailing `<<stereo>>` and the multiline
+# `:text;` form are all in those regexes; nothing opens a nested body.
+#
+# Tree. The first idea is the root whatever its marker count (MindMap.java:120-121): a
+# missing `*` root is not an error. A later level-0 idea starts a new mind map
+# (MindMapDiagram.java:120-121, MindMap.java:148-150). The first child's level becomes
+# the indentation multiplier of its mind map (MindMap.java:129-137): a later level that
+# is not a multiple of it is "Bad indentation" (:134-135), and one deeper than the last
+# idea of its side plus one is "error42L" (Branch.java:70-87). Levels of
+# CommandMindMapOrgmode lines come from getSmartLevel (MindMapDiagram.java:136-157),
+# which counts leading blanks, and CommandMindMapOrgmode and CommandMindMapPlus match
+# the untrimmed line (SingleLineCommand2 doTrim=false, command/SingleLineCommand2.java:
+# 69-81), so `  ++ x` matches no command (the generated entries carry `trim: false`).
+# A level check needs the levels of earlier ideas (the root's marker run, the
+# multiplier, the last idea of each side): one context per reachable state, with
+# levels counted from leading blanks. Not modeled; these stay gaps
+# (tests/fixtures/mindmap-wbs/gap/mindmap-*).
+#
+# Execution errors a line shows: an unknown node color (klimt/color/HColorSet.java:69-73)
+# fails CommandMindMapOrgmode (:105-107), CommandMindMapOrgmodeMultiline (:119-122) and
+# CommandMindMapPlus (:97-100). Each gets an interpreter-only `reject` before the first
+# command that could capture the color; emitters drop it and stay lenient on colors.
+# An empty body stays rejected (no `empty` context; command/PSystemCommandFactory.java:
+# 117-121).
+schema_version: 1
+id: mindmap-wbs-mindmap
+layer: diagram
+diagram: MINDMAP
+factory: MindMapDiagramFactory
+include: [gen-mind-map-diagram, common, mindmap-wbs-colors]
+
+overrides:
+  # CommandMindMapDirection.java:56-66 with the two zero-width `\b` leaves folded into
+  # the DIRECTION leaf: same language, but emitters drop zero-width leaves, so a
+  # grammar accepted `lefty side` (the jar rejects it).
+  CommandMindMapDirection:
+    parts:
+      seq:
+        - {regex: '[^*#]*', ci: true}
+        - {regex: '\b(left|right|top|bottom)\b', ci: true, name: DIRECTION}
+        - {regex: '[^*#]*', ci: true}
+        - alt:
+            - {literal: side, ci: true}
+            - {literal: direction, ci: true}
+        - {regex: '[^*#]*', ci: true}
+
+insert_before:
+  # `**[#bad]:x` fails in CommandMindMapOrgmodeMultiline when the block completes and in
+  # CommandMindMapOrgmode (the next candidate, PSystemCommandFactory.java:236-240) when
+  # it does not; `**[#bad] x` reaches CommandMindMapOrgmode directly. The color must
+  # follow the markers: after `_` or a blank, or after a marker run that mixes `*`/`#`
+  # with `+`/`-`, the bracket is part of the label.
+  CommandMindMapOrgmodeMultiline:
+    - command: MindMapOrgmodeUnknownColor
+      provenance:
+        class: net.sourceforge.plantuml.klimt.color.HColorSet
+        file: src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java
+        line: 69
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/mindmap/CommandMindMapOrgmode.java:105-107
+          - src/main/java/net/sourceforge/plantuml/mindmap/CommandMindMapOrgmodeMultiline.java:119-122
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {regex: '[*#]+', ci: true}
+          - {literal: '[#', ci: false}
+          - {ref: MW_BRACKET_COLOR_UNKNOWN}
+          - {regex: '[A-Za-z0-9_]+\]', ci: false}
+          - {regex: '.*', ci: true}
+  CommandMindMapPlus:
+    - command: MindMapPlusUnknownColor
+      provenance:
+        class: net.sourceforge.plantuml.klimt.color.HColorSet
+        file: src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java
+        line: 69
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/mindmap/CommandMindMapPlus.java:97-100
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {regex: '[+-]+', ci: true}
+          - {literal: '[#', ci: false}
+          - {ref: MW_BRACKET_COLOR_UNKNOWN}
+          - {regex: '[A-Za-z0-9_]+\]', ci: false}
+          - {regex: '.*', ci: true}

@@ -1,0 +1,4 @@
+' class: CommandCreateClassBadSpotColor
+@startuml
+class A <<(F, zzgrey)>>
+@enduml

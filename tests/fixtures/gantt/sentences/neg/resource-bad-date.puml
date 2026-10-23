@@ -1,0 +1,6 @@
+' gantt: NaturalGanttResourceInvalid
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+{R} is off on 2020-04-31
+@endgantt

@@ -1,0 +1,9 @@
+' state: StateEndAtRoot, CommandConcurrentState
+@startuml
+state A {
+  state B
+  --
+  state C
+end state
+}
+@enduml

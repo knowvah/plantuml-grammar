@@ -1,0 +1,4 @@
+' gantt: CommandTaskCompleteDefault
+@startgantt
+task default completion to 101
+@endgantt

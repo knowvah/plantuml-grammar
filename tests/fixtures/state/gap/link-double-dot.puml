@@ -1,0 +1,7 @@
+' state: CommandLinkState
+' gap: a name containing two separators throws in quarkInContext (CucaDiagram.java:258-259, :290-297); not modeled because `set separator` changes the separator for the whole diagram
+@startuml
+state Z {
+}
+Z --> A..B
+@enduml

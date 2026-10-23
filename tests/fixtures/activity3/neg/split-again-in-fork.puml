@@ -1,0 +1,7 @@
+' activity3: CommandFork3, CommandSplitAgain3
+@startuml
+fork
+:a;
+split again
+end fork
+@enduml

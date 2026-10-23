@@ -1,0 +1,9 @@
+' board-files-git: FilesStyleBlockStopped, FilesAfterStyleStop
+@startfiles
+<style>
+{
+</style>
+<style>
+*
+</style>
+@endfiles

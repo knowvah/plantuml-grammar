@@ -1,0 +1,4 @@
+@startuml
+!option svgTitle "t"
+a -> b
+@enduml

@@ -1,0 +1,8 @@
+' mindmap-wbs: CommandWBSItemNew_44
+@startwbs
+* root
+** a
+*** b
+** c
+*** d
+@endwbs

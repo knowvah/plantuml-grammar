@@ -1,0 +1,13 @@
+{
+  "name": "plantuml-grammar-proof",
+  "private": true,
+  "type": "module",
+  "description": "TextMate proof tests for the generated PlantUML grammar",
+  "scripts": {
+    "test": "node --test \"tests/textmate/**/*.test.mjs\""
+  },
+  "devDependencies": {
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.2.0"
+  }
+}

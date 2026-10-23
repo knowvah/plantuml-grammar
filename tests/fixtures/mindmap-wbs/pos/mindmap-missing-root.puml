@@ -1,0 +1,5 @@
+' mindmap-wbs: CommandMindMapOrgmode
+@startmindmap
+** first idea becomes the root
+*** child
+@endmindmap

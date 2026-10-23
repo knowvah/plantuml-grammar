@@ -1,0 +1,19 @@
+' state: CommandFactoryNoteOnEntity_1, CommandFactoryNoteOnEntity_2_12, CommandFactoryNote_1, CommandFactoryNoteOnLink_1
+@startuml
+state A
+state B
+note left of A : single
+note right of A
+  multi
+  }
+end note
+note "free" as N
+A --> B
+note on link
+  on the link
+end note
+state C {
+  state D
+  note bottom of D : inside
+}
+@enduml

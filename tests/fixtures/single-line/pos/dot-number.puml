@@ -1,0 +1,4 @@
+' single-line: single-line-dot
+@startdot
+graph -.5 {
+@enddot

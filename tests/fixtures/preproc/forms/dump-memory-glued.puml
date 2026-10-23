@@ -1,0 +1,4 @@
+@startuml
+!dump_memoryx
+a -> b
+@enduml

@@ -1,0 +1,3 @@
+@startuml "my diagram"
+class A
+@enduml

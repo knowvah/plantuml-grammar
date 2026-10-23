@@ -1,0 +1,6 @@
+' sequence: CommandParticipantA
+' gap: a participant color goes through HColorSet.getColor, which refuses the #back:..;line:.. spec
+@startuml
+participant Alice #back:lightblue;line:blue
+Alice -> Bob : x
+@enduml

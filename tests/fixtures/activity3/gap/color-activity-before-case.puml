@@ -1,0 +1,9 @@
+' activity3: CommandSwitch, CommandActivityLong3
+' gap: a `#color:` activity before the first case fails (InstructionSwitch.java:97-101); the head reject leaves `#` lines alone because If/While/Repeat/Switch/Spot openers also start with `#color:`
+@startuml
+switch (x)
+#red:foo
+bar;
+case (a)
+endswitch
+@enduml

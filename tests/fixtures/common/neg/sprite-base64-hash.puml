@@ -1,0 +1,6 @@
+' common: CommandSpriteBase64
+' factory: SequenceDiagramFactory
+@startuml
+sprite $dot data:image/png;base64,#
+Alice -> Bob : hello
+@enduml

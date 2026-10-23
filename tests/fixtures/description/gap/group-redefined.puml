@@ -1,0 +1,7 @@
+' description: CommandPackageWithUSymbol, CommandCreateElementFull
+' gap: the element names an existing group (CommandCreateElementFull.java:304-305): entity state
+@startuml
+folder A {
+  folder A
+}
+@enduml

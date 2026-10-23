@@ -1,0 +1,13 @@
+' common: CommandTitle, CommandSkinParamMultilines, CommandMultilinesLegend
+' factory: MindMapDiagramFactory
+@startmindmap
+title Mind
+skinparam {
+  ArrowColor red
+}
+* root
+** child
+legend
+x
+endlegend
+@endmindmap

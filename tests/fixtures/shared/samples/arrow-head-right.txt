@@ -1,0 +1,20 @@
+--|>
+--o
+--o{
+-->>
+--\\
++ getAddress()
+component Something {
+class c2 extends c1 implements I2 {
+if (Enum) Then (Value_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA)
+(CardBundle.Card,TagBundle.Tag) .. TagBundle.CardTag
+MileageCredit : baseMiles : Integer()
+Alice->An_other_actor : hello
+a ->o    b : ""->o  ""
+MinorId --> MinorReq
+repeat while (OK?) is (no)
+BorderColor #gray
+create "Instance 24:1 of Class\nLCL_COM_COMPARE" as 20
+:stop ?;
+CompesoBelbiosServer -> CompesoBelbiosServer : AddRanksToMessageQueue()
+!define module(x) component x <<module>>

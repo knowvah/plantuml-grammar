@@ -1,0 +1,5 @@
+' misc-charts: WireSpotFails
+@startwire
+* a
+spot a #zzzz
+@endwire

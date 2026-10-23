@@ -1,0 +1,18 @@
+' class: CommandFactoryNoteOnEntity_1, CommandFactoryNoteOnLink_1, CommandFactoryNote_1, CommandConstraintOnLinks
+@startuml
+class A {
+  + field
+}
+class B
+A --> B
+note on link : linked
+note right of A::field
+  on a member
+end note
+note left of A
+  multi
+  line
+end note
+note "free" as N1
+N1 .. A
+@enduml

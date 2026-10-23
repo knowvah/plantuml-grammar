@@ -1,0 +1,10 @@
+' misc-charts: ChartFirstIndexLine, CommandChartLine, CommandChartBar, CommandChartVAxis
+@startchart
+line [1e3, -2.5E-1, +4, .5, 5., 1d, 2F, NaN, -Infinity, 0x1p3, 0X.8P-1f]
+bar [1,2,,]
+bar [  ]
+bar [,,]
+v-axis ticks [ ]
+v-axis [a, b] spacing 0
+v-axis 1.2.3 --> 5 [labels win]
+@endchart

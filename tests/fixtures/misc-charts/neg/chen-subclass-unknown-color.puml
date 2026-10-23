@@ -1,0 +1,8 @@
+' misc-charts: ChenSimpleSubclassFails
+@startchen
+entity A {
+}
+entity B {
+}
+A ->- B #transparent-red
+@endchen

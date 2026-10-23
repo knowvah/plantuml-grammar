@@ -1,0 +1,5 @@
+' timing: CommandConstraint, CommandClock
+@startuml
+clock "c" as C with period 10
+@0 <-> @50
+@enduml

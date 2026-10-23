@@ -1,0 +1,10 @@
+' nwdiag-packet: CommandComment, CommandFootboxIgnored, CommandNwDiagInit
+@startnwdiag
+title Network
+nwdiag
+// a comment
+hide footbox
+network n {
+  a
+}
+@endnwdiag

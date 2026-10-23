@@ -1,0 +1,8 @@
+' misc-charts: CommandLineSimple, FlowLinkToBox
+@startflow
+10 "START"
+s 20 "FIND"
+e 30 "LOOP"
+n 40 "CHECK"
+w 10
+@endflow

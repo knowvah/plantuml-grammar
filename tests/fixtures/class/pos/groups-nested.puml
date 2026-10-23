@@ -1,0 +1,18 @@
+' class: CommandPackage, CommandNamespace, CommandNamespace2, CommandTogether, CommandPackageWithUSymbol, GroupEnd
+@startuml
+package p1 {
+  namespace n1 {
+    class A
+  }
+  namespace "Display" as n2 {
+    class B
+  }
+  together {
+    class C
+    class D
+  }
+}
+node N1 {
+  class E
+}
+@enduml

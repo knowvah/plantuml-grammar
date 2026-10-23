@@ -1,0 +1,6 @@
+' meta: CommandListSprite
+@startsprites
+title Sprites
+scale 2
+listsprites
+@endsprites

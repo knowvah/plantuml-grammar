@@ -1,0 +1,24 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+# Pattern2 `^sudoku(?:[%s]+([0-9a-zA-Z]+))?[%s]*$` (ASCII case folding, %s = \s +
+# NBSP) with find() (:53-54): `$` also matches before a final U+0085/U+2028/U+2029.
+# Long.parseLong(seed, 36) (:60) throws above Long.MAX_VALUE (1y2p0ij32e8e7), which
+# PSystemBuilder.java:275-280 reports as a crash, so the seed is bounded.
+schema_version: 1
+id: single-line-sudoku
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemSudokuFactory
+include: [gen-psystem-sudoku, single-line-base]
+overrides:
+  PSystemSudokuFactory:
+    provenance: {class: net.sourceforge.plantuml.sudoku.PSystemSudokuFactory, file: src/main/java/net/sourceforge/plantuml/sudoku/PSystemSudokuFactory.java, line: 49, also: [src/main/java/net/sourceforge/plantuml/sudoku/PSystemSudokuFactory.java:53-60, src/main/java/net/sourceforge/plantuml/regex/Pattern2.java:57, src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "[sS][uU][dD][oO][kK][uU](?:[ \\t\\x0B\\f\u00A0]+0*(?:[0-9A-Za-z]{1,12}|1(?:[0-9a-xA-X][0-9A-Za-z]{11}|[yY](?:[0-1][0-9A-Za-z]{10}|2(?:[0-9a-oA-O][0-9A-Za-z]{9}|[pP](?:0(?:[0-9a-hA-H][0-9A-Za-z]{7}|[iI](?:[0-9a-iA-I][0-9A-Za-z]{6}|[jJ](?:[0-2][0-9A-Za-z]{5}|3(?:[0-1][0-9A-Za-z]{4}|2(?:[0-9a-dA-D][0-9A-Za-z]{3}|[eE](?:[0-7][0-9A-Za-z]{2}|8(?:[0-9a-dA-D][0-9A-Za-z]{1}|[eE](?:[0-6]|7))))))))))))))?[ \\t\\x0B\\f\u00A0]*[\u0085\u2028\u2029]?"}
+    set: sl_done
+    gives: single_line
+contexts:
+  main:
+    - include: noise
+    - include: gen-psystem-sudoku#main

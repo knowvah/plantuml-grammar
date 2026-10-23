@@ -1,0 +1,19 @@
+' sequence: CommandParticipantA, CommandParticipantA2, CommandParticipantA3, CommandParticipantA4, CommandParticipantMultilines
+@startuml
+participant Alice
+actor Bob #pink
+boundary "Long Name" as L <<Gate>> order 10
+control C as "Control Display"
+entity "E1"
+queue Q1 as Q2
+database DB order -5 [[http://example.org]]
+collections Coll #lightblue
+participant P2 [
+  =Title
+  ----
+  body
+]
+create participant New
+Alice -> New : creates
+Alice -> Bob : hello
+@enduml

@@ -1,0 +1,4 @@
+' activity3: CommandActivityLong3
+@startuml
+#red:foo;
+@enduml

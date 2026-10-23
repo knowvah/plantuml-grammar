@@ -1,0 +1,4 @@
+' single-line: single-line-skinparameter-list
+@startuml
+skinparameters all
+@enduml

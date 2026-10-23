@@ -1,0 +1,8 @@
+' sequence: CommandGrouping
+@startuml
+Alice -> Bob : x
+alt x
+  Alice -> Bob
+end of loop - retry
+end
+@enduml

@@ -1,0 +1,10 @@
+hello world
+not plantuml
+@startuml
+class A
+@enduml
+trailing junk
+@startmindmap
+* a
+@endmindmap
+more junk

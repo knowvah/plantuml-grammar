@@ -1,0 +1,6 @@
+' description: CommandLinkElement, CommandCreateElementFull
+' gap: a link creates B as STILL_UNKNOWN, `rectangle B` then fails (CommandCreateElementFull.java:313-314): entity state
+@startuml
+[A] --> B
+rectangle B
+@enduml

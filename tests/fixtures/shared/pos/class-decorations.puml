@@ -1,0 +1,14 @@
+' refines: stereotype | << (S,#FF7700) Singleton >>
+' refines: tag-list | $tag1 $tag2
+' refines: url-link | [[http://plantuml.com{tooltip} label]]
+' refines: visibility-char | -
+' refines: visibility-char | #
+' refines: visibility-list | public private
+@startuml
+class A << (S,#FF7700) Singleton >> $tag1 $tag2 [[http://plantuml.com{tooltip} label]]
+class B {
+  -field : int
+  #method()
+}
+hide public private members
+@enduml

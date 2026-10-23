@@ -1,0 +1,4 @@
+' misc-charts: ChartHAxisFails
+@startchart
+h-axis 1.2.3 --> 5 [a]
+@endchart

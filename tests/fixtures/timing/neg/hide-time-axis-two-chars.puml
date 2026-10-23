@@ -1,0 +1,5 @@
+' timing: CommandHideTimeAxis
+@startuml
+robust "R" as R
+hide time--axis
+@enduml

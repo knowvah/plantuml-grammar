@@ -1,0 +1,5 @@
+' gantt: NaturalGanttTask
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days and is colored in red and is 50% complete and starts 2020-01-03
+@endgantt

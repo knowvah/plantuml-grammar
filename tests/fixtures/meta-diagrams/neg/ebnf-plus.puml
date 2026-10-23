@@ -1,0 +1,4 @@
+' meta: EbnfRuleUnparsable
+@startebnf
+a = b + c ;
+@endebnf

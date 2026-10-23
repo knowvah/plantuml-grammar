@@ -1,0 +1,20 @@
+' class: CommandCreateJsonBlock
+@startuml
+json J {
+  "phoneNumbers": [
+    {
+      "type": "home",
+      "number": "212 555-1234"
+    },
+    {
+      "type": "office"
+    }
+  ],
+  "ok": true, "n": -1.5e3, "z": null
+}
+json K {
+[1, 2, {"a": "b"}]
+}
+json E {
+}
+@enduml

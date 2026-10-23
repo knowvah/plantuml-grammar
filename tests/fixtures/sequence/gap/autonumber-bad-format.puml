@@ -1,0 +1,6 @@
+' sequence: CommandAutonumber
+' gap: the format is checked by java.text.DecimalFormat (CommandAutonumber.java:119-126)
+@startuml
+Alice -> Bob : x
+autonumber "0.0.0.0#,#"
+@enduml

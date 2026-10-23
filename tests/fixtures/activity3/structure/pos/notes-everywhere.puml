@@ -1,0 +1,30 @@
+' activity3: CommandNote3, CommandNoteLong3, CommandSwitch, CommandCase, CommandEndSwitch, CommandSplit3, CommandSplitEnd3, CommandFork3, CommandForkEnd3, CommandRepeat3, CommandBackward3, CommandRepeatWhile3, CommandWhile3, CommandWhileEnd3, CommandPartition3, CommandCloseGroup3
+@startuml
+switch (x)
+note left: before case
+case (a)
+:b;
+endswitch
+split
+note left: in split
+:a;
+end split
+fork
+note left: n
+:a;
+end fork
+repeat
+:a;
+backward :b;
+note right: n
+repeat while (x)
+while (x)
+note right: n
+endwhile
+partition P {
+note left
+in group
+end note
+:a;
+}
+@enduml

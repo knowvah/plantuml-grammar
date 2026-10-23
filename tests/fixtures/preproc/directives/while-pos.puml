@@ -1,0 +1,7 @@
+@startuml
+!$i = 0
+!while $i < 2
+a -> b
+!$i = $i + 1
+!endwhile
+@enduml

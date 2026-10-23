@@ -1,0 +1,11 @@
+' mindmap-wbs: CommandWBSItemNew_44, CommandWBSItemOld_47
+@startwbs
+*_
+**_ a
+**_<
+**[#red]_
+**(c)_
+**_(d)
+**[#red]_<
+**(e)[#pink]_<
+@endwbs

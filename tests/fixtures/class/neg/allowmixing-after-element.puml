@@ -1,0 +1,7 @@
+' class: ElementNeedsAllowMixing
+@startuml
+class A {
+}
+rectangle R
+allowmixing
+@enduml

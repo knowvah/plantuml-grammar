@@ -1,0 +1,10 @@
+' activity3: CommandStart3, CommandIf2, CommandActivity3, CommandElse3, CommandEndif3, CommandStop3
+@startuml
+start
+if (ok?) then (yes)
+:a;
+else (no)
+:b;
+endif
+stop
+@enduml

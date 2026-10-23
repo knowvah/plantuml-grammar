@@ -1,0 +1,39 @@
+schema_version: 1
+id: split_join_toy
+layer: diagram
+diagram: CLASS
+# `class X {` on one line, or `class X` then `{` on the next (a two-line join, as in
+# class-decl's CommandCreateClassMultilinesBracketNextLine), or a bare `class X`
+contexts:
+  main:
+    - command: ClassOpen
+      provenance: {class: toy.ClassOpen}
+      kind: single
+      parts: {regex: "class \\w+ *\\{", ci: false}
+      push: body
+      require_pop: true
+    - command: ClassNext
+      provenance: {class: toy.ClassNext}
+      kind: multiline
+      join: {max_lines: 1}
+      parts:
+        seq:
+          - {regex: "class \\w+", ci: false}
+          - {literal: "", ci: false}
+          - {literal: "{", ci: false}
+      push: body
+      require_pop: true
+    - command: ClassDecl
+      provenance: {class: toy.ClassDecl}
+      kind: single
+      parts: {regex: "class \\w+", ci: false}
+  body:
+    - command: End
+      provenance: {class: toy.End}
+      kind: single
+      parts: {literal: "}", ci: false}
+      pop: true
+    - command: Field
+      provenance: {class: toy.Field}
+      kind: single
+      parts: {regex: "\\w+", ci: false}

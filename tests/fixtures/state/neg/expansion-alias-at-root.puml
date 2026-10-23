@@ -1,0 +1,4 @@
+' state: StatePositionStereotypeAtRoot
+@startuml
+state E as "Expansion" <<expansionOutput>> [[http://e]] ##red
+@enduml

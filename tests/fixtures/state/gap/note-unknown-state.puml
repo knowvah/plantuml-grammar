@@ -1,0 +1,6 @@
+' state: CommandFactoryNoteOnEntity_1
+' gap: a note on a state that does not exist fails (command/note/CommandFactoryNoteOnEntity.java:304-307); declarations are cross-line facts
+@startuml
+state Z
+note left of Q : x
+@enduml

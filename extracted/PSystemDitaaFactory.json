@@ -1,0 +1,17 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "PSystemDitaaFactory",
+  "factoryOrder": 26,
+  "diagramType": "DITAA",
+  "commands": [
+    {
+      "order": 0,
+      "class": "net.sourceforge.plantuml.ditaa.PSystemDitaaFactory",
+      "kind": "opaque",
+      "engine": "IRegex",
+      "start": {"t": "leaf", "name": "SCALE", "pattern": "scale=([\\d.]+)", "children": []},
+      "end": null
+    }
+  ],
+  "unreachable": []
+}

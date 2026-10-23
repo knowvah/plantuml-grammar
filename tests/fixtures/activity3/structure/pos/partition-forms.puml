@@ -1,0 +1,33 @@
+' activity3: CommandPartition3, CommandCloseGroup3
+@startuml
+partition P {
+:a;
+}
+partition "P with space" {
+:b;
+}
+partition #red Q <<s>> {
+:c;
+}
+partition R #lightblue {
+:d;
+}
+package K {
+:e;
+}
+rectangle Re {
+:f;
+}
+card C {
+:g;
+}
+PARTITION U {
+:h;
+}
+partition {
+:i;
+}
+partition T { trailing
+:j;
+}
+@enduml

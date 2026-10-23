@@ -1,0 +1,8 @@
+' salt: CommandAnything
+@startsalt
+{+
+{* File | Edit | Source
+File | Open | Close }
+{/ <b>General | Fullscreen | Behavior }
+}
+@endsalt

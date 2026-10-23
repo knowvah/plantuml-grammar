@@ -1,0 +1,8 @@
+' class: MixingPackageEmptyName
+@startuml
+class A {
+}
+allowmixing
+package {
+}
+@enduml

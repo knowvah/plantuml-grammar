@@ -1,0 +1,9 @@
+' salt: CommandAnything
+@startsalt
+{
+[OK] | [Cancel]
+[X] checked | [] unchecked | [ ] unchecked
+(X) on | () off | ( ) off
+"text field  " | ^droplist^
+}
+@endsalt

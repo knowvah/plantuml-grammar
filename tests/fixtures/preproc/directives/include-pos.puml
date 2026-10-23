@@ -1,0 +1,4 @@
+@startuml
+!include <C4/C4>
+a -> b
+@enduml

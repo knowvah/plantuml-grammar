@@ -1,0 +1,8 @@
+' activity3: CommandSwitch, CommandActivity3
+@startuml
+:any;
+switch (any2)
+:Charged;
+case (a)
+endswitch
+@enduml

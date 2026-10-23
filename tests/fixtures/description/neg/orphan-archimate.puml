@@ -1,0 +1,6 @@
+' description: GroupStackEmpty, RootEnd
+@startuml
+[c]
+}
+archimate #red A
+@enduml

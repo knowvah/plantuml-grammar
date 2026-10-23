@@ -1,0 +1,4 @@
+@startuml
+!$x =
+a -> b
+@enduml

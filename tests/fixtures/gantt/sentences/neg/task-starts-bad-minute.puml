@@ -1,0 +1,5 @@
+' gantt: NaturalGanttTaskInvalid
+@startgantt
+Project starts 2020-01-01
+[A] lasts 1 day and starts 2020-01-03 10:60
+@endgantt

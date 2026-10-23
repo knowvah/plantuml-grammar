@@ -1,0 +1,9 @@
+' activity3: CommandPartition3, CommandElse3, CommandIf4
+@startuml
+if (x) then
+partition P {
+:a;
+else
+:b;
+endif
+@enduml

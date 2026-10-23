@@ -1,0 +1,5 @@
+@startuml
+!while
+a -> b
+!endwhile
+@enduml

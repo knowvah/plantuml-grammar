@@ -1,0 +1,11 @@
+' mindmap-wbs: CommandWBSItemNew_44
+@startwbs
+* root
+**< a
+**> b
+**_< c
+-- d
+++ e
+--> f
++-< g
+@endwbs

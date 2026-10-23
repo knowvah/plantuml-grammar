@@ -1,0 +1,8 @@
+' activity3: CommandSwimlane2
+@startuml
+swimlane A as "Lane A"
+:a;
+swimlane #red B
+:b;
+|A|
+@enduml

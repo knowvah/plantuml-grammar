@@ -1,0 +1,18 @@
+' sequence: CommandArrow, CommandLinkAnchor, CommandGrouping, CommandBoxStart
+@startuml
+!pragma teoz true
+box "Teoz box" #LightBlue
+participant Alice
+participant Bob
+end box
+{start} Alice -> Bob : start doing things
+& Bob -> Carl : at the same time
+Bob -> Alice : finish {end}
+{start} <-> {end} : some time
+Alice -> Bob : multicast & Carl
+Alice -> Bob & Carl : multicast
+alt teoz group
+  Alice -> Bob
+end
+Alice -> Bob !! : destroy
+@enduml

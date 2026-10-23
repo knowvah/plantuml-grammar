@@ -1,0 +1,23 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# D4 opaque body (latex): the lines are not parsed. Refines embedded-latex with the
+# PSystemBasicFactory line accounting of single-line-basic. The body entry becomes a
+# per-line `single` catch-all (the interpreter's `opaque` swallowed the rest of the block,
+# so noise-only bodies were accepted; emitters already treat `opaque` as `single`). It
+# matches only non-empty trimmed lines; "" lines are skipped and non-empty blank lines are
+# basic_lead's.
+schema_version: 1
+id: single-line-latex
+layer: diagram
+diagram: LATEX
+factory: PSystemLatexFactory
+include: [embedded-latex, single-line-basic]
+overrides:
+  PSystemLatexFactory:
+    provenance: {class: net.sourceforge.plantuml.math.PSystemLatexFactory, file: src/main/java/net/sourceforge/plantuml/math/PSystemLatexFactory.java, line: 57, also: [src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:94]}
+    kind: single
+    parts: {regex: "[\\s\\S]+"}
+    gives: basic_line
+contexts:
+  main:
+    - include: basic_lead
+    - include: embedded-latex#main

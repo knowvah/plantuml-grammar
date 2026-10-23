@@ -1,0 +1,6 @@
+' common: CommandRotate
+' factory: SequenceDiagramFactory
+@startuml
+rotate 90
+Alice -> Bob : hello
+@enduml

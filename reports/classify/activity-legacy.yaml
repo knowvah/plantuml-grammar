@@ -1,0 +1,46 @@
+# Classifications for the `activity-legacy` family (T22). Upstream pin 97a5992; `cite`
+# paths are relative to the repository root of plantuml.
+#
+# FR = 0 and FA = 0 on vega, plantuml-ts and pdiff. The two former false accepts are
+# fixed in model/diagrams/activity-legacy.yaml:
+# * malime-00-veja596 (plantuml-ts class/, pdiff dbhum/m_al/): an `else` after the
+#   outer `endif` has no open if ("No if for this else"); the if stack is now modelled.
+#   Same mechanism as the T07 probe `(*) --> iff x then` / `--> A` / `endif`.
+# * gucijo-35-jolo092 (plantuml-ts sequence/, pdiff dbhum/g_uc/): `scale 0` is an
+#   execution error; the model now includes `common`, whose common-errors rejects it.
+#   The block now leaves this factory and is judged by the later factories' models.
+cases:
+  # Interpreter SEQUENCE, oracle ACTIVITY (diagram type only, both accept): an
+  # unterminated `note right` swallows the block in the sequence model, but upstream the
+  # participant-less sequence diagram is incomplete and the next factory is tried
+  # (sequence family gap, .agent-notes/T17.md).
+  plantuml-ts:class/bizese-04-sulu767.puml#0:
+    class: semantic
+    note: "diagram mismatch from the sequence family: SequenceDiagram.isIncomplete (no participant) makes PSystemCommandFactory return null, so the jar's legacy activity factory accepts it"
+    cite: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java:591-593
+  pdiff:dbhum/b_iz/bizese-04-sulu767.puml#0:
+    class: semantic
+    note: "diagram mismatch from the sequence family: SequenceDiagram.isIncomplete (no participant) makes PSystemCommandFactory return null, so the jar's legacy activity factory accepts it"
+    cite: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java:591-593
+
+exclusions:
+  UBrexCommandEndPartition: >-
+    modeled by the tail entries ActivityEndGroupOrphan (main, activity_root,
+    activity_if_root: `}` pops the root, set activity_orphan), ActivityEndGroupOrphanIf
+    (activity_if_root, set activity_orphan_if), ActivityEndGroup (activity_group, pop),
+    ActivityEndGroupRoot (activity_group_root, set activity_root) and
+    ActivityEndGroupLenient (activity_if) in model/diagrams/activity-legacy.yaml, citing
+    CucaDiagram.endGroup (net/atmp/CucaDiagram.java:367-374); the generated entry is
+    removed because one entry cannot act differently per context
+  UBrexCommandElse: >-
+    modeled by the tail entries ActivityElse (contexts with an open if, accept) and
+    ActivityElseWithoutIf (no open if, reject) in model/diagrams/activity-legacy.yaml,
+    citing UBrexCommandElse.java:73-77 and ActivityDiagram.getCurrentContext; the
+    generated entry is removed because one entry cannot act differently per context
+  UBrexCommandEndif: >-
+    modeled by the tail entries ActivityEndif (activity_if, pop), ActivityEndifRoot
+    (activity_if_root, set activity_root), ActivityEndifOrphan (activity_orphan_if),
+    ActivityEndifLenient (activity_group) and ActivityEndifWithoutIf (no open if,
+    reject) in model/diagrams/activity-legacy.yaml, citing UBrexCommandEndif.java:76-80
+    and ActivityDiagram.endif (:78-80); the generated entry is removed because one entry
+    cannot act differently per context

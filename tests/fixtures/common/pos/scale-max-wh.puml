@@ -1,0 +1,6 @@
+' common: CommandScaleMaxWidthAndHeight
+' factory: SequenceDiagramFactory
+@startuml
+scale max 1024x768
+Alice -> Bob : hello
+@enduml

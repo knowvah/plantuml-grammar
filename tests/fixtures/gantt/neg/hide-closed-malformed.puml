@@ -1,0 +1,5 @@
+' gantt: CommandHideClosed
+@startgantt
+[A] -> [B]
+hide closed days
+@endgantt

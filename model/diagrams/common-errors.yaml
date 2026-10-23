@@ -1,0 +1,275 @@
+# Execution errors of the common commands (T16), included by `common`. Upstream pin
+# 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# `common` narrows each refined command to the lines its execute step accepts. Upstream,
+# though, the unnarrowed regex matches first and the execute step then fails the factory
+# (CommandExecutionResult.error -> EXECUTION_ERROR, command/PSystemCommandFactory.java:
+# 180-187), or throws (NumberFormatException, NullPointerException), so no later command
+# sees the line. Each entry below is therefore a `reject` with the generated (unnarrowed)
+# shape, inserted right after the narrowed rule: valid lines are taken by the rule, every
+# other line of the same shape fails here instead of falling through to a later command
+# (salt's catch-all CommandAnything, salt/CommandAnything.java:54). Emitters drop `reject`
+# entries and keep the narrowed rule.
+schema_version: 1
+id: common-errors
+layer: shared
+include: [shared]
+
+variables:
+  NUMBER_RUN: {regex: "[0-9]+", ci: true, scope: constant.numeric.integer}
+  DECIMAL_RUN: {regex: "[0-9.]+", ci: true, scope: constant.numeric.float}
+  SCALE_WORD: {literal: scale, ci: true, scope: keyword.other.scale}
+  MAX_WORD: {literal: max, ci: true, scope: keyword.other.scale}
+  TIMES: {regex: "[*x]", ci: true, scope: punctuation.separator.dimensions}
+  SPRITE_SHAPE_HEAD:
+    seq:
+      - {literal: sprite, ci: true, scope: keyword.other.sprite}
+      - {ref: SPACE_SOME}
+      - {regex: "\\$?", ci: true, scope: punctuation.definition.variable}
+      - {regex: "[-.\\p{L}\\p{N}_]+", ci: true, scope: entity.name.constant.sprite}
+      - {ref: SPACE_ANY}
+
+insert_after:
+  # CommonCommands.java:64.
+  CommandPragma:
+    - command: CommandPragmaError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandPragma
+        file: src/main/java/net/sourceforge/plantuml/command/CommandPragma.java
+        line: 120
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/CommandPragma.java:60-68
+          - src/main/java/net/sourceforge/plantuml/command/CommandPragma.java:107
+          - src/main/java/net/sourceforge/plantuml/command/CommandPragma.java:116
+          - src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:64
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {literal: "!pragma", ci: true, scope: keyword.control.directive.pragma}
+          - {ref: SPACE_SOME}
+          - {regex: "[A-Za-z_][A-Za-z_0-9]*", ci: true, scope: entity.name.pragma}
+          - opt:
+              seq:
+                - {ref: SPACE_SOME}
+                - {regex: ".*", ci: true, scope: string.unquoted.pragma-value}
+  # CommonCommands.java:68. A folded group the delegate cannot execute.
+  CommandSkinParamJaws:
+    - command: CommandSkinParamJawsError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandSkinParamJaws
+        file: src/main/java/net/sourceforge/plantuml/command/CommandSkinParamJaws.java
+        line: 101
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/CommandSkinParamJaws.java:58-63
+          - src/main/java/net/sourceforge/plantuml/command/SkinLoader.java:94-96
+          - src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:68
+      kind: single
+      reject: true
+      parts: {regex: "(?:(?:skinparam|skinparamlocked)[\\s\_]+.*\uE100.*)+", ci: true}
+  # CommonCommands.java:72.
+  CommandMinwidth:
+    - command: CommandMinwidthError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMinwidth
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMinwidth.java
+        line: 74
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:72]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {literal: minwidth, ci: true, scope: keyword.other.minwidth}
+          - {ref: SPACE_SOME}
+          - {ref: NUMBER_RUN}
+  # CommonCommands.java:73.
+  CommandPage:
+    - command: CommandPageError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandPage
+        file: src/main/java/net/sourceforge/plantuml/command/CommandPage.java
+        line: 90
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/CommandPage.java:87-88
+          - src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:73
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {literal: page, ci: true, scope: keyword.other.page}
+          - {ref: SPACE_SOME}
+          - {ref: NUMBER_RUN}
+          - {ref: SPACE_ANY}
+          - {regex: "x*", ci: true, scope: punctuation.separator.dimensions}
+          - {ref: SPACE_ANY}
+          - {ref: NUMBER_RUN}
+  # CommonCommands.java:77. A sprite start whose level or size fails
+  # (CommandFactorySprite.java:188-193); after require_pop backtracking also an
+  # unterminated sprite, which upstream hands to CommandSpriteFile, whose file `{` does
+  # not exist (CommandSpriteFile.java:121-122).
+  CommandFactorySprite_1:
+    - command: CommandFactorySpriteMultilineError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandFactorySprite
+        file: src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java
+        line: 193
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java:68-77
+          - src/main/java/net/sourceforge/plantuml/command/CommandSpriteFile.java:121-122
+          - src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:77
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: SPRITE_SHAPE_HEAD}
+          - opt: {regex: "\\[[0-9]+x[0-9]+/(?:[0-9]+z?|color)\\]", ci: true}
+          - {ref: SPACE_ANY}
+          - {literal: "{", ci: true, scope: punctuation.section.block.begin}
+  # CommonCommands.java:78.
+  CommandFactorySprite_2:
+    - command: CommandFactorySpriteSingleLineError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandFactorySprite
+        file: src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java
+        line: 193
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/CommandFactorySprite.java:79-88
+          - src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:78
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: SPRITE_SHAPE_HEAD}
+          - opt: {regex: "\\[[0-9]+x[0-9]+/(?:[0-9]+z|color)\\]", ci: true}
+          - {ref: SPACE_SOME}
+          - {regex: "[-_A-Za-z0-9]+", ci: true, scope: string.unquoted.sprite-data}
+  # CommonCommands.java:98.
+  CommandScale:
+    - command: CommandScaleError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandScale
+        file: src/main/java/net/sourceforge/plantuml/command/CommandScale.java
+        line: 95
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/CommandScale.java:93-100
+          - src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:98
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: SCALE_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: DECIMAL_RUN}
+          - opt:
+              seq:
+                - {ref: SPACE_ANY}
+                - {literal: /, ci: true, scope: keyword.operator.arithmetic}
+                - {ref: SPACE_ANY}
+                - {ref: DECIMAL_RUN}
+  # CommonCommands.java:99.
+  CommandScaleWidthAndHeight:
+    - command: CommandScaleWidthAndHeightError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandScaleWidthAndHeight
+        file: src/main/java/net/sourceforge/plantuml/command/CommandScaleWidthAndHeight.java
+        line: 78
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:99]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: SCALE_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: DECIMAL_RUN}
+          - {ref: SPACE_ANY}
+          - {ref: TIMES}
+          - {ref: SPACE_ANY}
+          - {ref: DECIMAL_RUN}
+  # CommonCommands.java:100.
+  CommandScaleWidthOrHeight:
+    - command: CommandScaleWidthOrHeightError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandScaleWidthOrHeight
+        file: src/main/java/net/sourceforge/plantuml/command/CommandScaleWidthOrHeight.java
+        line: 79
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:100]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: SCALE_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: DECIMAL_RUN}
+          - {ref: SPACE_SOME}
+          - {regex: "(?:width|height)", ci: true, scope: keyword.other.scale-dimension}
+  # CommonCommands.java:101.
+  CommandScaleMaxWidth:
+    - command: CommandScaleMaxWidthError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandScaleMaxWidth
+        file: src/main/java/net/sourceforge/plantuml/command/CommandScaleMaxWidth.java
+        line: 77
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:101]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: SCALE_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: MAX_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: DECIMAL_RUN}
+          - {ref: SPACE_SOME}
+          - {literal: width, ci: true, scope: keyword.other.scale-dimension}
+  # CommonCommands.java:102.
+  CommandScaleMaxHeight:
+    - command: CommandScaleMaxHeightError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandScaleMaxHeight
+        file: src/main/java/net/sourceforge/plantuml/command/CommandScaleMaxHeight.java
+        line: 77
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:102]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: SCALE_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: MAX_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: DECIMAL_RUN}
+          - {ref: SPACE_SOME}
+          - {literal: height, ci: true, scope: keyword.other.scale-dimension}
+  # CommonCommands.java:103.
+  CommandScaleMaxWidthAndHeight:
+    - command: CommandScaleMaxWidthAndHeightError
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandScaleMaxWidthAndHeight
+        file: src/main/java/net/sourceforge/plantuml/command/CommandScaleMaxWidthAndHeight.java
+        line: 79
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommonCommands.java:103]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: SCALE_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: MAX_WORD}
+          - {ref: SPACE_SOME}
+          - {ref: DECIMAL_RUN}
+          - {ref: SPACE_ANY}
+          - {ref: TIMES}
+          - {ref: SPACE_ANY}
+          - {ref: DECIMAL_RUN}

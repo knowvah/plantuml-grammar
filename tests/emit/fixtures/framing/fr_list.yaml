@@ -1,0 +1,11 @@
+schema_version: 1
+id: fr_list
+layer: diagram
+diagram: SPRITES
+factory: ToyListFactory
+contexts:
+  main:
+    - command: CommandListSprite
+      provenance: {class: toy.CommandListSprite}
+      kind: single
+      parts: {literal: listsprite, ci: true}

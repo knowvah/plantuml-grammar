@@ -1,0 +1,5 @@
+' timing: CommandRobustConcise, CommandAtPlayer
+@startuml
+concise "Data" as DATA
+@DATA
+@enduml

@@ -1,0 +1,6 @@
+' common: CommandSkinParamJaws
+' factory: SequenceDiagramFactory
+@startuml
+skinparam sequence {ArrowColor red}skinparam class {BackgroundColor red}
+Alice -> Bob : hello
+@enduml

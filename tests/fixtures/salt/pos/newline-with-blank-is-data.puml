@@ -1,0 +1,5 @@
+' salt: CommandAnything, SaltEmptyDataLine
+@startsalt
+ 
+salt
+@endsalt

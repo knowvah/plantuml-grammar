@@ -1,0 +1,7 @@
+' json: JsonHashLine, JsonText
+' A '#' line that is not '#highlight ' is dropped (JsonDiagramFactory.java:83-87).
+@startjson
+#highlight
+#foo <<bad
+[1, 2]
+@endjson

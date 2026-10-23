@@ -1,0 +1,6 @@
+@startuml
+class A
+@enduml
+@startuml
+A1 -> B1 : hi
+@enduml

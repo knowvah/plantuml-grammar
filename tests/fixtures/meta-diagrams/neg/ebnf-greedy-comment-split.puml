@@ -1,0 +1,4 @@
+' meta: EbnfRuleUnparsable
+@startebnf
+(* c *) a = b ; *) x = y . ;
+@endebnf

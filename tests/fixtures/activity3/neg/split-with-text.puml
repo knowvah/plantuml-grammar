@@ -1,0 +1,6 @@
+' activity3: CommandSplit3
+@startuml
+split x
+:a;
+end split
+@enduml

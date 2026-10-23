@@ -1,0 +1,11 @@
+' mindmap-wbs: CommandWBSItemOld_47
+@startwbs
+* R
+** Line 1
+***(l1) L11
+** Line 2
+***[#green]_< L21
+***(l2)[#pink]< L22
+
+l2 -> l1
+@endwbs

@@ -1,0 +1,4 @@
+' nwdiag-packet: CommandFootboxIgnored
+@startnwdiag
+hide footbox now
+@endnwdiag

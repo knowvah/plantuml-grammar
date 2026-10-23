@@ -1,0 +1,8 @@
+' misc-charts: ChenEntityChecked
+' gap: muteToType fails when a name changes kind (CommandCreateEntity.java:124-127); the model keeps no entity table
+@startchen
+entity A {
+}
+relationship A {
+}
+@endchen

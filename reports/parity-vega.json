@@ -1,0 +1,346 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "unclassified",
+      "family": "activity3",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "ACTIVITY",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "ACTIVITY",
+      "path": "sub/repro2.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "family": "class",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SEQUENCE",
+      "kind": "diagram_mismatch",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "CLASS",
+      "path": "preproc/eval.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "family": "class",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SEQUENCE",
+      "kind": "diagram_mismatch",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "CLASS",
+      "path": "preproc/upper.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "family": "description",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "DESCRIPTION",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "DESCRIPTION",
+      "path": "sub/includesub-same-file.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "family": "description",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "DESCRIPTION",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "DESCRIPTION",
+      "path": "sub/repro1.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "family": "misc-charts",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "CRASH",
+      "kind": "diagram_mismatch",
+      "note": "@startcrash block: CrashDiagram passes DiagramType.BPM to its constructor, so the jar reports BPM while the interpreter's model (embedded crash) reports CRASH; both accept",
+      "oracle": true,
+      "oracle_type": "BPM",
+      "path": "crash/crash-not-crashing.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "family": "misc-charts",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "CRASH",
+      "kind": "diagram_mismatch",
+      "note": "@startcrash block: CrashDiagram passes DiagramType.BPM to its constructor, so the jar reports BPM while the interpreter's model (embedded crash) reports CRASH; both accept (the crash happens only when drawing)",
+      "oracle": true,
+      "oracle_type": "BPM",
+      "path": "crash/crash-when-drawing.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "vega",
+  "families": {
+    "activity-legacy": {
+      "overlay": false,
+      "totals": {
+        "blocks": 1,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 1,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "activity3": {
+      "overlay": false,
+      "totals": {
+        "blocks": 3,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 3,
+        "raw_fr": 1,
+        "timeout": 0
+      }
+    },
+    "board-files-git": {
+      "overlay": false,
+      "totals": {
+        "blocks": 0,
+        "diagram_mismatch": 0,
+        "disagree": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 0,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "class": {
+      "overlay": false,
+      "totals": {
+        "blocks": 28,
+        "diagram_mismatch": 2,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 28,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "common": {
+      "overlay": true,
+      "totals": {
+        "blocks": 301,
+        "diagram_mismatch": 4,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 294,
+        "raw_fr": 3,
+        "timeout": 0
+      }
+    },
+    "description": {
+      "overlay": false,
+      "totals": {
+        "blocks": 10,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 10,
+        "raw_fr": 2,
+        "timeout": 0
+      }
+    },
+    "gantt": {
+      "overlay": false,
+      "totals": {
+        "blocks": 16,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 15,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "json": {
+      "overlay": false,
+      "totals": {
+        "blocks": 0,
+        "diagram_mismatch": 0,
+        "disagree": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 0,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "meta-diagrams": {
+      "overlay": false,
+      "totals": {
+        "blocks": 0,
+        "diagram_mismatch": 0,
+        "disagree": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 0,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "mindmap-wbs": {
+      "overlay": false,
+      "totals": {
+        "blocks": 5,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 5,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "misc-charts": {
+      "overlay": false,
+      "totals": {
+        "blocks": 6,
+        "diagram_mismatch": 2,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 6,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "nwdiag-packet": {
+      "overlay": false,
+      "totals": {
+        "blocks": 62,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 59,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "salt": {
+      "overlay": false,
+      "totals": {
+        "blocks": 7,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 7,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "sequence": {
+      "overlay": false,
+      "totals": {
+        "blocks": 119,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 119,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "single-line": {
+      "overlay": false,
+      "totals": {
+        "blocks": 2,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 0,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "state": {
+      "overlay": false,
+      "totals": {
+        "blocks": 38,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 38,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "style": {
+      "overlay": true,
+      "totals": {
+        "blocks": 15,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 15,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "timing": {
+      "overlay": false,
+      "totals": {
+        "blocks": 3,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 3,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    },
+    "unclassified": {
+      "overlay": false,
+      "totals": {
+        "blocks": 1,
+        "diagram_mismatch": 0,
+        "fa": 0,
+        "fr": 0,
+        "oracle_accepted": 0,
+        "raw_fr": 0,
+        "timeout": 0
+      }
+    }
+  },
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 301,
+    "diagram_mismatch": 4,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 294,
+    "raw_fr": 3,
+    "timeout": 0
+  }
+}

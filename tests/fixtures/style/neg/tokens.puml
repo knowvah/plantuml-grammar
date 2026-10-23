@@ -1,0 +1,23 @@
+' style: star alone
+@startuml
+<style>
+*
+</style>
+class Foo
+@enduml
+
+' style: comma alone
+@startuml
+<style>
+,
+</style>
+class Foo
+@enduml
+
+' style: colon alone
+@startuml
+<style>
+:
+</style>
+class Foo
+@enduml

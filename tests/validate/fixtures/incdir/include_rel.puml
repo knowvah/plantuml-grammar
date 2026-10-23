@@ -1,0 +1,4 @@
+@startuml
+!include part.iuml
+Inc --> Other
+@enduml

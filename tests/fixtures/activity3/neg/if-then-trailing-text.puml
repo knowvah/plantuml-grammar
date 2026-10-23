@@ -1,0 +1,6 @@
+' activity3: CommandIf4, CommandIf2
+@startuml
+if (a) is (b) then foo
+:x;
+endif
+@enduml

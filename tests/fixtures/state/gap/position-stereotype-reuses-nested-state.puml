@@ -1,0 +1,9 @@
+' state: StatePositionStereotypeAtRoot
+' jar: accepted
+' gap: quarkInContext reuses the only state named X (declared inside A), whose parent is not the root (CucaDiagram.java:267-273); the model sees only the root context
+@startuml
+state A {
+  state X
+}
+state X <<exitpoint>>
+@enduml

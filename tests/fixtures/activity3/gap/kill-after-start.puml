@@ -1,0 +1,6 @@
+' activity3: CommandStart3, CommandKill3
+' gap: InstructionStart.kill returns false (InstructionStart.java:86-88); the kind of the previous instruction is state
+@startuml
+start
+kill
+@enduml

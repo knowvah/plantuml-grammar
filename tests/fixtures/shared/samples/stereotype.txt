@@ -1,0 +1,20 @@
+class A << (S,#FF7700) Singleton >>
+<<>>
+<<(>)>>
+<<(>>)>>
+<< (C,red) >> x >>
+sh0007->sh0006:h[headlabel=<<TABLE BGCOLOR="#0000FF" FIXEDSIZE="TRUE" WIDTH="87" HEIGHT="16"><TR><TD></TD></TR></TABLE>>];
+:do something;<<continuous>>
+[Component] <<red>>
+'rectangle "<<//$alias//>>\n==$label\n<color:red><$Batch*$scale></color>\n//<size:12>[$technology]</size>//\n\n  $description 5" as $alias
+participant OnlyLabel as p1 << APIGateway >>
+hide <<action def>> circle
+rectangle "Autoridades\nCertificadoras\nCEF" as CEFCA << blue >>
+component "Consumer Plan Service - Work In Progress" <<package>> <<V3>> {
+participant Bob <<foo>>
+rectangle "R1" as r1 <<foo1>>  {
+borderStyle<<AmazonVPC>> dashed
+actor foo << Foo >>
+}}
+stereotypeFontColor Transparent
+%invoke_procedure("_"+$x)

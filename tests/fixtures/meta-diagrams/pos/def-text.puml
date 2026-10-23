@@ -1,0 +1,4 @@
+' meta: PSystemDefinitionFactory
+@startdef(id=foo)
+anything ; at all . ! ~
+@enddef

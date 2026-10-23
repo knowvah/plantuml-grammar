@@ -1,0 +1,12 @@
+' activity3: CommandSwimlane
+@startuml
+|A|
+:a;
+|#red|B| Lane B
+:b;
+| C |
+:c;
+|#red-blue|D|
+|A|
+:d;
+@enduml

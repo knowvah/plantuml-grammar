@@ -1,0 +1,21 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# PSystemSingleLineFactory.createSystem (command/PSystemSingleLineFactory.java:69-103):
+# leading noise lines are dropped (core/UmlSource.java:79-106), then the block must be
+# exactly start line + ONE line + end line (:75-76) and executeLine must accept it (:95).
+# Known gap: rules see trimmed lines, upstream matches the raw line; a trailing blank
+# line after the accepted line is rejected upstream but skipped here.
+
+schema_version: 1
+id: embedded-skinparameter-list
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemSkinparameterListFactory
+include: [embedded-single-line]
+contexts:
+  main:
+    - include: noise
+    - command: PSystemSkinparameterListFactory
+      provenance: {class: net.sourceforge.plantuml.donors.PSystemSkinparameterListFactory, file: src/main/java/net/sourceforge/plantuml/donors/PSystemSkinparameterListFactory.java, line: 48}
+      kind: single
+      parts: {regex: "skinparameters\\s*", ci: true}
+      set: done

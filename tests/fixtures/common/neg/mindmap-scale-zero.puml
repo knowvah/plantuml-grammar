@@ -1,0 +1,7 @@
+' common: CommandScale
+' factory: MindMapDiagramFactory
+@startmindmap
+* root
+scale 0
+** child
+@endmindmap

@@ -1,0 +1,7 @@
+' activity3: CommandActivity3, CommandArrow3
+' gap: unknown arrow color: NoSuchColorException (klimt/color/HColorSet.java:69-73); no shared valid-color variable yet
+@startuml
+:a;
+-[#toto]-> x;
+:b;
+@enduml

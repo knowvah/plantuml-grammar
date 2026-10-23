@@ -1,0 +1,6 @@
+' common: CommandSpriteStdlib
+' factory: SequenceDiagramFactory
+@startuml
+sprite $aws #awslib14/Analytics/Athena#
+Alice -> Bob : hello
+@enduml

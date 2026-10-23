@@ -1,0 +1,5 @@
+' activity3: CommandLink3
+@startuml
+:a;
+link red
+@enduml

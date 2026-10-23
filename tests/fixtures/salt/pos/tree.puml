@@ -1,0 +1,11 @@
+' salt: CommandAnything
+@startsalt
+{
+{T
++ World
+++ America
++++ Canada
+++ Europe
+}
+}
+@endsalt

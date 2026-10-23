@@ -1,0 +1,4 @@
+' nwdiag-packet: CommandNwDiagInit
+@startnwdiag
+nwdiag { x
+@endnwdiag

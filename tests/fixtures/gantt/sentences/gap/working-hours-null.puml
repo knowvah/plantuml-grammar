@@ -1,0 +1,7 @@
+' gantt: NaturalGanttWorkingHours
+' jar: rejected
+' gap: an invalid working time parses to null (TimeRange.java) and fails only once a task is laid out
+@startgantt
+[A] lasts 5 days
+from 25:00 to 99:99 are working hours
+@endgantt

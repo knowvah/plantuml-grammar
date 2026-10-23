@@ -1,0 +1,6 @@
+' sequence: CommandReferenceMultilinesOverSeveral
+@startuml
+Alice -> Bob : x
+ref over Alice
+  never ends
+@enduml

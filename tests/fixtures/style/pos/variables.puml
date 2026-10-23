@@ -1,0 +1,12 @@
+' style: custom properties
+@startuml
+<style>
+root {
+--mycol: red;
+LineColor var(--mycol)
+--empty
+}
+--x:;
+</style>
+class Foo
+@enduml

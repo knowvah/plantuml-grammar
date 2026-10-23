@@ -1,0 +1,7 @@
+' description: CommandCreateElementMultilinesBadSymbol1
+@startuml
+[A]
+portin A2 [
+line
+]
+@enduml

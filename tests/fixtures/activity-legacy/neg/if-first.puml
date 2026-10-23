@@ -1,0 +1,6 @@
+' activity-legacy: ActivityIfNoSource
+@startuml
+if "x" then
+--> (*)
+endif
+@enduml

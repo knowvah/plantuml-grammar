@@ -1,0 +1,4 @@
+' nwdiag-packet: CommandGroup
+@startnwdiag
+group g
+@endnwdiag

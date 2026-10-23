@@ -1,0 +1,22 @@
+' class: CommandCreateClass, CommandCreateClassMultilines
+@startuml
+abstract class Shape<T extends Number> <<entity>> #lightblue ##[dashed]blue {
+}
++interface Drawable $tag1 <<(I,orchid) api>> [[http://x.org{tip} label]]
+enum Color {
+  RED
+  GREEN
+}
+static class Util
+annotation Marker
+class "Long name" as Ln<String>
+class Child extends Shape implements Drawable, Serializable
+dataclass Point
+record Pair
+exception Oops
+protocol P
+struct S
+metaclass M
+stereotype St
+entity E
+@enduml

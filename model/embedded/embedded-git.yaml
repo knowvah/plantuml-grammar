@@ -1,0 +1,20 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# GitDiagramFactory.createSystem is not a command factory: every line goes to GitTextArea (:60-68); known gap: an unrecognised ASCII graph shape can throw (CursorPosition.java:210-211), which PSystemBuilder.java:275-281 turns into an error.
+# Any body, including an empty one, is accepted without parsing (D4).
+
+schema_version: 1
+id: embedded-git
+layer: diagram
+diagram: GIT
+factory: GitDiagramFactory
+contexts:
+  main:
+    - command: GitDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.gitlog.GitDiagramFactory, file: src/main/java/net/sourceforge/plantuml/gitlog/GitDiagramFactory.java, line: 69}
+      kind: opaque
+      parts: {regex: ".*"}
+  empty:
+    - command: GitDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.gitlog.GitDiagramFactory, file: src/main/java/net/sourceforge/plantuml/gitlog/GitDiagramFactory.java, line: 69}
+      kind: opaque
+      parts: {regex: ".*"}

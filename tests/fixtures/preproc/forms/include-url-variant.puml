@@ -1,0 +1,5 @@
+@startuml
+!include_many <C4/C4>
+!include_once <C4/C4>
+a -> b
+@enduml

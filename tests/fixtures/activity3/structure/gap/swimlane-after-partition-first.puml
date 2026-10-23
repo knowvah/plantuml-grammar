@@ -1,0 +1,8 @@
+' activity3: CommandSwimlane, CommandPartition3, CommandCloseGroup3
+' gap: the swimlane strategy is tracked in the top-level frame only: startGroup decides (ActivityDiagram3.java:422), but the partition pushes its body
+@startuml
+partition P {
+:a;
+}
+|A|
+@enduml

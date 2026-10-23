@@ -1,0 +1,6 @@
+' activity3: CommandNoteLong3
+@startuml
+:a;
+note left
+x
+@enduml

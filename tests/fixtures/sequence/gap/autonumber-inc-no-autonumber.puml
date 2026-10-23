@@ -1,0 +1,6 @@
+' sequence: CommandAutonumberIncrement
+' gap: inc needs a started dotted autonumber (DottedNumber/AutoNumber state)
+@startuml
+Alice -> Bob : x
+autonumber inc A
+@enduml

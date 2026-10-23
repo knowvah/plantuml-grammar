@@ -1,0 +1,10 @@
+' class: ClassBodyEmbedded
+@startuml
+class A {
+  {{
+    Bob -> Alice
+  }
+  }}
+  + x
+}
+@enduml

@@ -1,0 +1,22 @@
+' activity3: CommandSwimlane, CommandIf4, CommandElse3, CommandEndif3, CommandPartition3, CommandCloseGroup3, CommandWhile3, CommandWhileEnd3
+@startuml
+|A|
+:x;
+if (c) then (yes)
+  |B|
+  :a;
+else (no)
+  |A|
+  :b;
+endif
+partition P {
+  |B|
+  :c;
+}
+while (more?)
+  |A|
+  :d;
+endwhile
+|B|
+:e;
+@enduml

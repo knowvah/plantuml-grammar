@@ -1,0 +1,6 @@
+' misc-charts: WireTooDeep2
+@startwire
+* a
+	* b
+			print("x")
+@endwire

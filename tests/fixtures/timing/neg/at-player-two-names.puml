@@ -1,0 +1,5 @@
+' timing: CommandAtPlayer
+@startuml
+robust "R" as R
+@R S
+@enduml

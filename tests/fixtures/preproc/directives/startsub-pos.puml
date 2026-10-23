@@ -1,0 +1,5 @@
+@startuml
+!startsub S1
+a -> b
+!endsub
+@enduml

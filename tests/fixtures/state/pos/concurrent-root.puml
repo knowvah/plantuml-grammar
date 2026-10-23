@@ -1,0 +1,14 @@
+' state: StateConcurrentAtRoot, CommandConcurrentState, CommandCreatePackageState, StateEnd
+@startuml
+state Z
+--
+state B {
+  --
+  state C
+}
+state D
+||
+state E
+--
+--
+@enduml

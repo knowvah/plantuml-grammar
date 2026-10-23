@@ -1,0 +1,5 @@
+' sequence: CommandHSpace
+@startuml
+Alice -> Bob : x
+||x||
+@enduml

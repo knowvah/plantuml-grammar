@@ -1,0 +1,29 @@
+' misc-charts: ChenEntityChecked, ChenAttributeChecked, ChenAttributeOwnerChecked, ChenEndGroup, ChenAssociateChecked, ChenSimpleSubclassChecked, ChenMultiSubclassChecked, CommandRankDir, ChenAttributeOwner, ChenAttribute
+@startchen
+left to right direction
+entity "Movie X" as Movie #back:lightblue;line:blue {
+  Code : Number <<key>>
+  "Title" as T #red-blue
+  Year : DATE <<derived>> #red;line.dashed
+  Name {
+    First
+    Last #fff-red
+  }
+}
+entity Director <<weak>> #ff00ff {
+  Number
+}
+relationship Directs {
+  since
+}
+entity Person {
+}
+entity Actor {
+}
+Directs =N= Movie
+Directs -(1,N)- Director #green
+Person ->- Director
+Person =<= Actor #line:red
+Person ->- d { Director, Actor } #blue
+Person =>= U { Actor }
+@endchen

@@ -1,0 +1,7 @@
+' board-files-git: GitCommitLine, GitGraphLine
+' gap: the ancestor walk (CursorPosition.java:117-213) reads other lines by column
+' jar: reject
+@startgit
+* a
+|
+@endgit

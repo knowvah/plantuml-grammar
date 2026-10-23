@@ -1,0 +1,134 @@
+# `@startregex` (T32, family meta-diagrams). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/ unless stated.
+#
+# Commands. PSystemRegexFactory.initCommandsList (regexdiagram/PSystemRegexFactory.java:
+# 55-61) is the common block followed by CommandRegexfSingleLine `^[%s]*(.*)$`
+# (regexdiagram/CommandRegexfSingleLine.java:59-64), so every line no common command takes
+# is one regular expression. The syntax check runs its executeArg (:73-80):
+# PSystemRegex.addBlocLines (regexdiagram/PSystemRegex.java:131-178) parses the LINE at
+# once, so the regex bodies are checked while commands are matched, not when drawing.
+# Any failure is an EXECUTION_ERROR (command/PSystemCommandFactory.java:180-187): a
+# RegexParsingException is returned as an error (PSystemRegex.java:173-175), and every
+# other exception is caught by command/ProtectedCommand.java:54-77.
+#
+# What the jar rejects (oracle-verified; tests/fixtures/meta-diagrams/{neg,gap}/regex-*):
+# * Lexing (regexdiagram/RegexExpression.java:45-113): a `{` quantifier that is not
+#   `\{[0-9,]+\}` once read up to the next `}` and an optional `?` (:244-265; `a{x}`,
+#   `a{2}?`, `a{2`, and both corpus FAs, `{` inside `(...)`), an unclosed `(?#` comment
+#   (:168-183), `\0` / `\u` with fewer than 3 / 4 following chars (:336-351), `\p{` /
+#   `\x{` without `}` (:319-334), `[[:x:` without two more chars after the second `:`
+#   (:280-295, the jumps past the end throw in utils/CharInspectorImpl.java:66-69), and a
+#   trailing `\` (:353-366; the preprocessor joins such a line with the next one, so it
+#   never reaches the parser in practice). An unclosed `[abc` is fine (:297-317).
+# * Evaluation (PSystemRegex.java:131-178): an empty `[]` group (GroupSplitter returns no
+#   element, :197-198), a `(` or `)` without its partner (ShuntingYard.java:80-87 throws on
+#   a stray `)`, an unclosed `(` reaches the output queue and :171-172 throws), and an
+#   operator with too few operands. The operand stack `stack` (:103) is a FIELD: it is
+#   shared by all the lines of the diagram. Every operand pushes one tile, `|` and the
+#   implicit concatenation (ReTokenType.java:58-72) pop two, quantifiers, look-arounds and
+#   named groups pop one (:204-226, :307-354). So `*` alone, `a|`, `(?=)`, `a()` or `(?i)x`
+#   fail on the first line and succeed after any line that left a tile; `|` alone needs
+#   two. Comments (`(?#..)`) produce no token, and a NUL char ends the line (:49-50).
+#
+# Model. A line that parses into exactly one complete tree pushes one tile ("well
+# formed"); a line of nested empty `()` and comments pushes nothing; any other line has
+# h >= 1 holes, needs h tiles below it and leaves D + 1 - h, so once a tile exists the
+# depth never returns to 0 in an accepted run. Two states:
+# * `main` (no tile yet): only well-formed (RegexLineWellFormed, `set: regex_stacked`) and
+#   empty (RegexLineEmpty) lines are accepted; any other line is an execution error
+#   (RegexLineUnparsable). Exact.
+# * `regex_stacked` (at least one tile): every lexically valid line with balanced
+#   parentheses is accepted (RegexLineBalanced). Gap (FA only): a line with more holes
+#   than tiles (`a` then `|`); the depth is unbounded, so a finite context stack cannot
+#   count it (tests/fixtures/meta-diagrams/gap/regex-two-holes-after-one-line.puml).
+# Both states splice the generated list (common commands do not touch the stack) and end
+# with their own tail; the generated CommandRegexfSingleLine is removed because one entry
+# cannot act differently per state (coverage exclusion in reports/classify/
+# meta-diagrams.yaml). The three state entries are `emit: false`: they use recursion
+# (`(?(DEFINE)...)`, `(?&name)`), which TextMate cannot carry (it demotes groups). RX_DEFINE is the token grammar they share; tests/
+# families/test_meta_diagrams_regex.py checks them against a port of the Java parser.
+#
+# Emitters see RegexLine in `main`: the line as RegexExpression lexes it (RX_TOKEN), with
+# scopes, and nothing about balance or the stack. The interpreter never reaches it (the
+# reject before it takes every line). Known approximations of the interpreter-only
+# leaves: a NUL char is modeled only between tokens and inside `[...]` (it ends both);
+# Java `\s` in the `[%s]*` prefix is ASCII here (RX_JAVA_SPACE), Unicode letters follow
+# Python's Unicode tables, and astral chars count as two Java chars only in group names.
+schema_version: 1
+id: meta-diagrams-regex
+layer: diagram
+diagram: REGEX
+factory: PSystemRegexFactory
+include: [gen-psystem-regex, common]
+
+variables:
+  # `^[%s]*` of CommandRegexfSingleLine: Java `\s` (no UNICODE_CHARACTER_CLASS) plus NBSP
+  # (regex/Pattern2.java:54-59), consumed greedily before LINE. `\n`/`\r` never occur
+  # inside a line, and leaving them out keeps the pattern line-bounded.
+  RX_JAVA_SPACE: {regex: '[ \t\x0b\f\xa0]*(?![ \t\x0b\f\xa0])'}
+  # Interpreter-only leaves (single regexes; see the header). Generated by composition:
+  # the DEFINE block is identical in all three.
+  RX_WELL_FORMED: {regex: "(?(DEFINE)(?<rxc>(?:\\(\\?#[^)\\x00]*\\))*+)(?<rxo>(?:\\\\(?:0.{3}|u.{4}|[px]\\{[^}]*\\}|(?![0u])(?![px]\\{).)|[\\^$]|\\.|\\[\\[:[^:]*:..|\\[(?!\\[:)(?:[^\\]\\\\\\x00]|\\\\.)+(?:\\]|\\Z|(?=\\x00))|[^\\\\.^$|\\[()*+?{\\x00])(?&rxc))(?<rxq>(?:[*+?](?:\\?|(?!\\?))|\\{[0-9,]+\\}(?!\\?))(?&rxc))(?<rxpo>\\((?!\\?#|\\?<?[=!]|\\?<(?:(?![\U00010000-\U0010ffff])\\p{L})+>)(?:\\?:|(?!\\?:))(?:\\?!|(?!\\?!))(?&rxc))(?<rxlo>(?:\\(\\?<?[=!]|\\(\\?<(?:(?![\U00010000-\U0010ffff])\\p{L})+>)(?&rxc))(?<rxpc>\\)(?&rxc))(?<rxatom>(?&rxo)|(?:(?&rxpo)|(?&rxlo))(?&rxalt)(?&rxpc))(?<rxseq>(?:(?&rxatom)(?&rxq)*+)++)(?<rxalt>(?&rxseq)(?:\\|(?&rxc)(?&rxseq))*+)(?<rxnil>(?&rxpo)(?&rxnil)?+(?&rxpc))(?<rxbal>(?:(?&rxo)|(?&rxq)|\\|(?&rxc)|(?:(?&rxpo)|(?&rxlo))(?&rxbal)(?&rxpc))*+))(?&rxc)(?&rxalt)(?:\\x00.*)?"}
+  RX_EMPTY: {regex: "(?(DEFINE)(?<rxc>(?:\\(\\?#[^)\\x00]*\\))*+)(?<rxo>(?:\\\\(?:0.{3}|u.{4}|[px]\\{[^}]*\\}|(?![0u])(?![px]\\{).)|[\\^$]|\\.|\\[\\[:[^:]*:..|\\[(?!\\[:)(?:[^\\]\\\\\\x00]|\\\\.)+(?:\\]|\\Z|(?=\\x00))|[^\\\\.^$|\\[()*+?{\\x00])(?&rxc))(?<rxq>(?:[*+?](?:\\?|(?!\\?))|\\{[0-9,]+\\}(?!\\?))(?&rxc))(?<rxpo>\\((?!\\?#|\\?<?[=!]|\\?<(?:(?![\U00010000-\U0010ffff])\\p{L})+>)(?:\\?:|(?!\\?:))(?:\\?!|(?!\\?!))(?&rxc))(?<rxlo>(?:\\(\\?<?[=!]|\\(\\?<(?:(?![\U00010000-\U0010ffff])\\p{L})+>)(?&rxc))(?<rxpc>\\)(?&rxc))(?<rxatom>(?&rxo)|(?:(?&rxpo)|(?&rxlo))(?&rxalt)(?&rxpc))(?<rxseq>(?:(?&rxatom)(?&rxq)*+)++)(?<rxalt>(?&rxseq)(?:\\|(?&rxc)(?&rxseq))*+)(?<rxnil>(?&rxpo)(?&rxnil)?+(?&rxpc))(?<rxbal>(?:(?&rxo)|(?&rxq)|\\|(?&rxc)|(?:(?&rxpo)|(?&rxlo))(?&rxbal)(?&rxpc))*+))(?&rxc)(?&rxnil)?+(?:\\x00.*)?"}
+  RX_BALANCED: {regex: "(?(DEFINE)(?<rxc>(?:\\(\\?#[^)\\x00]*\\))*+)(?<rxo>(?:\\\\(?:0.{3}|u.{4}|[px]\\{[^}]*\\}|(?![0u])(?![px]\\{).)|[\\^$]|\\.|\\[\\[:[^:]*:..|\\[(?!\\[:)(?:[^\\]\\\\\\x00]|\\\\.)+(?:\\]|\\Z|(?=\\x00))|[^\\\\.^$|\\[()*+?{\\x00])(?&rxc))(?<rxq>(?:[*+?](?:\\?|(?!\\?))|\\{[0-9,]+\\}(?!\\?))(?&rxc))(?<rxpo>\\((?!\\?#|\\?<?[=!]|\\?<(?:(?![\U00010000-\U0010ffff])\\p{L})+>)(?:\\?:|(?!\\?:))(?:\\?!|(?!\\?!))(?&rxc))(?<rxlo>(?:\\(\\?<?[=!]|\\(\\?<(?:(?![\U00010000-\U0010ffff])\\p{L})+>)(?&rxc))(?<rxpc>\\)(?&rxc))(?<rxatom>(?&rxo)|(?:(?&rxpo)|(?&rxlo))(?&rxalt)(?&rxpc))(?<rxseq>(?:(?&rxatom)(?&rxq)*+)++)(?<rxalt>(?&rxseq)(?:\\|(?&rxc)(?&rxseq))*+)(?<rxnil>(?&rxpo)(?&rxnil)?+(?&rxpc))(?<rxbal>(?:(?&rxo)|(?&rxq)|\\|(?&rxc)|(?:(?&rxpo)|(?&rxlo))(?&rxbal)(?&rxpc))*+))(?&rxc)(?&rxbal)(?:\\x00.*)?"}
+  # ---- emitter view: one RegexExpression token (RegexExpression.java:52-108) ----
+  RX_TOKEN:
+    alt:
+      - {regex: '\\[AZzGbB]|[\^$]', scope: keyword.control.anchor.regexp}
+      - {regex: '\\[.*\\?^$|()\[\]{}<>]', scope: constant.character.escape.regexp}
+      - {regex: '\\(?:0.{3}|u.{4}|[px]\{[^}]*\})', scope: constant.character.escape.regexp}
+      - {regex: '\\(?![0uAZzGbB.*\\?^$|()\[\]{}<>])(?![px]\{).|\.', scope: constant.character.class.regexp}
+      - {literal: '|', ci: false, scope: keyword.operator.or.regexp}
+      - {regex: '\[\[:[^:]*:..', scope: constant.other.character-class.posix.regexp}
+      - {regex: '\[(?!\[:)(?:[^\]\\]|\\.)+(?:\]|(?![^\r\n]))', scope: constant.other.character-class.set.regexp}
+      - {regex: '\(\?#[^)]*\)', scope: comment.block.regexp}
+      - {regex: '\(\?<?[=!]', scope: punctuation.definition.group.assertion.regexp}
+      - {regex: '\(\?<\p{L}+>', scope: punctuation.definition.group.capture.regexp}
+      - {regex: '\((?!\?#|\?<?[=!]|\?<\p{L}+>)(?:\?:|(?!\?:))(?:\?!|(?!\?!))', scope: punctuation.definition.group.regexp}
+      - {literal: ')', ci: false, scope: punctuation.definition.group.regexp}
+      - {regex: '[*+?](?:\?|(?!\?))|\{[0-9,]+\}(?!\?)', scope: keyword.operator.quantifier.regexp}
+      - {regex: '[^\\.^$|\[()*+?{\x00]+(?![^\\.^$|\[()*+?{\x00])'}
+  RX_LINE:
+    seq:
+      - {ref: RX_JAVA_SPACE}
+      - star: {ref: RX_TOKEN}
+      - opt: {regex: '\x00.*'}
+
+overrides:
+  CommandRegexfSingleLine: {remove: true}
+
+contexts:
+  main:
+    - include: gen-psystem-regex#main
+    - command: RegexLineWellFormed
+      provenance: {class: net.sourceforge.plantuml.regexdiagram.PSystemRegex, file: src/main/java/net/sourceforge/plantuml/regexdiagram/PSystemRegex.java, line: 131, also: ['src/main/java/net/sourceforge/plantuml/regexdiagram/CommandRegexfSingleLine.java:59-80', 'src/main/java/net/sourceforge/plantuml/regexdiagram/ShuntingYard.java:50-100']}
+      kind: single
+      emit: false
+      parts: {seq: [{ref: RX_JAVA_SPACE}, {ref: RX_WELL_FORMED}]}
+      set: regex_stacked
+    - command: RegexLineEmpty
+      provenance: {class: net.sourceforge.plantuml.regexdiagram.PSystemRegex, file: src/main/java/net/sourceforge/plantuml/regexdiagram/PSystemRegex.java, line: 139, also: ['src/main/java/net/sourceforge/plantuml/regexdiagram/RegexExpression.java:161-183']}
+      kind: single
+      emit: false
+      parts: {seq: [{ref: RX_JAVA_SPACE}, {ref: RX_EMPTY}]}
+    - command: RegexLineUnparsable
+      provenance: {class: net.sourceforge.plantuml.regexdiagram.PSystemRegex, file: src/main/java/net/sourceforge/plantuml/regexdiagram/PSystemRegex.java, line: 173, also: ['src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:54-77']}
+      kind: single
+      reject: true
+      parts: {seq: [{regex: "[\\s\_]*", ci: true}, {regex: (.*), ci: true, name: LINE}]}
+    - command: RegexLine
+      provenance: {class: net.sourceforge.plantuml.regexdiagram.RegexExpression, file: src/main/java/net/sourceforge/plantuml/regexdiagram/RegexExpression.java, line: 45, also: ['src/main/java/net/sourceforge/plantuml/regexdiagram/CommandRegexfSingleLine.java:59-64']}
+      kind: single
+      parts: {ref: RX_LINE}
+  regex_stacked:
+    - include: gen-psystem-regex#main
+    - command: RegexLineBalanced
+      provenance: {class: net.sourceforge.plantuml.regexdiagram.PSystemRegex, file: src/main/java/net/sourceforge/plantuml/regexdiagram/PSystemRegex.java, line: 103, also: ['src/main/java/net/sourceforge/plantuml/regexdiagram/PSystemRegex.java:204-226', 'src/main/java/net/sourceforge/plantuml/regexdiagram/ShuntingYard.java:80-87']}
+      kind: single
+      emit: false
+      parts: {seq: [{ref: RX_JAVA_SPACE}, {ref: RX_BALANCED}]}
+    - command: RegexLineStackedUnparsable
+      provenance: {class: net.sourceforge.plantuml.regexdiagram.PSystemRegex, file: src/main/java/net/sourceforge/plantuml/regexdiagram/PSystemRegex.java, line: 173, also: ['src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:54-77']}
+      kind: single
+      reject: true
+      parts: {seq: [{regex: "[\\s\_]*", ci: true}, {regex: (.*), ci: true, name: LINE}]}

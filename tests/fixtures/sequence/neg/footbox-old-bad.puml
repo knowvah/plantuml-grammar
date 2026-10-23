@@ -1,0 +1,5 @@
+' sequence: CommandFootboxOld
+@startuml
+Alice -> Bob : x
+footbox maybe
+@enduml

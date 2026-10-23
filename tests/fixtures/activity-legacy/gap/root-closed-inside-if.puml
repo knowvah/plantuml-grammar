@@ -1,0 +1,8 @@
+' activity-legacy: ActivityEndGroupLenient
+' gap: a } inside an if cannot see whether a group is open below it
+@startuml
+(*) --> A
+A --> if x then
+}
+A --> (*)
+@enduml

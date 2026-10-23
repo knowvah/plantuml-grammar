@@ -1,0 +1,8 @@
+' activity-legacy: ActivityLinkLongFirst, CommandLinkLongActivity
+@startuml
+(*) --> "multi
+line" as M
+M --> "second
+one"
+--> (*)
+@enduml

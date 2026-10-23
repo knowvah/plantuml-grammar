@@ -1,0 +1,6 @@
+' nwdiag-packet: NwNetworkOpenAtRoot, NwGroupOpenInNetwork, CommandElement
+@startnwdiag
+network n {
+  group g {
+    a
+@endnwdiag

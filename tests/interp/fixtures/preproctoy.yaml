@@ -1,0 +1,36 @@
+schema_version: 1
+id: preproctoy
+layer: preproc
+contexts:
+  main:
+    - command: ToyDefine
+      provenance: {class: toy.ToyDefine}
+      kind: single
+      parts: {regex: "!define\\s+\\w+.*"}
+    - command: ToyProcedure
+      provenance: {class: toy.ToyProcedure}
+      kind: multiline
+      parts: {regex: "!procedure\\s+\\w+\\(\\)"}
+      end: {literal: "!endprocedure", ci: false}
+    - command: ToyIf
+      provenance: {class: toy.ToyIf}
+      kind: single
+      parts: {regex: "!if\\s+.+"}
+      push: if_body
+  if_body:
+    - command: ToyElse
+      provenance: {class: toy.ToyElse}
+      kind: single
+      parts: {literal: "!else", ci: false}
+      set: else_body
+    - command: ToyEndif
+      provenance: {class: toy.ToyEndif}
+      kind: single
+      parts: {literal: "!endif", ci: false}
+      pop: true
+  else_body:
+    - command: ToyEndifAfterElse
+      provenance: {class: toy.ToyEndif}
+      kind: single
+      parts: {literal: "!endif", ci: false}
+      pop: true

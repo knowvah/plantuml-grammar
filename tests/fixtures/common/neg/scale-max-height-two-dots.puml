@@ -1,0 +1,6 @@
+' common: CommandScaleMaxHeight
+' factory: SequenceDiagramFactory
+@startuml
+scale max 1.2.3 height
+Alice -> Bob : hello
+@enduml

@@ -1,0 +1,6 @@
+' common: CommandHideShowByVisibility
+' factory: ClassDiagramFactory
+@startuml
+show public, protected methods
+class A
+@enduml

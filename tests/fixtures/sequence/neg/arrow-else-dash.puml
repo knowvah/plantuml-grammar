@@ -1,0 +1,8 @@
+' sequence: CommandArrow
+@startuml
+autonumber
+Alice -> Bob : x
+alt x
+else - fallback
+end
+@enduml

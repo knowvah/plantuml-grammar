@@ -1,0 +1,7 @@
+' mindmap-wbs: CommandWBSItemNew_44
+' gap: a later level-0 item is a second root (wbs/WBSDiagram.java:160-162)
+@startwbs
+* A
+** B
+* C
+@endwbs

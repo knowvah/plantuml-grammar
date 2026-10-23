@@ -1,0 +1,10 @@
+' common: CommandFactorySprite_1
+' factory: SequenceDiagramFactory
+' gap: semantic: 4096-color data decoding against the declared size
+@startuml
+sprite $foo1 [2x2/color] {
+FFF000
+000FFF
+}
+Alice -> Bob : hello
+@enduml

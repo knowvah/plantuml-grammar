@@ -1,0 +1,6 @@
+' sequence: CommandReturn
+' gap: no message to return to (CommandReturn.java:108-114): state, not a line shape
+@startuml
+participant Alice
+return x
+@enduml

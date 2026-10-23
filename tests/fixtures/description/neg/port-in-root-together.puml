@@ -1,0 +1,6 @@
+' description: PortAtRoot, RootTogether
+@startuml
+together {
+port t
+}
+@enduml

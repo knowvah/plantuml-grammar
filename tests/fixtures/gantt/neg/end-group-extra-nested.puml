@@ -1,0 +1,9 @@
+' gantt: CommandGroupEnd, CommandGroupStart
+@startgantt
+[A] -> [B]
+group [G]
+group [H]
+end group
+end group
+end group
+@endgantt

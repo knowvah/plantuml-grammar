@@ -1,0 +1,6 @@
+@startuml
+class A
+@enduml
+@startwbs
+* a
+@endwbs

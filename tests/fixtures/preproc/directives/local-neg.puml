@@ -1,0 +1,4 @@
+@startuml
+!local $x = 1
+a -> b
+@enduml

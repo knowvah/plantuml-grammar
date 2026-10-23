@@ -1,0 +1,4 @@
+' single-line: single-line-ditaa
+@startditaa
+!pragma foo bar
+@endditaa

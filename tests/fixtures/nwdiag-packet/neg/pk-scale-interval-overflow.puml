@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandScaleInterval, CommandScaleIntervalError
+@startpacketdiag
+scale_interval = 2147483648
+0-7: A
+@endpacketdiag

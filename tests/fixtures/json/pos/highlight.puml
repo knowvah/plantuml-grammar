@@ -1,0 +1,7 @@
+' json: JsonHighlight, JsonMemberLine, JsonText
+@startjson
+#highlight "lastName"
+#highlight "address" / "city" <<h>>
+#highlight a <<x> y>>
+{"lastName": "x", "address": {"city": "y"}}
+@endjson

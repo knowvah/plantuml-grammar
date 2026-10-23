@@ -1,0 +1,5 @@
+' state: CommandCreateState
+' gap: a name ending in the separator throws in quarkInContext (CucaDiagram.java:258-259, :290-297); not modeled because `set separator` changes the separator for the whole diagram
+@startuml
+state A.
+@enduml

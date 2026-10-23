@@ -1,0 +1,5 @@
+' sequence: CommandAutoNewpage
+@startuml
+Alice -> Bob : x
+autonewpage 99999999999
+@enduml

@@ -1,0 +1,6 @@
+' nwdiag-packet: CommandProperty
+@startnwdiag
+network n {
+  shape = cloud
+}
+@endnwdiag

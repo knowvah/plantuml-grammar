@@ -1,0 +1,6 @@
+' common: CommandScale
+' factory: GanttDiagramFactory
+@startgantt
+scale 0
+printscale weekly
+@endgantt

@@ -1,0 +1,12 @@
+schema_version: 1
+id: seqtoy
+layer: diagram
+diagram: SEQUENCE
+include: [shared]
+contexts:
+  main:
+    - command: CommandAlpha
+      provenance: {class: toy.CommandAlpha}
+      kind: single
+      parts: {seq: [{literal: alpha, ci: true}, {regex: "\\s+"}, {ref: WORD}]}
+    - include: common

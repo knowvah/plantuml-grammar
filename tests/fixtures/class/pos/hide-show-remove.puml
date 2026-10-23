@@ -1,0 +1,12 @@
+' class: CommandHideShow2, CommandHideShowByGender, CommandRemoveRestore, CommandHideShowByVisibility
+@startuml
+class A
+class B <<s>>
+hide empty members
+hide <<s>> circle
+show A methods
+hide @unlinked
+remove B
+restore B
+hide private members
+@enduml

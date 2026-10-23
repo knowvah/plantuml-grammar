@@ -1,0 +1,9 @@
+' gantt: CommandPrintBetween
+@startgantt
+print between 2020-02-29 and 2020-03-04
+print between 29th of february 2000 and feb 29, 2400
+print between 0-02-29 and 3 days after start
+print between D+0002147483647 and 1 JAN 2020
+Print between 2020/04/30 and dec 31 9999
+[A] -> [B]
+@endgantt

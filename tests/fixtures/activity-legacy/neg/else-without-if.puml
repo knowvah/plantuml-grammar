@@ -1,0 +1,5 @@
+' activity-legacy: ActivityElseWithoutIf
+@startuml
+(*) --> A
+else
+@enduml

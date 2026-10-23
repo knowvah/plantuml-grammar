@@ -1,0 +1,6 @@
+' sequence: CommandActivate
+' gap: after create, the next message must reach the created participant (SequenceDiagram.java:207-210): state
+@startuml
+create Carl
+Alice -> Bob : x
+@enduml

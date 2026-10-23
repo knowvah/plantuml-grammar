@@ -1,0 +1,4 @@
+@startuml
+!define X class
+X Foo
+@enduml

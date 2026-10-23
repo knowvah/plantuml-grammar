@@ -1,0 +1,7 @@
+' common: CommandStyleImport
+' factory: SequenceDiagramFactory
+' gap: semantic: style file content (CommandStyleImport.java:100-132)
+@startuml
+<style file=/dev/null>
+Alice -> Bob : hello
+@enduml

@@ -1,0 +1,7 @@
+' common: CommandMultilinesFooter
+' factory: SequenceDiagramFactory
+@startuml
+footer
+line
+Alice -> Bob : hello
+@enduml

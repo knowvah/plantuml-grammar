@@ -1,0 +1,7 @@
+' sequence: CommandArrow
+' gap: unknown color inside an arrow style, checked at execution
+@startuml
+autonumber
+Alice -> Bob : x
+Alice -[#zzzz]> Bob
+@enduml

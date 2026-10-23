@@ -1,0 +1,7 @@
+' common: CommandFactorySprite_1
+' factory: WBSDiagramFactory
+@startwbs
+sprite $x {
+}
+* root
+@endwbs

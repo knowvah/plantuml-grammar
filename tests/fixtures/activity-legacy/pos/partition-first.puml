@@ -1,0 +1,7 @@
+' activity-legacy: ActivityPartitionFirst, ActivityEndGroupRoot
+@startuml
+partition Conductor {
+  (*) --> "Climbs on Platform"
+}
+--> (*)
+@enduml

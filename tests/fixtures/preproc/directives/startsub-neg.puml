@@ -1,0 +1,5 @@
+@startuml
+!startsub bad-name
+a -> b
+!endsub
+@enduml

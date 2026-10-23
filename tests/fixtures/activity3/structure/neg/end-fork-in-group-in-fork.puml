@@ -1,0 +1,7 @@
+' activity3: CommandPartition3, CommandForkEnd3, CommandFork3
+@startuml
+fork
+:a;
+partition P {
+end fork
+@enduml

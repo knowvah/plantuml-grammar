@@ -1,0 +1,14 @@
+' class: CommandAllowMixing, CommandCreateElementFull2_30, MixingPackageWithUSymbol
+@startuml
+class A
+allowmixing
+rectangle R
+actor :Bob:
+package P {
+  usecase U
+}
+rectangle Box {
+  node N
+}
+A --> R
+@enduml

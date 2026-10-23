@@ -1,0 +1,3614 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "ActivityDiagramFactory3",
+  "factoryOrder": 7,
+  "diagramType": "ACTIVITY",
+  "commands": [
+    {
+      "order": 0,
+      "class": "net.sourceforge.plantuml.command.CommandFootboxIgnored",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "(hide|show)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "footbox", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 1,
+      "class": "net.sourceforge.plantuml.command.CommandTitle",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "title", "children": []},
+          {"t": "leaf", "name": null, "pattern": "(?:[%s]*:[%s]*|[%s]+)", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": "TITLE1", "pattern": "[%g](.*)[%g]", "children": []},
+              {"t": "leaf", "name": "TITLE2", "pattern": "(.*[%pLN_.].*)", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 2,
+      "class": "net.sourceforge.plantuml.command.CommandMainframe",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "mainframe", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": ":", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+                ]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": "LABEL", "pattern": "(.*[%pLN_.].*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 3,
+      "class": "net.sourceforge.plantuml.command.CommandCaption",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "caption", "children": []},
+          {"t": "leaf", "name": null, "pattern": "(?:[%s]*:[%s]*|[%s]+)", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": "DISPLAY1", "pattern": "[%g](.*)[%g]", "children": []},
+              {"t": "leaf", "name": "DISPLAY2", "pattern": "(.*[%pLN_.].*)", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 4,
+      "class": "net.sourceforge.plantuml.command.CommandMultilinesCaption",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {"t": "leaf", "name": null, "pattern": "^caption$", "children": []},
+      "end": {"t": "leaf", "name": null, "pattern": "^end[%s]?caption$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 5,
+      "class": "net.sourceforge.plantuml.command.CommandMultilinesTitle",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {"t": "leaf", "name": null, "pattern": "^title$", "children": []},
+      "end": {"t": "leaf", "name": null, "pattern": "^end[%s]?title$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 6,
+      "class": "net.sourceforge.plantuml.command.CommandMultilinesLegend",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "legend", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+                  {"t": "leaf", "name": "VALIGN", "pattern": "(top|bottom)", "children": []}
+                ]
+              }
+            ]
+          },
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+                  {"t": "leaf", "name": "ALIGN", "pattern": "(left|right|center)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {"t": "leaf", "name": null, "pattern": "^end[%s]?legend$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 7,
+      "class": "net.sourceforge.plantuml.command.CommandLegend",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "legend", "children": []},
+          {"t": "leaf", "name": null, "pattern": "(?:[%s]*:[%s]*|[%s]+)", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": "LEGEND1", "pattern": "[%g](.*)[%g]", "children": []},
+              {"t": "leaf", "name": "LEGEND2", "pattern": "(.*[%pLN_.].*)", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 8,
+      "class": "net.sourceforge.plantuml.command.CommandFooter",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [{"t": "leaf", "name": "POSITION", "pattern": "(left|right|center)", "children": []}]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "footer", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": ":", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+                ]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []}
+            ]
+          },
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": "LABEL1", "pattern": "[%g](.*)[%g]", "children": []},
+              {"t": "leaf", "name": "LABEL2", "pattern": "(.*[%pLN_.].*)", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 9,
+      "class": "net.sourceforge.plantuml.command.CommandMultilinesFooter",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "leaf",
+        "name": null,
+        "pattern": "^(?:(left|right|center)?[%s]*)footer$",
+        "children": []
+      },
+      "end": {"t": "leaf", "name": null, "pattern": "^end[%s]?footer$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 10,
+      "class": "net.sourceforge.plantuml.command.CommandHeader",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [{"t": "leaf", "name": "POSITION", "pattern": "(left|right|center)", "children": []}]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "header", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": ":", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+                ]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []}
+            ]
+          },
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": "LABEL1", "pattern": "[%g](.*)[%g]", "children": []},
+              {"t": "leaf", "name": "LABEL2", "pattern": "(.*[%pLN_.].*)", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 11,
+      "class": "net.sourceforge.plantuml.command.CommandMultilinesHeader",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "leaf",
+        "name": null,
+        "pattern": "^(?:(left|right|center)?[%s]*)header$",
+        "children": []
+      },
+      "end": {"t": "leaf", "name": null, "pattern": "^end[%s]?header$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 12,
+      "class": "net.sourceforge.plantuml.classdiagram.command.CommandNamespaceSeparator",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "set", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "separator", "children": []},
+              {"t": "leaf", "name": null, "pattern": "namespaceseparator", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {
+            "t": "leaf",
+            "name": "SEPARATOR",
+            "pattern": "((?:none|null)|[\\\\]{2}|::|[^%pLN%s_$#\\\\{}<>%g])",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 13,
+      "class": "net.sourceforge.plantuml.command.CommandNope",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 14,
+      "class": "net.sourceforge.plantuml.command.CommandPragma",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "!pragma", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([A-Za-z_][A-Za-z_0-9]*)", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+                  {"t": "leaf", "name": "VALUE", "pattern": "(.*)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 15,
+      "class": "net.sourceforge.plantuml.command.CommandAssumeTransparent",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "!assume", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "transparent", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "TYPE", "pattern": "(dark|light)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 16,
+      "class": "net.sourceforge.plantuml.command.CommandSkinParam",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "TYPE", "pattern": "(skinparam|skinparamlocked)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {
+            "t": "leaf",
+            "name": "NAME",
+            "pattern": "([\\w.]*(?:\\<\\<[^<>]*\\>\\>)?[\\w.]*)",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "VALUE", "pattern": "([^{}]*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 17,
+      "class": "net.sourceforge.plantuml.command.CommandSkinParamJaws",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "plus",
+            "name": "FULL",
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {
+                    "t": "leaf",
+                    "name": "TYPE",
+                    "pattern": "(skinparam|skinparamlocked)",
+                    "children": []
+                  },
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+                  {"t": "leaf", "name": null, "pattern": ".*.*", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 18,
+      "class": "net.sourceforge.plantuml.command.CommandSkinParamMultilines",
+      "kind": "multiline-bracket",
+      "engine": "IRegex",
+      "start": {
+        "t": "leaf",
+        "name": null,
+        "pattern": "^skinparam[%s]*(?:[%s]+([\\w.]*(?:\\<\\<.*\\>\\>)?[\\w.]*))?[%s]*\\{$",
+        "children": []
+      },
+      "end": null,
+      "finalBracket": false
+    },
+    {
+      "order": 19,
+      "class": "net.sourceforge.plantuml.sequencediagram.command.CommandSkin",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "skin", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "SKIN", "pattern": "([\\w.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 20,
+      "class": "net.sourceforge.plantuml.command.CommandMinwidth",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "minwidth", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "VALUE", "pattern": "(\\d+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 21,
+      "class": "net.sourceforge.plantuml.command.CommandPage",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "page", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "NB1", "pattern": "(\\d+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "x*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "NB2", "pattern": "(\\d+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 22,
+      "class": "net.sourceforge.plantuml.command.CommandRotate",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "rotate", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 23,
+      "class": "net.sourceforge.plantuml.command.CommandFactorySprite$1",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$?", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-.%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "DIM",
+                "pattern": "\\[(\\d+)x(\\d+)/(?:(\\d+)(z)?|(color))\\]",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\{", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {"t": "leaf", "name": null, "pattern": "^end[%s]?sprite|\\}$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 24,
+      "class": "net.sourceforge.plantuml.command.CommandFactorySprite$2",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$?", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-.%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "DIM",
+                "pattern": "\\[(\\d+)x(\\d+)/(?:(\\d+)(z)|(color))\\]",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "DATA", "pattern": "([-_A-Za-z0-9]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 25,
+      "class": "net.sourceforge.plantuml.command.CommandSpriteBase64",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$?", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-.%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "data:image/png;base64,", "children": []},
+          {"t": "leaf", "name": "DATA", "pattern": "([A-Za-z0-9+/=]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 26,
+      "class": "net.sourceforge.plantuml.command.CommandSpriteMd5",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$?", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-.%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "data:image/png;md5,", "children": []},
+          {"t": "leaf", "name": "MD5", "pattern": "([0-9a-f]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 27,
+      "class": "net.sourceforge.plantuml.command.CommandSpriteSvg",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$?", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "SVG", "pattern": "(\\<svg\\b.*\\</svg\\>)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 28,
+      "class": "net.sourceforge.plantuml.command.CommandSpriteStdlib",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "STDLIB", "pattern": "#([^#]+)#([^%s]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 29,
+      "class": "net.sourceforge.plantuml.command.CommandSpriteStdlibSvg",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$?", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "STDLIB", "pattern": ":([^:]+):([^%s]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 30,
+      "class": "net.sourceforge.plantuml.command.CommandSpriteSvgMultiline",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$?", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "SVGSTART", "pattern": "(\\<svg\\b.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {"t": "leaf", "name": null, "pattern": "(.*\\</svg\\>)$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 31,
+      "class": "net.sourceforge.plantuml.command.CommandSpriteFile",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "sprite", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\$?", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([-%pLN_]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "FILE", "pattern": "([^<>%g#]*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 32,
+      "class": "net.sourceforge.plantuml.style.CommandStyleSingleLineCSS",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\<style\\>", "children": []},
+          {"t": "leaf", "name": "STYLE", "pattern": "([-#.\\w%s;:{}]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\</style\\>", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 33,
+      "class": "net.sourceforge.plantuml.style.CommandStyleMultilinesCSS",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\<style\\>", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {"t": "leaf", "name": null, "pattern": "^[%s]*\\</?style\\>[%s]*$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 34,
+      "class": "net.sourceforge.plantuml.style.CommandStyleImport",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\<style", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\w+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "=", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%q%g]?", "children": []},
+          {"t": "leaf", "name": "PATH", "pattern": "([^%q%g]*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%q%g]?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\>", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 35,
+      "class": "net.sourceforge.plantuml.command.CommandScale",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "scale", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "SCALE", "pattern": "([0-9.]+)", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "/", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": "DIV", "pattern": "([0-9.]+)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 36,
+      "class": "net.sourceforge.plantuml.command.CommandScaleWidthAndHeight",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "scale", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "WIDTH", "pattern": "([0-9.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[*x]", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "HEIGHT", "pattern": "([0-9.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 37,
+      "class": "net.sourceforge.plantuml.command.CommandScaleWidthOrHeight",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "scale", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "VALUE", "pattern": "([0-9.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "WIDTH", "pattern": "(width|height)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 38,
+      "class": "net.sourceforge.plantuml.command.CommandScaleMaxWidth",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "scale", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "max", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "WIDTH", "pattern": "([0-9.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "width", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 39,
+      "class": "net.sourceforge.plantuml.command.CommandScaleMaxHeight",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "scale", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "max", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "HEIGHT", "pattern": "([0-9.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "height", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 40,
+      "class": "net.sourceforge.plantuml.command.CommandScaleMaxWidthAndHeight",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "scale", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "max", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "WIDTH", "pattern": "([0-9.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[*x]", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "HEIGHT", "pattern": "([0-9.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 41,
+      "class": "net.sourceforge.plantuml.statediagram.command.CommandHideEmptyDescription",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "HIDE", "pattern": "(hide|show)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "empty", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "description", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 42,
+      "class": "net.sourceforge.plantuml.classdiagram.command.CommandHideShowByVisibility",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COMMAND", "pattern": "(hide|show)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {
+            "t": "leaf",
+            "name": "VISIBILITY",
+            "pattern": "((?:public|private|protected|package)?(?:[,%s]+(?:public|private|protected|package))*)",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {
+            "t": "leaf",
+            "name": "PORTION",
+            "pattern": "(members?|attributes?|fields?|methods?)",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 43,
+      "class": "net.sourceforge.plantuml.classdiagram.command.CommandHideShowByGender",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COMMAND", "pattern": "(hide|show)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {
+            "t": "leaf",
+            "name": "GENDER",
+            "pattern": "(?:(class|object|interface|enum|annotation|dataclass|record|abstract|[%pLN_.]+|[%g][^%g]+[%g]|\\<\\<.*\\>\\>)[%s]+)*?",
+            "children": []
+          },
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": "EMPTY", "pattern": "(empty)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []}
+                ]
+              }
+            ]
+          },
+          {
+            "t": "leaf",
+            "name": "PORTION",
+            "pattern": "(members?|attributes?|fields?|methods?|circles?|circled?|stereotypes?)",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 44,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandSwimlane",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\|", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+)\\|)?", "children": []},
+          {"t": "leaf", "name": "SWIMLANE", "pattern": "([^|]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\|", "children": []},
+          {"t": "leaf", "name": "LABEL", "pattern": "([^|]+)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 45,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandSwimlane2",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "swimlane", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+))?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "SWIMLANE", "pattern": "([^|]+?)", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "as", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+                  {"t": "leaf", "name": "LABEL", "pattern": "([^|]+)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 46,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandPartition3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "leaf",
+            "name": "TYPE",
+            "pattern": "(partition|package|rectangle|card|group)",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {
+                    "t": "leaf",
+                    "name": "BACK1",
+                    "pattern": "((?:#(?:\\w+[-\\\\|/]?\\w+;)?(?:(?:text|back|header|line|line\\.dashed|line\\.dotted|line\\.bold|shadowing)(?::\\w+[-\\\\|/]?\\w+)?(?:;|(?![\\w;:.])))+)|(?:#\\w+[-\\\\|/]?\\w+))?",
+                    "children": []
+                  },
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": "NAME", "pattern": "([%g][^%g]+[%g]|.*?)", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+                  {
+                    "t": "leaf",
+                    "name": "BACK2",
+                    "pattern": "((?:#(?:\\w+[-\\\\|/]?\\w+;)?(?:(?:text|back|header|line|line\\.dashed|line\\.dotted|line\\.bold|shadowing)(?::\\w+[-\\\\|/]?\\w+)?(?:;|(?![\\w;:.])))+)|(?:#\\w+[-\\\\|/]?\\w+))?",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "t": "concat",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+              {
+                "t": "opt",
+                "name": null,
+                "pattern": null,
+                "children": [{"t": "leaf", "name": "STEREO", "pattern": "(\\<\\<.+?\\>\\>)", "children": []}]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": "BRACKET", "pattern": "(\\{?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 47,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandCloseGroup3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\}", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 48,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandCloseGroupLegacy3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "CMD", "pattern": "(end ?group|group ?end)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 49,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandArrow3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "->", "children": []},
+              {
+                "t": "leaf",
+                "name": "COLOR",
+                "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": "LABEL", "pattern": "(.*);", "children": []},
+              {"t": "leaf", "name": null, "pattern": "", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 50,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandArrowLong3",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "->", "children": []},
+              {
+                "t": "leaf",
+                "name": "COLOR",
+                "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "LABEL", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {"t": "leaf", "name": null, "pattern": "^(.*);$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 51,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandRepeat3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "repeat", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": ":", "children": []},
+                  {"t": "leaf", "name": "LABEL", "pattern": "(.*?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": ";", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+                ]
+              }
+            ]
+          },
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 52,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandActivity3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "concat",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+              {
+                "t": "opt",
+                "name": null,
+                "pattern": null,
+                "children": [{"t": "leaf", "name": "IGNORED", "pattern": "(\\<\\<.+?\\>\\>)", "children": []}]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ":", "children": []},
+          {"t": "leaf", "name": "LABEL", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "URL",
+                "pattern": "(\\[\\[[%s]*[%g]([^%g]+)[%g](?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\]|\\[\\[[%s]*\\{(.*)\\}[%s]*\\]\\]|\\[\\[[%s]*\\{([^{}]*)\\}[%s]*([^\\[%s\\{\\}\\[\\]][^\\[\\]]*)[%s]*\\]\\]|\\[\\[[%s]*([^\\s%g{}\\[\\]]+?)[%s]*\\{(.+)\\}[%s]*\\]\\]|\\[\\[[%s]*([^%s%g\\[\\]]+?)(?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\])",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 53,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandIf4",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "if", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "(is|equals?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "WHEN", "pattern": "(.+?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "then", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 54,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandIf2",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "URL",
+                "pattern": "(\\[\\[[%s]*[%g]([^%g]+)[%g](?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\]|\\[\\[[%s]*\\{(.*)\\}[%s]*\\]\\]|\\[\\[[%s]*\\{([^{}]*)\\}[%s]*([^\\[%s\\{\\}\\[\\]][^\\[\\]]*)[%s]*\\]\\]|\\[\\[[%s]*([^\\s%g{}\\[\\]]+?)[%s]*\\{(.+)\\}[%s]*\\]\\]|\\[\\[[%s]*([^%s%g\\[\\]]+?)(?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\])",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "if", "children": []},
+          {
+            "t": "concat",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+              {
+                "t": "opt",
+                "name": null,
+                "pattern": null,
+                "children": [{"t": "leaf", "name": "IGNORED", "pattern": "(\\<\\<.+?\\>\\>)", "children": []}]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "then", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [{"t": "leaf", "name": "WHEN", "pattern": "\\((.+?)\\)", "children": []}]
+                  }
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 55,
+      "class": "net.sourceforge.plantuml.command.CommandDecoratorMultine",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "URL",
+                "pattern": "(\\[\\[[%s]*[%g]([^%g]+)[%g](?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\]|\\[\\[[%s]*\\{(.*)\\}[%s]*\\]\\]|\\[\\[[%s]*\\{([^{}]*)\\}[%s]*([^\\[%s\\{\\}\\[\\]][^\\[\\]]*)[%s]*\\]\\]|\\[\\[[%s]*([^\\s%g{}\\[\\]]+?)[%s]*\\{(.+)\\}[%s]*\\]\\]|\\[\\[[%s]*([^%s%g\\[\\]]+?)(?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\])",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "if", "children": []},
+          {
+            "t": "concat",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+              {
+                "t": "opt",
+                "name": null,
+                "pattern": null,
+                "children": [{"t": "leaf", "name": "IGNORED", "pattern": "(\\<\\<.+?\\>\\>)", "children": []}]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "then", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [{"t": "leaf", "name": "WHEN", "pattern": "\\((.+?)\\)", "children": []}]
+                  }
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "wrapper": "CommandDecoratorMultine",
+      "nbMaxLines": 50
+    },
+    {
+      "order": 56,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandIfLegacy1",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "if", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.+?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "then", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "when", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "WHEN", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 57,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandElseIf3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "or",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                          {
+                            "t": "leaf",
+                            "name": "INCOMING_COLOR",
+                            "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {"t": "leaf", "name": "INCOMING", "pattern": "(.*?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "else", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "if", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "(is|equals?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "WHEN", "pattern": "(.+?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "then", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "concat",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                          {
+                            "t": "opt",
+                            "name": null,
+                            "pattern": null,
+                            "children": [
+                              {
+                                "t": "or",
+                                "name": null,
+                                "pattern": null,
+                                "children": [
+                                  {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                                  {
+                                    "t": "leaf",
+                                    "name": "WHEN_COLOR",
+                                    "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                                    "children": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 58,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandElseIf2",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "or",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                          {
+                            "t": "leaf",
+                            "name": "INCOMING_COLOR",
+                            "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {"t": "leaf", "name": "INCOMING", "pattern": "(.*?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "else", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "if", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "then", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "concat",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                          {
+                            "t": "opt",
+                            "name": null,
+                            "pattern": null,
+                            "children": [
+                              {
+                                "t": "or",
+                                "name": null,
+                                "pattern": null,
+                                "children": [
+                                  {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                                  {
+                                    "t": "leaf",
+                                    "name": "WHEN_COLOR",
+                                    "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                                    "children": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {"t": "leaf", "name": "WHEN", "pattern": "(.*?)", "children": []},
+                          {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 59,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandElse3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "else", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "or",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                          {
+                            "t": "leaf",
+                            "name": "WHEN_COLOR",
+                            "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {"t": "leaf", "name": "WHEN", "pattern": "(.*?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 60,
+      "class": "net.sourceforge.plantuml.command.CommandDecoratorMultine",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "else", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "or",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                          {
+                            "t": "leaf",
+                            "name": "WHEN_COLOR",
+                            "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {"t": "leaf", "name": "WHEN", "pattern": "(.*?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "wrapper": "CommandDecoratorMultine",
+      "nbMaxLines": 50
+    },
+    {
+      "order": 61,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandElseLegacy1",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "else", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": null, "pattern": "when", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "WHEN", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 62,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandEndif3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "end", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "if", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 63,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandSwitch",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "switch", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 64,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandCase",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "case", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 65,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandEndSwitch",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "endswitch", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 66,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandRepeatWhile3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "repeat", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "while", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": "TEST3", "pattern": "\\((.*?)\\)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "(is|equals?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": "WHEN3", "pattern": "\\((.+?)\\)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "(not)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": "OUT3", "pattern": "\\((.+?)\\)", "children": []}
+                ]
+              },
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": "TEST4", "pattern": "\\((.*?)\\)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "(not)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": "OUT4", "pattern": "\\((.+?)\\)", "children": []}
+                ]
+              },
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": "TEST2", "pattern": "\\((.*?)\\)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "(is|equals?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": "WHEN2", "pattern": "\\((.+?)\\)", "children": []}
+                ]
+              },
+              {
+                "t": "opt",
+                "name": null,
+                "pattern": null,
+                "children": [{"t": "leaf", "name": "TEST1", "pattern": "\\((.*)\\)", "children": []}]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {
+                    "t": "or",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                      {
+                        "t": "leaf",
+                        "name": "XCOLOR",
+                        "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                        "children": []
+                      }
+                    ]
+                  },
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {
+                    "t": "or",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {"t": "leaf", "name": "LABEL", "pattern": "(.*)", "children": []},
+                      {"t": "leaf", "name": null, "pattern": "", "children": []}
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 67,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandRepeatWhile3Multilines",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "repeat", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "while", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST1", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": "TEST1", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "finalBracket": false
+    },
+    {
+      "order": 68,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandBackward3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "or",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                          {
+                            "t": "leaf",
+                            "name": "INCOMING_COLOR",
+                            "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {"t": "leaf", "name": "INCOMING", "pattern": "(.*?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "backward", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": ":", "children": []},
+          {"t": "leaf", "name": "LABEL", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "or",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                          {
+                            "t": "leaf",
+                            "name": "OUTCOMING_COLOR",
+                            "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {"t": "leaf", "name": "OUTCOMING", "pattern": "(.*?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 69,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandBackwardLong3",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "backward", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": ":", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "DATA", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": "TEXT", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "finalBracket": false
+    },
+    {
+      "order": 70,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandWhile3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "while", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "(is|equals?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": "YES", "pattern": "\\((.+?)\\)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 71,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandWhileEnd3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "end", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "while", "children": []}
+                ]
+              },
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "while", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "end", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [{"t": "leaf", "name": "OUT", "pattern": "\\((.+?)\\)", "children": []}]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 72,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandFork3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "fork", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 73,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandForkAgain3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "fork", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "again", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 74,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandForkEnd3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "or",
+            "name": "STYLE",
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "end", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "fork", "children": []}
+                ]
+              },
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "fork", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "end", "children": []}
+                ]
+              },
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "end", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "merge", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "LABEL", "pattern": "(\\{.+\\})?", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 75,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandSplit3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "split", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 76,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandSplitAgain3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "split", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "again", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 77,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandSplitEnd3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "or",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "end", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "split", "children": []}
+                ]
+              },
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "split", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "end", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 78,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandStart3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "start", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 79,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandStop3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "stop", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 80,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandCircleSpot3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": "SPOT", "pattern": "\\((\\S)\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 81,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandBreak",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "break", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 82,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandEnd3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "end", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 83,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandKill3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "kill|detach", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 84,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandLink3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "link", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(#\\w+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 85,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandNote3",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "TYPE", "pattern": "(note|floating note)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "POSITION", "pattern": "(left|right)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "leaf",
+            "name": "COLOR",
+            "pattern": "((?:#(?:\\w+[-\\\\|/]?\\w+;)?(?:(?:text|back|header|line|line\\.dashed|line\\.dotted|line\\.bold|shadowing)(?::\\w+[-\\\\|/]?\\w+)?(?:;|(?![\\w;:.])))+)|(?:#\\w+[-\\\\|/]?\\w+))?",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "leaf",
+            "name": "TAGS",
+            "pattern": "((\\$[^%s{}%g<>$]+)([%s]+(\\$[^%s{}%g<>$]+))*)?",
+            "children": []
+          },
+          {
+            "t": "concat",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+              {
+                "t": "opt",
+                "name": null,
+                "pattern": null,
+                "children": [{"t": "leaf", "name": "STEREO", "pattern": "(\\<\\<.+?\\>\\>)", "children": []}]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ":", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "NOTE", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 86,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandNoteLong3",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "TYPE", "pattern": "(note|floating note)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": "POSITION", "pattern": "(left|right)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "leaf",
+            "name": "TAGS",
+            "pattern": "((\\$[^%s{}%g<>$]+)([%s]+(\\$[^%s{}%g<>$]+))*)?",
+            "children": []
+          },
+          {
+            "t": "concat",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+              {
+                "t": "opt",
+                "name": null,
+                "pattern": null,
+                "children": [{"t": "leaf", "name": "STEREO", "pattern": "(\\<\\<.+?\\>\\>)", "children": []}]
+              },
+              {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []}
+            ]
+          },
+          {
+            "t": "leaf",
+            "name": "COLOR",
+            "pattern": "((?:#(?:\\w+[-\\\\|/]?\\w+;)?(?:(?:text|back|header|line|line\\.dashed|line\\.dotted|line\\.bold|shadowing)(?::\\w+[-\\\\|/]?\\w+)?(?:;|(?![\\w;:.])))+)|(?:#\\w+[-\\\\|/]?\\w+))?",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {"t": "leaf", "name": null, "pattern": "^end[%s]?note$", "children": []},
+      "finalBracket": false
+    },
+    {
+      "order": 87,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandActivityLong3",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {
+            "t": "leaf",
+            "name": "COLOR",
+            "pattern": "((?:#(?:\\w+[-\\\\|/]?\\w+;)?(?:(?:text|back|header|line|line\\.dashed|line\\.dotted|line\\.bold|shadowing)(?::\\w+[-\\\\|/]?\\w+)?(?:;|(?![\\w;:.])))+)|(?:#\\w+[-\\\\|/]?\\w+))?",
+            "children": []
+          },
+          {"t": "leaf", "name": null, "pattern": ":", "children": []},
+          {"t": "leaf", "name": "DATA", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": "TEXT", "pattern": "(.*)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "URL",
+                "pattern": "(\\[\\[[%s]*[%g]([^%g]+)[%g](?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\]|\\[\\[[%s]*\\{(.*)\\}[%s]*\\]\\]|\\[\\[[%s]*\\{([^{}]*)\\}[%s]*([^\\[%s\\{\\}\\[\\]][^\\[\\]]*)[%s]*\\]\\]|\\[\\[[%s]*([^\\s%g{}\\[\\]]+?)[%s]*\\{(.+)\\}[%s]*\\]\\]|\\[\\[[%s]*([^%s%g\\[\\]]+?)(?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\])",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "finalBracket": false
+    },
+    {
+      "order": 88,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandActivityList",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[-*]", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [{"t": "leaf", "name": null, "pattern": "[%s]", "children": []}]
+          },
+          {"t": "leaf", "name": "LABEL", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "URL",
+                "pattern": "(\\[\\[[%s]*[%g]([^%g]+)[%g](?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\]|\\[\\[[%s]*\\{(.*)\\}[%s]*\\]\\]|\\[\\[[%s]*\\{([^{}]*)\\}[%s]*([^\\[%s\\{\\}\\[\\]][^\\[\\]]*)[%s]*\\]\\]|\\[\\[[%s]*([^\\s%g{}\\[\\]]+?)[%s]*\\{(.+)\\}[%s]*\\]\\]|\\[\\[[%s]*([^%s%g\\[\\]]+?)(?:[%s]*\\{([^{}]*)\\})?(?:[%s]([^%s\\{\\}\\[\\]][^\\[\\]]*))?[%s]*\\]\\])",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 89,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandLabel",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "label", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([%pLN_.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 90,
+      "class": "net.sourceforge.plantuml.activitydiagram3.command.CommandGoto",
+      "kind": "single",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": null, "pattern": "goto", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]+", "children": []},
+          {"t": "leaf", "name": "NAME", "pattern": "([%pLN_.]+)", "children": []},
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 91,
+      "class": "net.sourceforge.plantuml.command.CommandDecoratorMultine",
+      "kind": "multiline",
+      "engine": "IRegex",
+      "start": {
+        "t": "concat",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {"t": "leaf", "name": null, "pattern": "^", "children": []},
+          {"t": "leaf", "name": "COLOR", "pattern": "(?:(#\\w+[-\\\\|/]?\\w+):)?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "or",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                          {
+                            "t": "leaf",
+                            "name": "INCOMING_COLOR",
+                            "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {"t": "leaf", "name": "INCOMING", "pattern": "(.*?)", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "else", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "if", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+          {"t": "leaf", "name": "TEST", "pattern": "(.*?)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "\\)", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "concat",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {"t": "leaf", "name": null, "pattern": "then", "children": []},
+                  {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+                  {
+                    "t": "opt",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "concat",
+                        "name": null,
+                        "pattern": null,
+                        "children": [
+                          {"t": "leaf", "name": null, "pattern": "\\(", "children": []},
+                          {
+                            "t": "opt",
+                            "name": null,
+                            "pattern": null,
+                            "children": [
+                              {
+                                "t": "or",
+                                "name": null,
+                                "pattern": null,
+                                "children": [
+                                  {"t": "leaf", "name": null, "pattern": "->", "children": []},
+                                  {
+                                    "t": "leaf",
+                                    "name": "WHEN_COLOR",
+                                    "pattern": "-\\[((?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*(?:(?:;(?:#\\w+|dotted|dashed|plain|bold|hidden|norank|single|node|thickness=\\d+)(?:,#\\w+|,dotted|,dashed|,plain|,bold|,hidden|,norank|,single|,node|,thickness=\\d+)*)*)*)\\]->",
+                                    "children": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {"t": "leaf", "name": "WHEN", "pattern": "(.*?)", "children": []},
+                          {"t": "leaf", "name": null, "pattern": "\\)", "children": []}
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": ";?", "children": []},
+          {"t": "leaf", "name": null, "pattern": "[%s]*", "children": []},
+          {
+            "t": "opt",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "leaf",
+                "name": "STEREOGROUP",
+                "pattern": "(<<[^<>]+>>(?:[%s]*<<[^<>]+>>)*)",
+                "children": []
+              }
+            ]
+          },
+          {"t": "leaf", "name": null, "pattern": "$", "children": []}
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "wrapper": "CommandDecoratorMultine",
+      "nbMaxLines": 50
+    }
+  ],
+  "unreachable": []
+}

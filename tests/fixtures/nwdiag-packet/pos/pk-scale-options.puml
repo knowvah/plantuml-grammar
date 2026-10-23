@@ -1,0 +1,10 @@
+' nwdiag-packet: CommandScaleDirection, CommandScaleInterval, CommandSameHeight, CommandNumRange
+@startpacketdiag
+packetdiag {
+  scale_direction = rtl;
+  scale_interval = 4;
+  same_height = true
+  0-7 A
+  8-15 B [height = 2]
+}
+@endpacketdiag

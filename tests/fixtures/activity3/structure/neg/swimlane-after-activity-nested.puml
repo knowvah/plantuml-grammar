@@ -1,0 +1,14 @@
+' activity3: CommandSwimlane, CommandIf4, CommandElse3, CommandEndif3
+@startuml
+  :preAct;
+  if (Test) then (S1!)
+    :ActPre;
+    |S1|
+    :Act;
+  else (S2!)
+    |S2|
+    :Act;
+  end if
+  |S2|
+  :postAct;
+@enduml

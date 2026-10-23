@@ -1,0 +1,6 @@
+' timing: CommandAtTime
+' gap: no time-label table: `What time?` (CommandAtTime.java:90-92)
+@startuml
+robust "R" as R
+@:nowhere
+@enduml

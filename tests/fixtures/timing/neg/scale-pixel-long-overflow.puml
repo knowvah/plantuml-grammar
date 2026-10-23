@@ -1,0 +1,5 @@
+' timing: CommandScalePixel
+@startuml
+robust "R" as R
+scale 1 as 9223372036854775808 pixels
+@enduml

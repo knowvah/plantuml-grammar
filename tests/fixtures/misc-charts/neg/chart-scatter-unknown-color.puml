@@ -1,0 +1,4 @@
+' misc-charts: ChartScatterFails
+@startchart
+scatter [1,2] #ff labels
+@endchart

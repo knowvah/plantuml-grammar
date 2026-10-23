@@ -1,0 +1,8 @@
+' activity3: CommandSwimlane, CommandIf4, CommandEndif3
+' gap: the swimlane strategy is tracked in the top-level frame only: the first deciding command is an opener (if), whose push leaves the top level undecided
+@startuml
+if (x) then
+:a;
+endif
+|A|
+@enduml

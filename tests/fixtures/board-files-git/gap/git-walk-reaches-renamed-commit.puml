@@ -1,0 +1,8 @@
+' board-files-git: GitCommitLine, GitGraphLine
+' gap: the walk names the reached commit from its `*`, the line from its first word (GNodeBuilder.java:61-63)
+' jar: reject
+@startgit
+* a
+|
+x * b
+@endgit

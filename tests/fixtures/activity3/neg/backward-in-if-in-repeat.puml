@@ -1,0 +1,8 @@
+' activity3: CommandRepeat3, CommandIf2, CommandBackward3
+@startuml
+repeat
+if (a) then
+backward :y;
+endif
+repeat while (b)
+@enduml

@@ -1,0 +1,4 @@
+' gantt: CommandColorTask
+@startgantt
+[A] #red
+@endgantt

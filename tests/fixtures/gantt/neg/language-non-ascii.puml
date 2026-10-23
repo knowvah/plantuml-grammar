@@ -1,0 +1,5 @@
+' gantt: CommandLanguage
+@startgantt
+[A] -> [B]
+language é
+@endgantt

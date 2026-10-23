@@ -1,0 +1,246 @@
+# Gantt sentences whose execution fails on a field (T25), used only by `reject` entries.
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# A sentence whose subject and first phrase `check` belongs to NaturalGanttCommand, and any
+# exception in getMe/execute becomes an execution error (command/ProtectedCommand.java:
+# 65-76), so no later command sees the line. The fields that fail, positively:
+# * digit runs: UBrex `〴d` is [0-9_] (com/plantuml/ubrex/CharClassRaw.java:65-69), so a
+#   run with `_`, or above Integer.MAX_VALUE, fails Integer.parseInt (counts, durations,
+#   completion, day/month/year, hour/minute/second);
+# * dates: LocalDate.of (gantt/lang/DayPattern.java:89-108, SubjectDayAsDate.java:106-111,
+#   SubjectDaysAsDates.java:129-140): month 1..12, day within the month, Feb 29 in leap
+#   years only (gantt-dates); times: LocalTime.of (ComplementTimePoint.java:95-100), hour
+#   0..23, minute and second 0..59;
+# * task resources `{R:N}`: GanttDiagram.affectResource (gantt/GanttDiagram.java:378-393)
+#   uses the first find of `([^:]+)(:(\d+))?` in the trimmed text: no match (only colons)
+#   throws, N = 0 is "Bad argument for resource" (SubjectTask.java:466-476), N above
+#   MAX_VALUE throws.
+# GB_<S>_INVALID: a sentence of subject S that reaches such a field, either in the subject
+# or in the committed phrase at some position of the AND chain (earlier phrases as shapes:
+# if one of them already fails, upstream fails there instead, and the line is rejected all
+# the same). Phrases that differ only in the ignored words share one alternative.
+schema_version: 1
+id: gantt-sentences-bad
+layer: shared
+include: [gantt-sentences-phrases, gantt-dates, gantt-lang]
+
+variables:
+  # --- digit runs -------------------------------------------------------------------
+  GB_RUN: {regex: "[0-9_]+", scope: constant.numeric.integer}
+  GB_R2: {regex: "[0-9_]{1,2}(?![0-9_])", scope: constant.numeric.integer}
+  GB_R4: {regex: "[0-9_]{1,4}(?![0-9_])", scope: constant.numeric.integer}
+  GB_D2: {regex: "[0-9]{1,2}(?![0-9_])", scope: constant.numeric.integer}
+  GB_D4: {regex: "[0-9]{1,4}(?![0-9_])", scope: constant.numeric.integer}
+  GB_US2: {regex: "(?:_[0-9_]?|[0-9]_)(?![0-9_])", scope: invalid.illegal.number}
+  GB_US4: {regex: "(?=[0-9_]{1,4}(?![0-9_]))[0-9]*_[0-9_]*", scope: invalid.illegal.number}
+  # A run Integer.parseInt rejects: `_`, or a value above 2147483647 (the range is
+  # common's JAVA_INT_RANGE; tests/families/test_gantt.py pins the equivalence).
+  GB_BAD_NUM:
+    regex: "(?!0*(?:1[0-9]{9}|20[0-9]{8}|21[0-3][0-9]{7}|214[0-6][0-9]{6}|2147[0-3][0-9]{5}|21474[0-7][0-9]{4}|214748[0-2][0-9]{3}|2147483[0-5][0-9]{2}|21474836[0-3][0-9]|214748364[0-7]|[1-9][0-9]{0,8})?(?![0-9_]))[0-9_]+"
+    scope: invalid.illegal.number
+  GB_MONTH_BAD: {regex: "(?:0?0|1[3-9]|[2-9][0-9])(?![0-9_])", scope: invalid.illegal.month}
+  GB_DAY_BAD: {regex: "(?:0?0|3[2-9]|[4-9][0-9])(?![0-9_])", scope: invalid.illegal.day}
+  GB_DAY_31: {regex: "31(?![0-9_])", scope: invalid.illegal.day}
+  GB_DAY_30_31: {regex: "3[01](?![0-9_])", scope: invalid.illegal.day}
+  GB_DAY_29: {regex: "29(?![0-9_])", scope: constant.numeric.integer.day}
+  # Not GD_YEAR_LEAP (gantt-dates; pinned by the tests).
+  GB_YEAR_NOT_LEAP:
+    regex: "(?!(?:[048]|[0-9]{0,2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26]|[048])?00)(?![0-9_]))[0-9]{1,4}(?![0-9_])"
+    scope: invalid.illegal.year
+  GB_HOUR_BAD: {regex: "(?:2[4-9]|[3-9][0-9])(?![0-9_])", scope: invalid.illegal.hour}
+  GB_MINUTE_BAD: {regex: "[6-9][0-9](?![0-9_])", scope: invalid.illegal.minute}
+  GB_ANY_MONTH: {alt: [{ref: GD_NAME_31}, {ref: GD_NAME_30}, {ref: GD_NAME_FEB}]}
+  GB_D: {regex: "[d]", ci: true}
+  GB_PLUS: {literal: +, ci: true}
+  GB_SPACES: {plus: {regex: "[ ]"}}
+
+  # --- dates (gantt/lang/TimeResolution.java:48-85) ----------------------------------
+  GB_DATE_A_BAD:
+    alt:
+      - seq: [{ref: GB_US2}, {ref: GD_UPTO_MONTH}, {ref: GB_ANY_MONTH}, {ref: GD_SEP}, {ref: GB_R4}]
+      - seq: [{ref: GB_R2}, {ref: GD_UPTO_MONTH}, {ref: GB_ANY_MONTH}, {ref: GD_SEP}, {ref: GB_US4}]
+      - seq: [{ref: GB_DAY_BAD}, {ref: GD_UPTO_MONTH}, {ref: GB_ANY_MONTH}, {ref: GD_SEP}, {ref: GB_R4}]
+      - seq: [{ref: GB_DAY_31}, {ref: GD_UPTO_MONTH}, {ref: GD_NAME_30}, {ref: GD_SEP}, {ref: GB_R4}]
+      - seq: [{ref: GB_DAY_30_31}, {ref: GD_UPTO_MONTH}, {ref: GD_NAME_FEB}, {ref: GD_SEP}, {ref: GB_R4}]
+      - seq: [{ref: GB_DAY_29}, {ref: GD_UPTO_MONTH}, {ref: GD_NAME_FEB}, {ref: GD_SEP}, {ref: GB_YEAR_NOT_LEAP}]
+  GB_DATE_B_SHAPE: {seq: [{ref: GB_R4}, {ref: GD_SEP}, {ref: GB_R2}, {ref: GD_SEP}, {ref: GB_R2}]}
+  GB_DATE_B_BAD:
+    alt:
+      - seq: [{ref: GB_US4}, {ref: GD_SEP}, {ref: GB_R2}, {ref: GD_SEP}, {ref: GB_R2}]
+      - seq: [{ref: GB_R4}, {ref: GD_SEP}, {ref: GB_US2}, {ref: GD_SEP}, {ref: GB_R2}]
+      - seq: [{ref: GB_R4}, {ref: GD_SEP}, {ref: GB_R2}, {ref: GD_SEP}, {ref: GB_US2}]
+      - seq: [{ref: GB_D4}, {ref: GD_SEP}, {ref: GB_MONTH_BAD}, {ref: GD_SEP}, {ref: GB_D2}]
+      - seq: [{ref: GB_D4}, {ref: GD_SEP}, {ref: GB_D2}, {ref: GD_SEP}, {ref: GB_DAY_BAD}]
+      - seq: [{ref: GB_D4}, {ref: GD_SEP}, {ref: GD_MONTH_30}, {ref: GD_SEP}, {ref: GB_DAY_31}]
+      - seq: [{ref: GB_D4}, {ref: GD_SEP}, {ref: GD_MONTH_FEB}, {ref: GD_SEP}, {ref: GB_DAY_30_31}]
+      - seq: [{ref: GB_YEAR_NOT_LEAP}, {ref: GD_SEP}, {ref: GD_MONTH_FEB}, {ref: GD_SEP}, {ref: GB_DAY_29}]
+  GB_DATE_C_BAD:
+    alt:
+      - seq: [{ref: GB_ANY_MONTH}, {ref: GD_SEP}, {ref: GB_US2}, {ref: GD_SEP}, {ref: GB_R4}]
+      - seq: [{ref: GB_ANY_MONTH}, {ref: GD_SEP}, {ref: GB_R2}, {ref: GD_SEP}, {ref: GB_US4}]
+      - seq: [{ref: GB_ANY_MONTH}, {ref: GD_SEP}, {ref: GB_DAY_BAD}, {ref: GD_SEP}, {ref: GB_R4}]
+      - seq: [{ref: GD_NAME_30}, {ref: GD_SEP}, {ref: GB_DAY_31}, {ref: GD_SEP}, {ref: GB_R4}]
+      - seq: [{ref: GD_NAME_FEB}, {ref: GD_SEP}, {ref: GB_DAY_30_31}, {ref: GD_SEP}, {ref: GB_R4}]
+      - seq: [{ref: GD_NAME_FEB}, {ref: GD_SEP}, {ref: GB_DAY_29}, {ref: GD_SEP}, {ref: GB_YEAR_NOT_LEAP}]
+  GB_DATE_ABS_BAD: {alt: [{ref: GB_DATE_A_BAD}, {ref: GB_DATE_B_BAD}, {ref: GB_DATE_C_BAD}]}
+  # ComplementDate relative forms (ComplementDate.java:86-102, :119-127).
+  GB_DATE_REL_BAD:
+    alt:
+      - seq: [{ref: GB_BAD_NUM}, {ref: GB_SPACES}, {literal: day, ci: true}, {opt: {literal: s, ci: true}}, {ref: GB_SPACES}, {literal: after, ci: true}, {ref: GB_SPACES}, {literal: start, ci: true}]
+      - seq: [{ref: GB_D}, {ref: GB_PLUS}, {ref: GB_BAD_NUM}]
+  GB_DATE_ANY_BAD: {alt: [{ref: GB_DATE_ABS_BAD}, {ref: GB_DATE_REL_BAD}]}
+  # ComplementTimePoint (:73-100): an absolute date, `[ t]`, HH:MM[:SS].
+  GB_TIME_BAD:
+    seq:
+      - {regex: "[ t]", ci: true}
+      - alt:
+          - seq: [{ref: GB_US2}, {literal: ':', ci: true}, {ref: GB_R2}]
+          - seq: [{ref: GB_R2}, {literal: ':', ci: true}, {ref: GB_US2}]
+          - seq: [{ref: GB_R2}, {literal: ':', ci: true}, {ref: GB_R2}, {literal: ':', ci: true}, {ref: GB_US2}]
+          - seq: [{ref: GB_HOUR_BAD}, {literal: ':', ci: true}, {ref: GB_R2}]
+          - seq: [{ref: GB_D2}, {literal: ':', ci: true}, {ref: GB_MINUTE_BAD}]
+          - seq: [{ref: GB_D2}, {literal: ':', ci: true}, {ref: GB_D2}, {literal: ':', ci: true}, {ref: GB_MINUTE_BAD}]
+  GB_TIME_POINT_BAD:
+    alt:
+      - {ref: GB_DATE_ABS_BAD}
+      - seq: [{ref: COMPLEMENT_DATE_ONLY_ABSOLUTE}, {ref: GB_TIME_BAD}]
+  GB_TO:
+    seq: [{ref: GB_SPACES}, {literal: to, ci: true}, {star: {seq: [{literal: the, ci: true}, {ref: GB_SPACES}]}}, {ref: GB_SPACES}]
+  # ComplementIntervals (:85-104).
+  GB_INTERVALS_BAD:
+    alt:
+      - seq: [{ref: GB_DATE_ABS_BAD}, {ref: GB_TO}, {ref: COMPLEMENT_DATE_ONLY_ABSOLUTE}]
+      - seq: [{ref: COMPLEMENT_DATE_ONLY_ABSOLUTE}, {ref: GB_TO}, {ref: GB_DATE_ABS_BAD}]
+      - seq: [{ref: GB_D}, {ref: GB_PLUS}, {ref: GB_BAD_NUM}, {ref: GB_TO}, {ref: GB_D}, {ref: GB_PLUS}, {ref: GB_RUN}]
+      - seq: [{ref: GB_D}, {ref: GB_PLUS}, {ref: GB_RUN}, {ref: GB_TO}, {ref: GB_D}, {ref: GB_PLUS}, {ref: GB_BAD_NUM}]
+
+  # --- counts before a task instant (AbstractComplementTaskInstant.java:53-70) ---------
+  GB_BA_UNIT:
+    seq:
+      - {ref: GB_SPACES}
+      - opt: {seq: [{regex: working, ci: true}, {ref: GB_SPACES}]}
+      - {regex: "(?:day|week)", ci: true}
+      - opt: {literal: s, ci: true}
+  GB_BA_AND: {seq: [{ref: GB_SPACES}, {literal: and, ci: true}, {ref: GB_SPACES}]}
+  GB_BA_TASK:
+    seq:
+      - {ref: GB_SPACES}
+      - {regex: "(?:before|after)", ci: true}
+      - star: {regex: "[ ]"}
+      - {literal: '[', ci: true}
+      - {regex: "[^\\[\\]]+", ci: true}
+      - {literal: ']', ci: true}
+      - {regex: "[\\s\\S]"}
+      - {literal: s, ci: true}
+      - {ref: GB_SPACES}
+      - {regex: "(?:start|end)", ci: true}
+  GB_BEFORE_AFTER_BAD:
+    alt:
+      - seq: [{ref: GB_BAD_NUM}, {ref: GB_BA_UNIT}, {opt: {seq: [{ref: GB_BA_AND}, {ref: GB_RUN}, {ref: GB_BA_UNIT}]}}, {ref: GB_BA_TASK}]
+      - seq: [{ref: GB_RUN}, {ref: GB_BA_UNIT}, {ref: GB_BA_AND}, {ref: GB_BAD_NUM}, {ref: GB_BA_UNIT}, {ref: GB_BA_TASK}]
+  # ComplementIntervalsSmart (:57-104): the first date, or a count before the task.
+  GB_SMART_BAD:
+    alt:
+      - {ref: GB_DATE_ABS_BAD}
+      - seq: [{ref: COMPLEMENT_DATE_ONLY_ABSOLUTE}, {ref: GB_SPACES}, {literal: to, ci: true}, {star: {regex: "[ ]"}}, {ref: GB_BEFORE_AFTER_BAD}]
+
+  # --- durations and completion -------------------------------------------------------
+  # ComplementDuration (:63-125): every CNUM goes through Integer.parseInt.
+  GB_DUR_UNIT:
+    seq: [{ref: GB_SPACES}, {regex: "(?:hour|minute|second|day|week|month)", ci: true}, {opt: {literal: s, ci: true}}]
+  GB_DUR_SEP:
+    alt:
+      - seq: [{plus: {regex: "[ ,]"}}, {literal: and, ci: true}, {plus: {regex: "[ ,]"}}]
+      - plus: {regex: "[ ,]"}
+  GB_DURATION_BAD:
+    alt:
+      - seq: [{ref: GB_BAD_NUM}, {ref: GB_DUR_UNIT}]
+      - seq: [{ref: GB_RUN}, {ref: GB_DUR_UNIT}, {star: {seq: [{ref: GB_DUR_SEP}, {ref: GB_RUN}, {ref: GB_DUR_UNIT}]}}, {ref: GB_DUR_SEP}, {ref: GB_BAD_NUM}, {ref: GB_DUR_UNIT}]
+  # ComplementCompleted (:54-62).
+  GB_COMPLETED_BAD:
+    seq: [{ref: GB_BAD_NUM}, {plus: {regex: "[^a-zA-Z0-9_]"}}, {literal: complete, ci: true}, {opt: {literal: d, ci: true}}]
+
+  # --- subjects -----------------------------------------------------------------------
+  # One `{...}` of a task's resources that affectResource refuses (see header). Java
+  # trims the text, then finds the first run of non-colons and an optional `:digits`.
+  GB_RESOURCE_BAD:
+    regex: "\\{(?:\\s*:+\\s*|\\s*(?!\\s):*[^:{}]+:(?=[0-9])0*(?:(?!(?:1[0-9]{9}|20[0-9]{8}|21[0-3][0-9]{7}|214[0-6][0-9]{6}|2147[0-3][0-9]{5}|21474[0-7][0-9]{4}|214748[0-2][0-9]{3}|2147483[0-5][0-9]{2}|21474836[0-3][0-9]|214748364[0-7]|[1-9][0-9]{0,8})(?![0-9]))[1-9][0-9]*)?(?![0-9])[^{}]*)\\}[ ]*"
+    ci: true
+    scope: invalid.illegal.resource
+  GB_RESOURCE: {regex: "\\{[^{}]+\\}[ ]*", ci: true}
+  # SUBJECT_TASK (SubjectTask.java:416-438) with a refused resource.
+  GB_TASK_SUBJECT_BAD:
+    seq:
+      - opt: {seq: [{regex: then, ci: true}, {ref: GB_SPACES}]}
+      - {literal: '[', ci: true}
+      - {regex: "[^\\[\\]]+", ci: true}
+      - {literal: ']', ci: true}
+      - opt: {seq: [{star: {regex: "[ ]"}}, {regex: "<<[^<>]+>>", ci: true}, {star: {regex: "[ ]"}}]}
+      - opt: {seq: [{ref: GB_SPACES}, {literal: as, ci: true}, {ref: GB_SPACES}, {literal: '[', ci: true}, {regex: "[^\\[\\]]+", ci: true}, {literal: ']', ci: true}]}
+      - {ref: GB_SPACES}
+      - {literal: 'on', ci: true}
+      - {ref: GB_SPACES}
+      - star: {ref: GB_RESOURCE}
+      - {ref: GB_RESOURCE_BAD}
+      - star: {ref: GB_RESOURCE}
+  # SUBJECT_DAYS_AS_DATES (SubjectDaysAsDates.java:66-140).
+  GB_DAYS_SUBJECT_BAD:
+    alt:
+      - seq: [{ref: GB_DATE_B_BAD}, {ref: GB_SPACES}, {literal: to, ci: true}, {ref: GB_SPACES}, {ref: GB_DATE_B_SHAPE}]
+      - seq: [{ref: GB_DATE_B_SHAPE}, {ref: GB_SPACES}, {literal: to, ci: true}, {ref: GB_SPACES}, {ref: GB_DATE_B_BAD}]
+      - seq: [{ref: GB_D}, {ref: GB_PLUS}, {ref: GB_BAD_NUM}, {ref: GB_SPACES}, {literal: to, ci: true}, {ref: GB_SPACES}, {ref: GB_D}, {ref: GB_PLUS}, {ref: GB_RUN}]
+      - seq: [{ref: GB_D}, {ref: GB_PLUS}, {ref: GB_RUN}, {ref: GB_SPACES}, {literal: to, ci: true}, {ref: GB_SPACES}, {ref: GB_D}, {ref: GB_PLUS}, {ref: GB_BAD_NUM}]
+      - seq: [{ref: GB_DATE_B_BAD}, {ref: GB_SPACES}, {literal: and, ci: true}, {ref: GB_SPACES}, {ref: GB_RUN}, {ref: GB_SPACES}, {literal: day, ci: true}, {opt: {literal: s, ci: true}}]
+      - seq: [{ref: GB_DATE_B_SHAPE}, {ref: GB_SPACES}, {literal: and, ci: true}, {ref: GB_SPACES}, {ref: GB_BAD_NUM}, {ref: GB_SPACES}, {literal: day, ci: true}, {opt: {literal: s, ci: true}}]
+      - seq: [{literal: then, ci: true}, {ref: GB_SPACES}, {ref: GB_BAD_NUM}, {ref: GB_SPACES}, {literal: day, ci: true}, {opt: {literal: s, ci: true}}]
+  # SUBJECT_DAY_AS_DATE (SubjectDayAsDate.java:96-142).
+  GB_DAY_SUBJECT_BAD:
+    alt:
+      - {ref: GB_DATE_B_BAD}
+      - seq: [{regex: "[det]", ci: true}, {regex: "[+\\-]"}, {ref: GB_BAD_NUM}]
+
+  # --- committed phrases with a failing field ------------------------------------------
+  GB_TASK_PHRASE_BAD:
+    alt:
+      - seq: [{ref: VERB_REQUIRES}, {ref: GS_SP}, {ref: GS_IGN_1}, {ref: GB_DURATION_BAD}]
+      - seq: [{alt: [{ref: VERB_STARTS}, {ref: VERB_ENDS}]}, {ref: GS_SP}, {ref: GS_IGN_2}, {alt: [{ref: GB_TIME_POINT_BAD}, {ref: GB_DATE_REL_BAD}]}]
+      - seq: [{alt: [{ref: VERB_STARTS}, {ref: VERB_ENDS}, {ref: VERB_HAPPENS}]}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: GB_BEFORE_AFTER_BAD}]
+      - seq: [{ref: VERB_HAPPENS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: GB_DATE_ANY_BAD}]
+      - seq: [{ref: VERB_IS}, {ref: GS_SP}, {ref: GB_COMPLETED_BAD}]
+      - seq: [{ref: VERB_PAUSES}, {ref: GS_SP}, {ref: GS_IGN_4}, {alt: [{ref: GB_INTERVALS_BAD}, {ref: GB_SMART_BAD}, {ref: GB_DATE_ANY_BAD}]}]
+  #  always fails: ComplementTask looks the code up with its brackets
+  # (ComplementTask.java:49-58, COMPLEMENT names the whole taskCode), and no task code can
+  # contain  (SubjectTask.java:78-83, CommandGanttArrow2.java:61).
+  GB_RESOURCE_PHRASE_BAD:
+    alt:
+      - seq: [{ref: VERB_WORKS_ON}, {ref: GS_SP}, {ref: COMPLEMENT_TASK}]
+      - seq:
+          - alt: [{ref: VERB_IS_OFF}, {ref: VERB_IS_ON}]
+          - {ref: GS_SP}
+          - opt: {seq: [{alt: [{ref: IGNORED_5}, {ref: IGNORED_6}, {ref: IGNORED_7}]}, {ref: GS_SP}]}
+          - alt: [{ref: GB_INTERVALS_BAD}, {ref: GB_DATE_ANY_BAD}]
+  GB_SEPARATOR_PHRASE_BAD:
+    seq:
+      - {ref: VERB_JUST}
+      - {ref: GS_SP}
+      - alt:
+          - seq: [{opt: {seq: [{alt: [{ref: IGNORED_8}, {ref: IGNORED_9}]}, {ref: GS_SP}]}}, {ref: GB_DATE_ANY_BAD}]
+          - {ref: GB_BEFORE_AFTER_BAD}
+
+  # --- whole invalid sentences -------------------------------------------------------
+  GB_GANTT_INVALID:
+    seq: [{ref: GS_SP}, {ref: SUBJECT_GANTT}, {ref: GS_SP}, {star: {seq: [{ref: GS_GANTT_PHRASE}, {ref: AND}]}}, {ref: VERB_STARTS}, {ref: GS_SP}, {ref: GS_IGN_1}, {ref: GB_DATE_ABS_BAD}, {ref: GS_REST}]
+  GB_TODAY_INVALID:
+    seq: [{ref: GS_SP}, {ref: SUBJECT_TODAY}, {ref: GS_SP}, {star: {seq: [{ref: GS_TODAY_PHRASE}, {ref: AND}]}}, {ref: VERB_IS}, {ref: GS_SP}, {ref: GB_DATE_ANY_BAD}, {ref: GS_REST}]
+  GB_TASK_INVALID:
+    alt:
+      - seq: [{ref: GS_SP}, {ref: GB_TASK_SUBJECT_BAD}, {ref: GS_SP}, {ref: GS_TASK_PHRASE}, {ref: GS_REST}]
+      - seq: [{ref: GS_SP}, {ref: SUBJECT_TASK}, {ref: GS_SP}, {star: {seq: [{ref: GS_TASK_PHRASE}, {ref: AND}]}}, {ref: GB_TASK_PHRASE_BAD}, {ref: GS_REST}]
+  GB_RESOURCE_INVALID:
+    seq: [{ref: GS_SP}, {ref: SUBJECT_RESOURCE}, {ref: GS_SP}, {star: {seq: [{ref: GS_RESOURCE_PHRASE}, {ref: AND}]}}, {ref: GB_RESOURCE_PHRASE_BAD}, {ref: GS_REST}]
+  GB_DAYS_INVALID:
+    seq: [{ref: GS_SP}, {ref: GB_DAYS_SUBJECT_BAD}, {ref: GS_SP}, {ref: GS_DAYS_PHRASE}, {ref: GS_REST}]
+  GB_DAY_INVALID:
+    seq: [{ref: GS_SP}, {ref: GB_DAY_SUBJECT_BAD}, {ref: GS_SP}, {ref: GS_DAY_PHRASE}, {ref: GS_REST}]
+  GB_SEPARATOR_INVALID:
+    seq: [{ref: GS_SP}, {ref: SUBJECT_SEPARATOR}, {ref: GS_SP}, {star: {seq: [{ref: GS_SEPARATOR_PHRASE}, {ref: AND}]}}, {ref: GB_SEPARATOR_PHRASE_BAD}, {ref: GS_REST}]

@@ -1,0 +1,8 @@
+' gantt: CommandNoteBottom, CommandSeparator
+@startgantt
+-- a --
+note bottom
+x
+end note
+[A] -> [B]
+@endgantt

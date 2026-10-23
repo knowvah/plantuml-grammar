@@ -1,0 +1,5 @@
+' gantt: CommandFootboxGantt
+@startgantt
+[A] -> [B]
+footbox
+@endgantt

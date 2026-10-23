@@ -1,0 +1,16 @@
+{
+  "cases": [],
+  "corpus": "plantuml-ts",
+  "family": "json",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 0,
+    "diagram_mismatch": 0,
+    "disagree": 0,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 0,
+    "raw_fr": 0,
+    "timeout": 0
+  }
+}

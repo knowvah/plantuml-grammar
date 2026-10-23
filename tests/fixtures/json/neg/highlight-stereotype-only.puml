@@ -1,0 +1,5 @@
+' json: JsonHighlightError
+@startjson
+#highlight <<x>>
+{"a": 1}
+@endjson

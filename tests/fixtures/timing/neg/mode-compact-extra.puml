@@ -1,0 +1,5 @@
+' timing: CommandModeCompact
+@startuml
+mode compact now
+robust "R" as R
+@enduml

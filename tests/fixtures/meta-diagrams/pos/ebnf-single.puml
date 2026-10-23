@@ -1,0 +1,5 @@
+' meta: CommandEBnfSingleLine
+@startebnf
+title EBNF
+a = b , "c" | 'd' | ? e ? ;
+@endebnf

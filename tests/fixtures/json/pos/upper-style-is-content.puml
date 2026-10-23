@@ -1,0 +1,6 @@
+' json: JsonText
+' '<style>' is matched case-sensitively (StyleExtractor.java:105-107).
+@startjson
+<STYLE>
+skinparam x {
+@endjson

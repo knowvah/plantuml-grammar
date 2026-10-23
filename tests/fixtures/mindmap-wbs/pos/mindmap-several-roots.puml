@@ -1,0 +1,9 @@
+' mindmap-wbs: CommandMindMapOrgmode, CommandMindMapRoot
+@startmindmap
+* a
+** b
+* c
+** d
+0 e
++++ f
+@endmindmap

@@ -1,0 +1,5 @@
+' misc-charts: ChartFirstIndexScatter, CommandChartScatter
+@startchart
+scatter [1, 2] <<circle>>
+line [2, 3]
+@endchart

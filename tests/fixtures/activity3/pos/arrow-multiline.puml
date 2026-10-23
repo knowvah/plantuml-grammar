@@ -1,0 +1,7 @@
+' activity3: CommandActivity3, CommandArrowLong3
+@startuml
+:a;
+-> line one
+line two;
+:b;
+@enduml

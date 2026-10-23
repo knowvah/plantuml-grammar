@@ -1,0 +1,334 @@
+# Class declarations and class bodies (T18, included by `class`). Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# CommandCreateClassMultilines (classdiagram/command/CommandCreateClassMultilines.java:
+# 98-134) is a CommandMultilines2 whose END is the first trimmed line `^[%s]*\}[%s]*$`
+# (:92). Body lines are not checked: executeNow hands each one to
+# Bodier.addFieldOrMethod (:289-308), which stores the text. So the body is entered
+# as the `class_body` context; its rules only give structure (separators, members,
+# visibility, modifiers) and every line except END is accepted. `require_pop`: a body
+# still open at the end of the block makes upstream skip the command
+# (command/PSystemCommandFactory.java:236-240) and try the next one for that line.
+#
+# Bracket on the next line. Two commands of this factory override
+# syntaxWithFinalBracket() (CommandCreateClassMultilines.java:138-141,
+# command/CommandPackage.java:97-100). For them a declaration without a final `{`
+# followed by a line that is exactly `{` is the same command:
+# CommandMultilines2.isValid (command/CommandMultilines2.java:84-92) checks
+# `line + " {"` and moves the bracket up (utils/BlocLines.java:358-371);
+# SingleLineCommand2.isValidBracket (command/SingleLineCommand2.java:109-119) does the
+# same for one-line commands. A blank line between them breaks it (no line filter
+# drops blank lines). The model adds a `join` entry right after each command whose
+# parts need U+E100 between the declaration and `{`. TextMate (one line at a time)
+# skips it. The
+# package entry lives in class-groups, which gives it its group push.
+#
+# The structured heads below accept exactly the language of the generated parts
+# (tests/families/test_class.py checks that on every corpus declaration line); the
+# shared refinements STEREOTYPE_SPEC, TAG_LIST and URL_LINK replace the generated STEREO,
+# TAGS1/TAGS2 and URL leaves. COLOR stays the generated leaf: shared COLOR_SPEC expands
+# the color table several times and makes the emitted TextMate regex too large for PCRE2.
+schema_version: 1
+id: class-decl
+layer: shared
+include: [shared, gen-shared]
+
+variables:
+  CD_JOINER: {literal: "", ci: true}
+  CD_BLOCK_OPEN: {literal: "{", ci: true, scope: punctuation.section.block.begin}
+  CD_BLOCK_CLOSE: {literal: "}", ci: true, scope: punctuation.section.block.end}
+  CD_AS:
+    seq:
+      - {ref: SPACE_SOME}
+      - {literal: as, ci: true, scope: keyword.other.as}
+      - {ref: SPACE_SOME}
+  # NameAndCodeParser.nameAndCodeForClassWithGeneric (command/NameAndCodeParser.java).
+  CD_DISPLAY:
+    regex: "[\"“”](.+?)(?:\\<([^\\<\\>/](?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<\\>)*\\>)*\\>)*\\>)*\\>)*)\\>)?[\"“”]"
+    ci: true
+    scope: string.quoted.double.class-display
+  CD_CODE: {regex: "[^\\s {}\"“”<>]+", ci: true, scope: entity.name.type.class}
+  CD_CODE_QUOTED:
+    regex: "[\"“”][^\"“”]+[\"“”]"
+    ci: true
+    scope: entity.name.type.class
+  CD_NAME:
+    alt:
+      - seq: [{ref: CD_DISPLAY}, {ref: CD_AS}, {ref: CD_CODE}]
+      - seq: [{ref: CD_CODE}, {ref: CD_AS}, {ref: CD_DISPLAY}]
+      - {ref: CD_CODE}
+      - {ref: CD_CODE_QUOTED}
+  CD_GENERIC:
+    regex: "\\<([^\\<\\>/](?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<\\>)*\\>)*\\>)*\\>)*\\>)*)\\>"
+    ci: true
+    scope: meta.generic
+  CD_OPT_GENERIC:
+    opt:
+      seq: [{ref: SPACE_ANY}, {ref: CD_GENERIC}]
+  CD_CLASS_TYPE:
+    regex: "(?:interface|enum|annotation|abstract[\\s ]+class|static[\\s ]+class|abstract|class|entity|protocol|struct|exception|metaclass|stereotype|dataclass|record)"
+    ci: true
+    scope: storage.type.class
+  CD_LINE_COLOR:
+    seq:
+      - {literal: "##", ci: true, scope: punctuation.definition.color}
+      - {regex: "(?:\\[(?:dotted|dashed|bold)\\])?(?:\\w+)?", ci: true, scope: constant.other.color}
+  # CommandCreateClassMultilines.CODES (:85-87) or a quoted name.
+  CD_CODES:
+    regex: "(?:(?:[^\\p{L}\\p{N}\\s _$#\\:{}<>\"“”]|[\\\\]{2}|::)?[\\p{L}\\p{N}_$]+(?:(?:[^\\p{L}\\p{N}\\s _$#\\:{}<>\"“”]|[\\\\]{2}|::)[\\p{L}\\p{N}_$]+)*(?:\\s*,\\s*(?:[^\\p{L}\\p{N}\\s _$#\\:{}<>\"“”]|[\\\\]{2}|::)?[\\p{L}\\p{N}_$]+(?:(?:[^\\p{L}\\p{N}\\s _$#\\:{}<>\"“”]|[\\\\]{2}|::)[\\p{L}\\p{N}_$]+)*)*|[\"“”][^\"“”]+[\"“”])"
+    ci: true
+    scope: entity.other.inherited-class
+  CD_EXTENDS:
+    seq:
+      - {ref: SPACE_SOME}
+      - {literal: extends, ci: true, scope: storage.modifier.extends}
+      - {ref: SPACE_SOME}
+      - {ref: CD_CODES}
+      - {ref: CD_OPT_GENERIC}
+  CD_IMPLEMENTS:
+    seq:
+      - {ref: SPACE_SOME}
+      - {literal: implements, ci: true, scope: storage.modifier.implements}
+      - {ref: SPACE_SOME}
+      - {ref: CD_CODES}
+      - {ref: CD_OPT_GENERIC}
+  # Stereotype and tags, as StereotypePattern.optional + Stereotag.pattern.
+  CD_TAGS_STEREO:
+    seq:
+      - {ref: TAG_LIST}
+      - {ref: SPACE_ANY}
+      - opt: {ref: STEREOTYPE_SPEC}
+      - {ref: SPACE_ANY}
+      - {ref: TAG_LIST}
+  # A stereotype with a spot whose color is not a known color: Stereotype.build
+  # (stereo/StereotypeDecoration.java:59-74, circleChar COLOR `#[0-9a-fA-F]{6}|\w+`)
+  # resolves `\w+` through HColorSet.getColor, which throws NoSuchColorException
+  # (klimt/color/HColorSet.java:82-157) and the command fails (badColor). Known
+  # colors: the ColorTrieNode names and specials (shared COLOR_NAME, COLOR_SPECIAL;
+  # tests/families/test_class.py pins the list) and hex of 1, 3, 6 or 8 digits.
+  CD_STEREO_BAD_SPOT:
+    regex: "<<(?:.*?>>[\\s\u00a0]*<<)??[\\s\u00a0]*\\(\\S[\\s\u00a0]*,[\\s\u00a0]*(?!(?:AliceBlue|AntiqueWhite|Aqua|Aquamarine|Azure|Beige|Bisque|Black|BlanchedAlmond|Blue|BlueViolet|Brown|BurlyWood|CadetBlue|Chartreuse|Chocolate|Coral|CornflowerBlue|Cornsilk|Crimson|Cyan|DarkBlue|DarkCyan|DarkGoldenRod|DarkGray|DarkGrey|DarkGreen|DarkKhaki|DarkMagenta|DarkOliveGreen|Darkorange|DarkOrchid|DarkRed|DarkSalmon|DarkSeaGreen|DarkSlateBlue|DarkSlateGray|DarkSlateGrey|DarkTurquoise|DarkViolet|DeepPink|DeepSkyBlue|DimGray|DimGrey|DodgerBlue|FireBrick|FloralWhite|ForestGreen|Fuchsia|Gainsboro|GhostWhite|Gold|GoldenRod|Gray|Grey|Green|GreenYellow|HoneyDew|HotPink|IndianRed|Indigo|Ivory|Khaki|Lavender|LavenderBlush|LawnGreen|LemonChiffon|LightBlue|LightCoral|LightCyan|LightGoldenRodYellow|LightGray|LightGrey|LightGreen|LightPink|LightSalmon|LightSeaGreen|LightSkyBlue|LightSlateGray|LightSlateGrey|LightSteelBlue|LightYellow|Lime|LimeGreen|Linen|Magenta|Maroon|MediumAquaMarine|MediumBlue|MediumOrchid|MediumPurple|MediumSeaGreen|MediumSlateBlue|MediumSpringGreen|MediumTurquoise|MediumVioletRed|MidnightBlue|MintCream|MistyRose|Moccasin|NavajoWhite|Navy|OldLace|Olive|OliveDrab|Orange|OrangeRed|Orchid|PaleGoldenRod|PaleGreen|PaleTurquoise|PaleVioletRed|PapayaWhip|PeachPuff|Peru|Pink|Plum|PowderBlue|Purple|Red|RosyBrown|RoyalBlue|SaddleBrown|Salmon|SandyBrown|SeaGreen|SeaShell|Sienna|Silver|SkyBlue|SlateBlue|SlateGray|SlateGrey|Snow|SpringGreen|SteelBlue|Tan|Teal|Thistle|Tomato|Turquoise|Violet|Wheat|White|WhiteSmoke|Yellow|YellowGreen|BUSINESS|APPLICATION|MOTIVATION|STRATEGY|TECHNOLOGY|PHYSICAL|IMPLEMENTATION|transparent|background|automatic|[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{3}|[0-9a-f])[\\s\u00a0]*\\))[A-Za-z0-9_]+[\\s\u00a0]*\\).*?>>"
+    ci: true
+    scope: invalid.illegal.stereotype-spot-color
+  CD_TAGS_STEREO_BAD_SPOT:
+    seq:
+      - {ref: TAG_LIST}
+      - {ref: SPACE_ANY}
+      - {ref: CD_STEREO_BAD_SPOT}
+      - {ref: SPACE_ANY}
+      - {ref: TAG_LIST}
+  # After the class name (both class regexes share it).
+  CD_CLASS_TAIL:
+    seq:
+      - {ref: CD_OPT_GENERIC}
+      - {ref: SPACE_ANY}
+      - {ref: CD_TAGS_STEREO}
+      - {ref: CD_CLASS_TAIL_END}
+  CD_CLASS_TAIL_BAD_SPOT:
+    seq:
+      - {ref: CD_OPT_GENERIC}
+      - {ref: SPACE_ANY}
+      - {ref: CD_TAGS_STEREO_BAD_SPOT}
+      - {ref: CD_CLASS_TAIL_END}
+  CD_CLASS_TAIL_END:
+    seq:
+      - {ref: SPACE_ANY}
+      - opt: {ref: URL_LINK}
+      - {ref: SPACE_ANY}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+      - opt: {ref: CD_LINE_COLOR}
+      - opt: {ref: CD_EXTENDS}
+      - opt: {ref: CD_IMPLEMENTS}
+  CD_CLASS_PREFIX:
+    seq:
+      - opt: {ref: VISIBILITY_CHAR}
+      - {ref: SPACE_ANY}
+      - {ref: CD_CLASS_TYPE}
+      - {ref: SPACE_SOME}
+      - {ref: CD_NAME}
+  # Everything of CommandCreateClassMultilines.getRegexConcat (:98-134) before `{`.
+  CD_CLASS_HEAD:
+    seq: [{ref: CD_CLASS_PREFIX}, {ref: CD_CLASS_TAIL}, {ref: SPACE_ANY}]
+  # CommandCreateClass.java:81 (its TYPE adds circle, diamond and map; an
+  # optional `{ }` ends the line).
+  CD_CREATE_CLASS_PREFIX:
+    seq:
+      - opt: {ref: VISIBILITY_CHAR}
+      - {ref: SPACE_ANY}
+      - regex: "(?:interface|enum|annotation|abstract[\\s\u00a0]+class|static[\\s\u00a0]+class|abstract|class|entity|circle|diamond|protocol|struct|exception|metaclass|stereotype|dataclass|record|map)"
+        ci: true
+        scope: storage.type.class
+      - {ref: SPACE_SOME}
+      - {ref: CD_NAME}
+  CD_EMPTY_BODY:
+    opt:
+      seq: [{ref: SPACE_ANY}, {ref: CD_BLOCK_OPEN}, {ref: SPACE_ANY}, {ref: CD_BLOCK_CLOSE}]
+  # Everything of command/CommandPackage.getRegexConcat (:72) before `{`.
+  CD_PACKAGE_HEAD:
+    seq:
+      - opt: {ref: VISIBILITY_CHAR}
+      - {ref: SPACE_ANY}
+      - {literal: package, ci: true, scope: storage.type.package}
+      - {ref: SPACE_SOME}
+      - regex: "(?:[\"“”][^\"“”]+[\"“”]|[^#\\s {}]*)"
+        ci: true
+        scope: entity.name.type.package
+      - opt:
+          seq:
+            - {ref: CD_AS}
+            - {regex: "[\\p{L}\\p{N}_.]+", ci: true, scope: entity.name.type.package}
+      - {ref: SPACE_ANY}
+      - {ref: CD_TAGS_STEREO}
+      - {ref: SPACE_ANY}
+      - opt: {ref: URL_LINK}
+      - {ref: SPACE_ANY}
+      - {ref: COLOR}
+      - {ref: SPACE_ANY}
+
+  # --- class body lines -------------------------------------------------------------
+  # END of CommandCreateClassMultilines (:92), on the trimmed line.
+  CD_BODY_END:
+    seq: [{ref: SPACE_ANY}, {ref: CD_BLOCK_CLOSE}, {ref: SPACE_ANY}]
+  # EmbeddedDiagram.getEmbeddedType: `{{` alone or `{{<type>`.
+  CD_EMBEDDED_START:
+    regex: "\\{\\{(?:board|creole|chronology|chen|chart|ditaa|ebnf|files|gantt|json|mindmap|nwdiag|packetdiag|regex|salt|uml|wbs|wire|yaml)?"
+    ci: false
+    scope: punctuation.section.embedded.begin
+  CD_EMBEDDED_END: {regex: "\\}\\}", ci: false, scope: punctuation.section.embedded.end}
+  # cucadiagram/BodyEnhancedAbstract.java:67-82, isBlockSeparator.
+  CD_SEPARATOR:
+    regex: "(?=--).*(?<=--)|(?===).*(?<===)|(?!\\.\\.\\.(?!.))(?=\\.\\.).*(?<=\\.\\.)|(?=__).*(?<=__)"
+    ci: false
+    scope: meta.separator.class-body
+  # cucadiagram/Member.java:95-98 (modifiers, case-insensitive).
+  CD_MODIFIER:
+    regex: "\\{(?:static|classifier|abstract|field|method)\\}"
+    ci: true
+    scope: storage.modifier.class-member
+  CD_MEMBER_PREFIX:
+    seq:
+      - star:
+          seq: [{ref: CD_MODIFIER}, {ref: SPACE_ANY}]
+      - opt: {ref: VISIBILITY_CHAR}
+  # Not the END line (keeps emitters from reading `}` as a member).
+  CD_NOT_END: {regex: "(?![\\s ]*\\}[\\s ]*(?!.))", ci: false}
+
+overrides:
+  # The class body is a context (see header).
+  CommandCreateClassMultilines:
+    kind: single
+    end: null
+    parts:
+      seq: [{ref: CD_CLASS_HEAD}, {ref: CD_BLOCK_OPEN}, {ref: SPACE_ANY}]
+    push: class_body
+    require_pop: true
+
+insert_before:
+  # Execution errors (badColor) of the two class declaration commands.
+  CommandCreateClassMultilines:
+    - command: CommandCreateClassMultilinesBadSpotColor
+      provenance:
+        class: net.sourceforge.plantuml.stereo.StereotypeDecoration
+        file: src/main/java/net/sourceforge/plantuml/stereo/StereotypeDecoration.java
+        line: 59
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/CommandMultilines2.java:119-120
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: CD_CLASS_PREFIX}, {ref: CD_CLASS_TAIL_BAD_SPOT}, {ref: SPACE_ANY}, {ref: CD_BLOCK_OPEN}, {ref: SPACE_ANY}]
+  CommandCreateClass:
+    - command: CommandCreateClassBadSpotColor
+      provenance:
+        class: net.sourceforge.plantuml.stereo.StereotypeDecoration
+        file: src/main/java/net/sourceforge/plantuml/stereo/StereotypeDecoration.java
+        line: 59
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClass.java:81]
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: CD_CREATE_CLASS_PREFIX}, {ref: CD_CLASS_TAIL_BAD_SPOT}, {ref: CD_EMPTY_BODY}]
+
+insert_after:
+  CommandCreateClassMultilines:
+    - command: CommandCreateClassMultilinesBracketNextLine
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMultilines2
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilines2.java
+        line: 84
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClassMultilines.java:138-141
+          - src/main/java/net/sourceforge/plantuml/utils/BlocLines.java:358-371
+      kind: multiline
+      join: {max_lines: 1}
+      parts:
+        seq: [{ref: CD_CLASS_HEAD}, {ref: CD_JOINER}, {ref: CD_BLOCK_OPEN}]
+      push: class_body
+      require_pop: true
+
+contexts:
+  class_body:
+    - command: ClassBodyEnd
+      provenance:
+        class: net.sourceforge.plantuml.command.CommandMultilines2
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilines2.java
+        line: 105
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateClassMultilines.java:92]
+      kind: single
+      parts: {ref: CD_BODY_END}
+      pop: true
+    - command: ClassBodyEmbedded
+      provenance:
+        class: net.sourceforge.plantuml.command.PSystemCommandFactory
+        file: src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java
+        line: 288
+      kind: multiline
+      parts: {ref: CD_EMBEDDED_START}
+      end: {ref: CD_EMBEDDED_END}
+    # An embedded diagram that never closes swallows the rest of the block
+    # (PSystemCommandFactory.java:288-307), so the class body never ends: upstream drops
+    # the class command and no later command accepts its `{` line.
+    - command: ClassBodyEmbeddedUnterminated
+      provenance:
+        class: net.sourceforge.plantuml.command.PSystemCommandFactory
+        file: src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java
+        line: 288
+        also: [src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:236-240]
+      kind: single
+      reject: true
+      parts: {ref: CD_EMBEDDED_START}
+    - command: ClassBodySeparator
+      provenance:
+        class: net.sourceforge.plantuml.cucadiagram.BodyEnhancedAbstract
+        file: src/main/java/net/sourceforge/plantuml/cucadiagram/BodyEnhancedAbstract.java
+        line: 67
+      kind: single
+      parts: {ref: CD_SEPARATOR}
+    - command: ClassBodyMethod
+      provenance:
+        class: net.sourceforge.plantuml.cucadiagram.BodierLikeClassOrObject
+        file: src/main/java/net/sourceforge/plantuml/cucadiagram/BodierLikeClassOrObject.java
+        line: 107
+      kind: single
+      parts:
+        seq:
+          - {ref: CD_NOT_END}
+          - {ref: CD_MEMBER_PREFIX}
+          - {regex: "[^()]*", ci: false, scope: entity.name.function.member}
+          - {regex: "[()].*", ci: false, scope: meta.function.parameters}
+    - command: ClassBodyField
+      provenance:
+        class: net.sourceforge.plantuml.cucadiagram.Member
+        file: src/main/java/net/sourceforge/plantuml/cucadiagram/Member.java
+        line: 100
+      kind: single
+      parts:
+        seq:
+          - {ref: CD_NOT_END}
+          - {ref: CD_MEMBER_PREFIX}
+          - {regex: ".+", ci: false, scope: variable.other.member}

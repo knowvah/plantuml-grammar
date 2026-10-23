@@ -1,0 +1,5 @@
+' style: import without >
+@startuml
+<style file=plantuml.skin
+class Foo
+@enduml

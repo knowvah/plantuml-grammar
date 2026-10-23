@@ -1,0 +1,4 @@
+' misc-charts: ChartVAxisFails
+@startchart
+v-axis 0 --> 10 ticks [0:low]
+@endchart

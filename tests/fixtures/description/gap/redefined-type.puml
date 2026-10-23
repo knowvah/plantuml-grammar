@@ -1,0 +1,6 @@
+' description: CommandCreateElementFull
+' gap: an element defined again with another type fails (CommandCreateElementFull.java:313-314); the model keeps no entity table
+@startuml
+usecase sameid
+rectangle sameid
+@enduml

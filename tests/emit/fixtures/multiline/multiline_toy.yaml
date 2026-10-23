@@ -1,0 +1,16 @@
+schema_version: 1
+id: multiline_toy
+layer: diagram
+diagram: CLASS
+contexts:
+  main:
+    - command: Cmd
+      provenance: {class: toy.Cmd}
+      kind: single
+      parts: {literal: "cmd", ci: false}
+    # upstream closes a multiline command at the first later line matching `end`
+    - command: Note
+      provenance: {class: toy.Note}
+      kind: multiline
+      parts: {literal: "note", ci: false}
+      end: {regex: "end ?note", ci: false}

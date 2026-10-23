@@ -1,0 +1,4 @@
+' gantt: NaturalGanttTodayInvalid
+@startgantt
+today is 2020-02-30
+@endgantt

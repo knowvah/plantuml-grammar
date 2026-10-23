@@ -1,0 +1,6 @@
+' activity3: CommandStart3, CommandActivity3
+' gap: unknown color in a stereotype: NoSuchColorException (klimt/color/HColorSet.java:69-73); no shared valid-color variable yet
+@startuml
+start
+:toto; <<#zzblue>>
+@enduml

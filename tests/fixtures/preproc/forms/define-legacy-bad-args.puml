@@ -1,0 +1,4 @@
+@startuml
+!define X(a b
+a -> b
+@enduml

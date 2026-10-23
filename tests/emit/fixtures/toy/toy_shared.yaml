@@ -1,0 +1,5 @@
+schema_version: 1
+id: toy_shared
+layer: shared
+variables:
+  NAME: {regex: "[\\p{L}_][\\p{L}\\p{N}_]*", name: ident, scope: entity.name}

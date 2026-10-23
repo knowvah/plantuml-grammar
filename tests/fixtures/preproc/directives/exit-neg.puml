@@ -1,0 +1,4 @@
+@startuml
+!exit now
+a -> b
+@enduml

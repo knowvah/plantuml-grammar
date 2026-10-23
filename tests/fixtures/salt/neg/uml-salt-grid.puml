@@ -1,0 +1,7 @@
+' salt: CommandAnything
+@startuml
+salt
+{
+[OK]
+}
+@enduml

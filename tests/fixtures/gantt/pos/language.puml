@@ -1,0 +1,6 @@
+' gantt: CommandLanguage
+@startgantt
+language fr
+Language toto
+[A] -> [B]
+@endgantt

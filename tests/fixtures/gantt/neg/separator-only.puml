@@ -1,0 +1,5 @@
+' gantt: CommandSeparator
+@startgantt
+-- Phase one --
+printscale weekly
+@endgantt

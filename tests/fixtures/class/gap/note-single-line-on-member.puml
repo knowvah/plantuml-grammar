@@ -1,0 +1,8 @@
+' class: CommandFactoryNoteOnEntity_1
+' gap: entity state: CommandFactoryNoteOnEntity.java:303-307 looks the target up as an entity; A::field is none under the default separator
+@startuml
+class A {
+  + field
+}
+note right of A::field : on a member
+@enduml

@@ -1,0 +1,9 @@
+' activity-legacy: ActivityEndGroupLenient, ActivityEndif
+@startuml
+(*) --> A
+partition P {
+A --> if x then
+}
+--> B
+endif
+@enduml

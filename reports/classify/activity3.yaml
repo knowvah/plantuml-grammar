@@ -1,0 +1,26 @@
+# Classifications for the `activity3` family (T21a core, T21b structure). Upstream pin
+# 97a5992; `cite` paths are relative to the upstream repository root. FR is 0 on every
+# corpus. The remaining FAs are unknown colors (execution errors in HColorSet, no shared
+# valid-color variable yet). T21b resolved the swimlane-strategy FAs (plantuml-ts/pdiff
+# nakavu-98-pela661, velodu-59-sada437, pdiff input/tmp1.puml#1; swimlane after the first
+# activity, ActivityDiagram3.java:86-95) and the group-closing FA (veducu-71-tika634, `}`
+# inside a fork, ActivityDiagram3.java:429-435).
+cases:
+  # --- unknown colors ---------------------------------------------------------------
+  plantuml-ts:class/duluve-89-mati167.puml#0:
+    class: semantic
+    note: "unknown arrow color `-[#toto]->`: NoSuchColorException at execution (gap/arrow-unknown-color)"
+    cite: src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java:69-73
+  pdiff:dbhum/d_ul/duluve-89-mati167.puml#0:
+    class: semantic
+    note: "unknown arrow color `-[#toto]->`: NoSuchColorException at execution (gap/arrow-unknown-color)"
+    cite: src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java:69-73
+  plantuml-ts:class/leseku-63-ruda113.puml#0:
+    class: semantic
+    note: "unknown stereotype color `<<#zzblue>>`: NoSuchColorException at execution (gap/activity-unknown-color)"
+    cite: src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java:69-73
+  pdiff:dbhum/l_es/leseku-63-ruda113.puml#0:
+    class: semantic
+    note: "unknown stereotype color `<<#zzblue>>`: NoSuchColorException at execution (gap/activity-unknown-color)"
+    cite: src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java:69-73
+exclusions: {}

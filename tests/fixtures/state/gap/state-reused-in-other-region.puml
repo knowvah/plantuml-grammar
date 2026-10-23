@@ -1,0 +1,12 @@
+' state: CommandLinkState
+' gap: c belongs to the concurrent region of b, so it cannot be used from S's region (StateDiagram.checkConcurrentStateOk, StateDiagram.java:75-90); entity ownership is a cross-line fact
+@startuml
+state S {
+  state a
+--
+  state b {
+    state c
+  }
+  c -> d
+}
+@enduml

@@ -1,0 +1,27 @@
+schema_version: 1
+id: tm_sequence
+layer: diagram
+diagram: SEQUENCE
+include: [tm_shared]
+contexts:
+  main:
+    - command: CommandTitle
+      provenance: {class: toy.CommandTitle}
+      kind: single
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: title, ci: true, scope: keyword.other}
+          - {regex: "\\s+"}
+          - {ref: TITLE_TEXT}
+    - command: CommandParticipant
+      provenance: {class: toy.CommandParticipant}
+      kind: single
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - alt:
+              - {literal: participant, ci: true, scope: keyword.other}
+              - {literal: actor, ci: true, scope: keyword.other}
+          - {regex: "\\s+"}
+          - {ref: NAME}

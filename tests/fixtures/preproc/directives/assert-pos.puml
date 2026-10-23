@@ -1,0 +1,4 @@
+@startuml
+!assert 1 == 1
+a -> b
+@enduml

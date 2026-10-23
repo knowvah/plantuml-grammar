@@ -1,0 +1,5 @@
+' activity3: CommandCloseGroupLegacy3
+@startuml
+:a;
+end group
+@enduml

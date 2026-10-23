@@ -1,0 +1,4 @@
+' meta: CommandEBnfSingleLine
+@startebnf
+règle = é	| β_1 | x-y ;
+@endebnf

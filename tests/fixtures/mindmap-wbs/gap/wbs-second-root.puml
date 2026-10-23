@@ -1,0 +1,6 @@
+' mindmap-wbs: CommandWBSItemNew_44
+' gap: WBS diagram only accepts one root (wbs/WBSDiagram.java:160-162); the level of a later line depends on its leading blanks (getSmartLevel :187-208)
+@startwbs
+* A
+* B
+@endwbs

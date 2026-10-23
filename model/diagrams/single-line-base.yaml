@@ -1,0 +1,36 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# Shared refinement of the PSystemSingleLineFactory models (embedded-license, ...).
+# PSystemSingleLineFactory.createSystem (command/PSystemSingleLineFactory.java:69-103):
+# removeInitialNoise drops leading lines that are "" or start, at column 0 and case
+# sensitive, with "skinparam ", "skinparamlocked " or "!pragma " (core/UmlSource.java:79-106);
+# then the block must be exactly start + ONE line + end (:75-76), and executeLine gets that
+# line untrimmed (:91-95). So: noise is matched untrimmed and only counts before the
+# command (a noise-only body has two lines left: `needs: single_line`); a non-empty blank
+# line is never noise and makes the count wrong or fails executeLine (reject); after the
+# command any line, "" included, makes the count wrong (sl_done rejects everything).
+schema_version: 1
+id: single-line-base
+layer: shared
+include: [embedded-single-line]
+overrides:
+  UmlSourceNoise:
+    provenance: {class: net.sourceforge.plantuml.core.UmlSource, file: src/main/java/net/sourceforge/plantuml/core/UmlSource.java, line: 95, also: [src/main/java/net/sourceforge/plantuml/core/UmlSource.java:79-93, src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:73-76]}
+    trim: false
+    parts: {regex: "(?:skinparam |skinparamlocked |!pragma )[\\s\\S]*"}
+    needs: single_line
+insert_after:
+  UmlSourceNoise:
+    - command: SingleLineBlankLine
+      provenance: {class: net.sourceforge.plantuml.command.PSystemSingleLineFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java, line: 75, also: [src/main/java/net/sourceforge/plantuml/core/UmlSource.java:95-97]}
+      kind: single
+      trim: false
+      reject: true
+      parts: {regex: "[\\x00-\\x09\\x0B\\x0C\\x0E-\\x20]+"}
+contexts:
+  sl_done:
+    - command: SingleLineExtraLine
+      provenance: {class: net.sourceforge.plantuml.command.PSystemSingleLineFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java, line: 75}
+      kind: single
+      trim: false
+      reject: true
+      parts: {regex: "[\\s\\S]*"}

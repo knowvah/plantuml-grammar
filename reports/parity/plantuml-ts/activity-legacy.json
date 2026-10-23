@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "SEQUENCE",
+      "kind": "diagram_mismatch",
+      "note": "diagram mismatch from the sequence family: SequenceDiagram.isIncomplete (no participant) makes PSystemCommandFactory return null, so the jar's legacy activity factory accepts it",
+      "oracle": true,
+      "oracle_type": "ACTIVITY",
+      "path": "class/bizese-04-sulu767.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "plantuml-ts",
+  "family": "activity-legacy",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 119,
+    "diagram_mismatch": 1,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 119,
+    "raw_fr": 0,
+    "timeout": 0
+  }
+}

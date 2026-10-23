@@ -1,0 +1,355 @@
+# Legacy activity diagrams (T22): ActivityDiagramFactory. Upstream pin 97a5992; paths
+# are relative to src/main/java/net/sourceforge/plantuml/ unless they start with net/atmp/.
+#
+# Upstream. ActivityDiagramFactory.initCommandsList (activitydiagram/
+# ActivityDiagramFactory.java:75-97) registers footbox, the common block, rank direction,
+# partition, end partition, the long link, four note commands, if, else, endif, the link
+# and hide/show. `gen-activity-diagram` holds them in that order. PSystemBuilder tries
+# this factory after sequence and class and before description, state and the new
+# activity syntax (PSystemBuilder.java:135-140): whatever this model rejects is offered
+# to those factories, as upstream does.
+#
+# Diagram state the regexes cannot see (activitydiagram/ActivityDiagram.java):
+# * the last activity (`lastEntityConsulted`) is null until the first entity is created
+#   (:101-110, net/atmp/CucaDiagram.java:220-234). A link, long link or `if` without a
+#   source uses it and fails while it is null (command/CommandLinkActivity.java:248-251,
+#   :398-400; CommandLinkLongActivity.java:184-186; UBrexCommandIf.java:174-176).
+#   Notes on an activity create the start node when it is null
+#   (command/note/CommandFactoryNoteActivity.java:197-199); a note on a link needs a link.
+# * the if stack (`currentContext`, :71-80): `else` and `endif` fail when it is empty
+#   (UBrexCommandElse.java:73-77, UBrexCommandEndif.java:76-80).
+# * the group stack (net/atmp/CucaDiagram.java:344-374), which starts with the root:
+#   `partition` and a link to `{` push it; `}` / `end partition` pop it and fail only
+#   when it is empty (UBrexCommandEndPartition.java:76-83). A `}` that pops the root is
+#   accepted, but every later command that needs the current group throws (:177-186).
+# Nothing checks at the end that an if or a group is closed, so no `require_pop`.
+#
+# Contexts. Every context runs the generated list (`gen-activity-diagram#main`, with the
+# refinements below) and carries what differs per state in head and tail entries:
+# * main                 nothing created yet (head entries reject the source-less forms
+#                        and switch to a started state on the first entity);
+# * activity_root        root group, started, no open if;
+# * activity_if          an `if` pushed on top of another state (`endif` pops);
+# * activity_if_root     an `if` opened by the first command: no frame below it, so
+#                        `endif` switches to activity_root (a pop would return to `main`);
+# * activity_group       a group pushed on top of another state (`}` pops);
+# * activity_group_root  a group opened in `main`: `}` switches to activity_root;
+# * activity_orphan      after a `}` that popped the root, no if open;
+# * activity_orphan_if   the same with the root-level if of activity_if_root still open
+#                        (`else` / `endif` only use the if stack, :78-80).
+# Closers live in tail entries: a line reaches the tail only if no generated command
+# took it, and no command after UBrexCommandEndPartition / Else / Endif matches a closer
+# line upstream, so tail placement keeps upstream's first match. The generated closers
+# are removed (coverage exclusions in reports/classify/activity-legacy.yaml).
+# Head entries of `main` run before the common block; each copies a generated rule
+# (activity-legacy-parts) and keeps the upstream order among the activity commands.
+# A line that a common command takes upstream and a head entry also matches (`title -->
+# X`) is accepted either way; only the state differs, towards a more lenient one.
+#
+# Mixed nesting is lenient: the if and group stacks are independent upstream, but a
+# context only sees its own frame. `endif` inside a group and `}` inside an if are
+# accepted without a pop, so the model never sits in a frame upstream already closed:
+# a closer is rejected only where upstream rejects it. A partition opened in `main`
+# does not create an entity, but its body is treated as started. Known gaps (pinned by
+# tests/fixtures/activity-legacy/gap): those leniencies, a note on a link when only a
+# note exists, and unknown colors (klimt/color/HColorSet.java:69-73).
+schema_version: 1
+id: activity-legacy
+layer: diagram
+diagram: ACTIVITY
+factory: ActivityDiagramFactory
+include: [gen-activity-diagram, common, activity-legacy-parts]
+
+overrides:
+  # ActivityDiagramFactory.java:80; UBrexCommandPartition.java:116.
+  UBrexCommandPartition: {push: activity_group}
+  # ActivityDiagramFactory.java:81-94. Replaced by the tail entries of each context.
+  UBrexCommandEndPartition: {remove: true}
+  UBrexCommandElse: {remove: true}
+  UBrexCommandEndif: {remove: true}
+  # ActivityDiagramFactory.java:92; ActivityDiagram.startIf (:71-76).
+  UBrexCommandIf: {push: activity_if}
+
+insert_before:
+  # The target `{` creates an inner activity group (CommandLinkActivity.java:315-317).
+  CommandLinkActivity:
+    - command: ActivityLinkToBlock
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 143
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkActivity.java:104]
+      kind: single
+      parts: {ref: AL_LINK_TO_BLOCK}
+      push: activity_group
+
+contexts:
+  main:
+    - include: activity_fresh_heads
+    - include: gen-activity-diagram#main
+    - include: activity_tail_no_if
+    - include: activity_tail_group_at_root
+  activity_root:
+    - include: gen-activity-diagram#main
+    - include: activity_tail_no_if
+    - include: activity_tail_group_at_root
+  activity_if:
+    - include: gen-activity-diagram#main
+    - include: activity_tail_else
+    - command: ActivityEndif
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 78
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndif.java:74-85]
+      kind: single
+      parts: {ref: AL_ENDIF}
+      pop: true
+    - command: ActivityEndGroupLenient
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndPartition.java:76-83]
+      kind: single
+      parts: {ref: AL_END_GROUP}
+  activity_if_root:
+    - include: gen-activity-diagram#main
+    - include: activity_tail_else
+    - command: ActivityEndifRoot
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 78
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndif.java:74-85]
+      kind: single
+      parts: {ref: AL_ENDIF}
+      set: activity_root
+    - command: ActivityEndGroupOrphanIf
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndPartition.java:76-83]
+      kind: single
+      parts: {ref: AL_END_GROUP}
+      set: activity_orphan_if
+  activity_group:
+    - include: gen-activity-diagram#main
+    - include: activity_tail_else
+    - include: activity_tail_endif_lenient
+    - command: ActivityEndGroup
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndPartition.java:76-83]
+      kind: single
+      parts: {ref: AL_END_GROUP}
+      pop: true
+  activity_group_root:
+    - include: gen-activity-diagram#main
+    - include: activity_tail_no_if
+    - command: ActivityEndGroupRoot
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndPartition.java:76-83]
+      kind: single
+      parts: {ref: AL_END_GROUP}
+      set: activity_root
+  activity_orphan:
+    - include: activity_orphan_head
+    - include: gen-activity-diagram#main
+    - include: activity_tail_no_if
+  # After the root was popped, lines of group-dependent commands fail.
+  activity_orphan_head:
+    - command: ActivityOrphanUnsafe
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 185
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndPartition.java:78-80]
+      kind: single
+      reject: true
+      parts: {ref: AL_ORPHAN_UNSAFE}
+  activity_orphan_if:
+    - include: activity_orphan_head
+    - include: gen-activity-diagram#main
+    - include: activity_tail_else
+    - command: ActivityEndifOrphan
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 78
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndif.java:74-85]
+      kind: single
+      parts: {ref: AL_ENDIF}
+      set: activity_orphan
+
+  # --- tails ---------------------------------------------------------------------------
+  # No if is open: `else` / `endif` fail (UBrexCommandElse.java:73-77,
+  # UBrexCommandEndif.java:76-80).
+  activity_tail_no_if:
+    - command: ActivityElseWithoutIf
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 134
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandElse.java:73-77]
+      kind: single
+      reject: true
+      parts: {ref: AL_ELSE}
+    - command: ActivityEndifWithoutIf
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 134
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndif.java:76-80]
+      kind: single
+      reject: true
+      parts: {ref: AL_ENDIF}
+  # `else` switches to the branch of the open if (UBrexCommandElse.java:79-83); also
+  # used where an if may be open below (groups, orphan).
+  activity_tail_else:
+    - command: ActivityElse
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 134
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandElse.java:71-84]
+      kind: single
+      parts: {ref: AL_ELSE}
+  activity_tail_endif_lenient:
+    - command: ActivityEndifLenient
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 78
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndif.java:74-85]
+      kind: single
+      parts: {ref: AL_ENDIF}
+  # The root is the only group: `}` pops it (net/atmp/CucaDiagram.java:367-374).
+  activity_tail_group_at_root:
+    - command: ActivityEndGroupOrphan
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandEndPartition.java:76-83]
+      kind: single
+      parts: {ref: AL_END_GROUP}
+      set: activity_orphan
+
+  # --- heads of `main` -----------------------------------------------------------------
+  # Upstream order among the activity commands (ActivityDiagramFactory.java:80-96).
+  activity_fresh_heads:
+    - command: ActivityPartitionFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandPartition.java
+        line: 116
+        also: [src/main/java/net/atmp/CucaDiagram.java:344-365]
+      kind: single
+      parts: {ref: AL_PARTITION}
+      set: activity_group_root
+    - command: ActivityLinkLongNoSource
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkLongActivity.java
+        line: 184
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkActivity.java:398-400]
+      kind: single
+      reject: true
+      parts: {ref: AL_LONG_NO_SOURCE}
+    - command: ActivityLinkLongFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkLongActivity.java
+        line: 250
+      kind: multiline
+      parts: {ref: AL_LONG_WITH_SOURCE}
+      end: {ref: AL_LONG_END}
+      set: activity_root
+    - command: ActivityNoteFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/note/CommandFactoryNoteActivity.java
+        line: 197
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java:82-89]
+      kind: single
+      parts: {ref: AL_NOTE}
+      set: activity_root
+    - command: ActivityNoteLongFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/note/CommandFactoryNoteActivity.java
+        line: 197
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java:82-89]
+      kind: multiline
+      parts: {ref: AL_NOTE_HEAD}
+      end: {ref: AL_NOTE_END}
+      set: activity_root
+    - command: ActivityNoteOnLinkFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/note/CommandFactoryNoteOnLink.java
+        line: 157
+      kind: single
+      reject: true
+      parts: {ref: AL_NOTE_ON_LINK}
+    # A multiline note on a link fails when it completes; when it does not, no later
+    # command matches its first line. Either way the start line fails.
+    - command: ActivityNoteOnLinkLongFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/note/CommandFactoryNoteOnLink.java
+        line: 114
+      kind: single
+      reject: true
+      parts: {ref: AL_NOTE_ON_LINK_HEAD}
+    - command: ActivityIfNoSource
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandIf.java
+        line: 174
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkActivity.java:447]
+      kind: single
+      reject: true
+      parts: {ref: AL_IF_NO_SOURCE}
+    - command: ActivityIfFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 71
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/UBrexCommandIf.java:174-187]
+      kind: single
+      parts: {ref: AL_IF_WITH_SOURCE}
+      set: activity_if_root
+    - command: ActivityLinkNoSource
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkActivity.java
+        line: 250
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkActivity.java:398-400]
+      kind: single
+      reject: true
+      parts: {ref: AL_LINK_NO_SOURCE}
+    - command: ActivityLinkFirstToBlock
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/ActivityDiagram.java
+        line: 143
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkActivity.java:261-265]
+      kind: single
+      parts: {ref: AL_LINK_WITH_SOURCE_TO_BLOCK}
+      set: activity_group_root
+    - command: ActivityLinkFirst
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram.ActivityDiagram
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram/command/CommandLinkActivity.java
+        line: 265
+      kind: single
+      parts: {ref: AL_LINK_WITH_SOURCE}
+      set: activity_root

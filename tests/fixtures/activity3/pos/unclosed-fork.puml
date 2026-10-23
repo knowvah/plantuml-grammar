@@ -1,0 +1,7 @@
+' activity3: CommandFork3, CommandActivity3, CommandForkAgain3
+@startuml
+fork
+:x;
+fork again
+:y;
+@enduml

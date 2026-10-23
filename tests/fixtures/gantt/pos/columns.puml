@@ -1,0 +1,7 @@
+' gantt: CommandHideShowColumns
+@startgantt
+hide column start
+show column Duration
+hide column TASK
+[A] -> [B]
+@endgantt

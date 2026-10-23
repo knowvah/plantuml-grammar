@@ -1,0 +1,4 @@
+' state: StatePositionStereotypeAtRoot
+@startuml
+state X <<exitpoint>>
+@enduml

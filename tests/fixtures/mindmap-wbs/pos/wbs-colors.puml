@@ -1,0 +1,9 @@
+' mindmap-wbs: WBSItemUnknownColor, CommandWBSItemNew_44
+@startwbs
+*[#fff] root
+**[#AUTOMATIC] a
+**[#f] b
+**[#ffffff] c
+**[#background] d
+** [#zzzz] a label
+@endwbs

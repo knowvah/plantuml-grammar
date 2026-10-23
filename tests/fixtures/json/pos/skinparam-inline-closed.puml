@@ -1,0 +1,6 @@
+' json: JsonSkinparamBlock, JsonText
+@startjson
+skinparam x { a b }
+}
+[1]
+@endjson

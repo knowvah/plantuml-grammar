@@ -1,0 +1,5 @@
+' meta: CreoleText
+@startcreole
+<size:99999999999>x
+<img:nope.png> **open
+@endcreole

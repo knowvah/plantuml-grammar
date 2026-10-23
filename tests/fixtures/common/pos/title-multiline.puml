@@ -1,0 +1,9 @@
+' common: CommandMultilinesTitle
+' factory: SequenceDiagramFactory
+@startuml
+title
+First line
+  **second**
+end title
+Alice -> Bob : hello
+@enduml

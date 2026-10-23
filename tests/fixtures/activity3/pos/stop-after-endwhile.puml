@@ -1,0 +1,7 @@
+' activity3: CommandWhile3, CommandWhileEnd3, CommandStop3
+@startuml
+while (a)
+:x;
+endwhile
+stop
+@enduml

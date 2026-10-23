@@ -1,0 +1,16 @@
+' state: CommandLinkState, CommandCreatePackageState
+@startuml
+[*] --> A
+A --> [*]
+[H] --> A
+[H*] --> A
+A[H] --> B
+B[H*] --> A
+state Comp {
+  [*] --> X
+  X --> [H]
+  X --> [H*]
+  X --> [*]
+  X[h] --> Y
+}
+@enduml

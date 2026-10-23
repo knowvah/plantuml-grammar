@@ -1,0 +1,7 @@
+' gantt: NaturalGanttTask
+' jar: rejected
+' gap: `it` refers to the last task subject (SubjectTask.java:444-460); `[A] -> [B]` creates tasks without setting it
+@startgantt
+[A] -> [B]
+it lasts 3 days
+@endgantt

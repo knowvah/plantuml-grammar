@@ -1,0 +1,6 @@
+' misc-charts: ChartFirstIndexArea, CommandChartArea, CommandChartBar
+@startchart
+h-axis [a, b]
+area "A" [1, 2] v2
+bar [3, 4]
+@endchart

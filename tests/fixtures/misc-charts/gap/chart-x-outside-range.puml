@@ -1,0 +1,6 @@
+' misc-charts: ChartFirstCoordinateLine
+' gap: x values are compared with the numeric h-axis range (ChartDiagram.java:223-229)
+@startchart
+h-axis 0 --> 5
+line [(1,2),(9,4)]
+@endchart

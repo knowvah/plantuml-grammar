@@ -1,0 +1,6 @@
+' activity3: CommandIfLegacy1
+@startuml
+if (a) then when
+:x;
+endif
+@enduml

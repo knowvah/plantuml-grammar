@@ -1,0 +1,6 @@
+' activity-legacy: ActivityLinkLongNoSource
+@startuml
+--> "a
+b"
+--> (*)
+@enduml

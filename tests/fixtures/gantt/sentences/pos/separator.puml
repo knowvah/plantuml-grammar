@@ -1,0 +1,8 @@
+' gantt: NaturalGanttSeparator
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+separator just before 2020-01-10
+separator just after 2020-01-11
+separator just at [A]'s end
+@endgantt

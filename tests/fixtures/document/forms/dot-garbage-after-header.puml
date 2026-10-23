@@ -1,0 +1,4 @@
+@startdot
+digraph G {
+ this is ]]] not ((( valid dot
+@enddot

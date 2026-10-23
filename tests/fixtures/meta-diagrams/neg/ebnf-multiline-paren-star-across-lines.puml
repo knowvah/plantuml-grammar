@@ -1,0 +1,5 @@
+' meta: EbnfRuleMultilinesUnparsable
+@startebnf
+a = ( * x
+. *) ;
+@endebnf

@@ -1,0 +1,10 @@
+' activity3: CommandSwitch, CommandPartition3, CommandCloseGroup3, CommandCase, CommandEndSwitch
+@startuml
+switch (x)
+partition P {
+:a;
+}
+case (a)
+:b;
+endswitch
+@enduml

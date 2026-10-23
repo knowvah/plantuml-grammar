@@ -1,0 +1,22 @@
+schema_version: 1
+id: gen-seq
+layer: diagram
+diagram: SEQUENCE
+factory: SeqFactory
+contexts:
+  main:
+    - command: CommandWide
+      provenance: {class: toy.CommandWide}
+      kind: single
+      parts:
+        seq:
+          - {literal: wide, ci: true}
+          - {regex: "\\s+\\w+"}
+    - command: CommandGone
+      provenance: {class: toy.CommandGone}
+      kind: single
+      parts: {literal: gone, ci: true}
+    - command: CommandKept
+      provenance: {class: toy.CommandKept}
+      kind: single
+      parts: {literal: kept, ci: true}

@@ -1,0 +1,6 @@
+' sequence: CommandDeactivateShort
+' gap: no activating message (CommandDeactivateShort.java:76-78): state
+@startuml
+Alice -> Bob : x
+deactivate
+@enduml

@@ -1,0 +1,6 @@
+' sequence: CommandGrouping
+@startuml
+!pragma teoz true
+Alice -> Bob : x
+end
+@enduml

@@ -1,0 +1,12 @@
+' misc-charts: WireComponentAtLevel3, WireComponentAtLevel4, WireComponentBeyondLevel3
+@startwire
+* a
+	* b
+		* c
+			* d
+				* e
+					* f
+						* g
+		* h
+			* i
+@endwire

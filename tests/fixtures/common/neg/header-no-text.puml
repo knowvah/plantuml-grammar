@@ -1,0 +1,6 @@
+' common: CommandHeader
+' factory: SequenceDiagramFactory
+@startuml
+header !!!
+Alice -> Bob : hello
+@enduml

@@ -1,0 +1,15 @@
+{
+  "cases": [],
+  "corpus": "pdiff",
+  "family": "misc-charts",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 55,
+    "diagram_mismatch": 0,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 55,
+    "raw_fr": 0,
+    "timeout": 0
+  }
+}

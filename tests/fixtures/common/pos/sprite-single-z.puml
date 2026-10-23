@@ -1,0 +1,6 @@
+' common: CommandFactorySprite_2
+' factory: SequenceDiagramFactory
+@startuml
+sprite $bug [15x15/16z] PKzR2i0m2BFMi15p__FEjQEqB1z27aeqCqixa8S4OT7C53cKpsHpaYPDJY_12MHM-BLRyywPhrrlw3qumqNThmXgd1TOterAZmOW8sgiJafogofWRwtV3nCF
+Alice -> Bob : hello
+@enduml

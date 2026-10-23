@@ -1,0 +1,12 @@
+' activity3: CommandNote3
+@startuml
+note left: first
+:a;
+note left: x
+note right #red: y
+floating note right: z
+note left <<s>>: w
+note left $tag: v
+note left:
+note right: on **two**\nlines
+@enduml

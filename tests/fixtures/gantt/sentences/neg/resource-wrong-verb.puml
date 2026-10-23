@@ -1,0 +1,5 @@
+' gantt: NaturalGanttResource
+@startgantt
+[A] lasts 5 days
+{Alice} starts at 2020-01-01
+@endgantt

@@ -1,0 +1,6 @@
+' sequence: FactorySequenceNoteAcrossCommand_2
+@startuml
+Alice -> Bob : x
+note across
+  never ends
+@enduml

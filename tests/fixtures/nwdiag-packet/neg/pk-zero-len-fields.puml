@@ -1,0 +1,7 @@
+' nwdiag-packet: PacketZeroWidthOnly
+@startpacketdiag
+* A [len = 0]
+title t
+1: B [height = 2, len = "0"]
+* C [ len=+0 ]
+@endpacketdiag

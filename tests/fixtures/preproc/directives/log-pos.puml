@@ -1,0 +1,4 @@
+@startuml
+!log hello $x
+a -> b
+@enduml

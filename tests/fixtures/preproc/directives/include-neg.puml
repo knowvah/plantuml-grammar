@@ -1,0 +1,4 @@
+@startuml
+!include
+a -> b
+@enduml

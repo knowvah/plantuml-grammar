@@ -1,0 +1,16 @@
+' activity3: CommandActivity3, CommandIf2, CommandElse3, CommandEndif3, CommandFork3, CommandForkAgain3, CommandForkEnd3, CommandKill3
+@startuml
+:z;
+if (a) then
+:x;
+else
+:y;
+endif
+kill
+fork
+:a;
+fork again
+:b;
+end fork
+detach
+@enduml

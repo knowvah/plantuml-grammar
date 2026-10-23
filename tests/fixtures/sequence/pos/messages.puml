@@ -1,0 +1,30 @@
+' sequence: CommandArrow
+@startuml
+Alice -> Bob : sync
+Alice ->> Bob : async
+Alice -\ Bob
+Alice -/ Bob
+Alice -\\ Bob
+Alice -// Bob
+Alice ->x Bob
+Alice ->o Bob
+Alice o->o Bob
+Alice x-> Bob
+Alice <-> Bob
+Alice <- Bob
+Bob --> Alice : dotted
+Alice -[#red]> Bob
+Alice -[#blue,dashed]> Bob
+Alice -> Alice : self
+Alice -> Bob ++ : activate
+Bob --> Alice -- : deactivate
+Alice -> Carl ** : create
+Alice -> Carl !! : destroy
+"Long" as L -> Bob
+Alice -> "Quoted" : quoted
+Alice -> Bob & Carl : multicast
+& Bob -> Carl : parallel
+Alice -> Bob #green : lifecolor
+Alice -> Bob <<stereo>> : stereotype
+Alice -> Bob [[http://example.org]] : link
+@enduml

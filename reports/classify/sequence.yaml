@@ -1,0 +1,38 @@
+# Classifications for the `sequence` family (T17). Upstream pin 97a5992; `cite` paths
+# are relative to src/main/java/net/sourceforge/plantuml/. The same three blocks occur
+# in plantuml-ts and pdiff. All are false accepts (FA); FR is 0 on every corpus.
+cases:
+  # `%dirpath` takes no argument; the preprocessor fails before any sequence command runs.
+  plantuml-ts:sequence/moragi-03-luto111.puml#0:
+    class: semantic
+    note: "preprocessor error: %dirpath() has arity 0, called with one argument; not a sequence command"
+    cite: src/main/java/net/sourceforge/plantuml/tim/builtin/Dirpath.java:51
+  pdiff:dbhum/m_or/moragi-03-luto111.puml#0:
+    class: semantic
+    note: "preprocessor error: %dirpath() has arity 0, called with one argument; not a sequence command"
+    cite: src/main/java/net/sourceforge/plantuml/tim/builtin/Dirpath.java:51
+  # After `create "Node C"` the next message must reach Node C (state across lines).
+  plantuml-ts:sequence/riguga-63-mujo058.puml#0:
+    class: semantic
+    note: "create then a message to another participant: SequenceDiagram.addMessage pendingCreate check (state, gap/create-then-other-message)"
+    cite: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java:207-210
+  pdiff:dbhum/r_ig/riguga-63-mujo058.puml#0:
+    class: semantic
+    note: "create then a message to another participant: SequenceDiagram.addMessage pendingCreate check (state, gap/create-then-other-message)"
+    cite: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java:207-210
+  # `deactivate` right after a `...` delay (state across lines).
+  plantuml-ts:sequence/sosudi-70-jape391.puml#0:
+    class: semantic
+    note: "activate/deactivate just after a delay: SequenceDiagram.activate lastDelay check (state, gap/activate-after-delay)"
+    cite: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java:368-369
+  pdiff:dbhum/s_os/sosudi-70-jape391.puml#0:
+    class: semantic
+    note: "activate/deactivate just after a delay: SequenceDiagram.activate lastDelay check (state, gap/activate-after-delay)"
+    cite: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java:368-369
+
+exclusions:
+  CommandBoxEnd: >-
+    modeled by the tail entries SequenceBoxEndWithoutBox (main, reject), SequenceBoxEnd
+    (box_body, pop) and SequenceBoxEndInGroup (group_body) in model/diagrams/sequence.yaml,
+    which cite SequenceDiagram.endBox/isBoxPending (SequenceDiagram.java:510-519); the
+    generated entry is removed because one entry cannot act differently per context

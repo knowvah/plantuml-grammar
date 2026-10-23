@@ -1,0 +1,6 @@
+' mindmap-wbs: CommandMindMapRoot, CommandMindMapPlus
+@startmindmap
+0 root
+++ a
+-- b
+@endmindmap

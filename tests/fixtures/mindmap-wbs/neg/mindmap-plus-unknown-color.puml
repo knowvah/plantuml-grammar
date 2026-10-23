@@ -1,0 +1,5 @@
+' mindmap-wbs: MindMapPlusUnknownColor
+@startmindmap
++ root
++-[#zzzz] a
+@endmindmap

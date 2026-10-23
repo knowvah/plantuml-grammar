@@ -1,0 +1,6 @@
+' common: CommandSkinParam
+' factory: SequenceDiagramFactory
+@startuml
+skinparamlocked monochrome true
+Alice -> Bob : hello
+@enduml

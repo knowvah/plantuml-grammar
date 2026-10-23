@@ -1,0 +1,22 @@
+' style: no closing line
+@startuml
+<style>
+root {
+LineColor red
+}
+class Foo
+@enduml
+
+' style: a second <style> closes, the </style> is left over
+@startuml
+<style>
+<style>
+</style>
+class Foo
+@enduml
+
+' style: <style> as the last body line
+@startuml
+class Foo
+<style>
+@enduml

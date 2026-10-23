@@ -1,0 +1,7 @@
+@startuml
+!if 1
+a -> b
+!else
+]]] not sequence
+!endif
+@enduml

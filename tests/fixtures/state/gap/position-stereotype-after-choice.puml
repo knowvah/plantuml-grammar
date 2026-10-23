@@ -1,0 +1,7 @@
+' state: StatePositionStereotypeAtRoot
+' jar: accepted
+' gap: X already exists as a choice pseudo-state, and getEntityPosition is NORMAL for leaf types other than STATE (abel/Entity.java:337-338)
+@startuml
+state X <<choice>>
+state X <<exitpoint>>
+@enduml

@@ -1,0 +1,4 @@
+' single-line: single-line-list-fonts
+@startuml
+listfonts
+@enduml

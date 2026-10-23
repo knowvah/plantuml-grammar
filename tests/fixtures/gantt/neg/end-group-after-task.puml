@@ -1,0 +1,5 @@
+' gantt: CommandGroupEnd
+@startgantt
+[A] -> [B]
+end group
+@endgantt

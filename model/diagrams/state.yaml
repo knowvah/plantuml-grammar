@@ -1,0 +1,194 @@
+# State diagrams (T20): StateDiagramFactory. Upstream pin 97a5992; paths are relative
+# to src/main/java/net/sourceforge/plantuml/ unless they start with net/atmp/.
+#
+# Upstream. StateDiagramFactory.initCommandsList (statediagram/StateDiagramFactory.java:
+# 84-120) registers the state commands, the notes, map/json, then the common block.
+# `gen-state-diagram` holds them in that order; this model refines them and adds the
+# group stack the extractor cannot see. StateDiagram runs every line three times
+# (ParserPass ONE, TWO, THREE; StateDiagram.java:65-68, command/PSystemCommandFactory.java:
+# 125-140): links run in pass TWO, notes on entities in pass THREE, field lines in pass
+# ONE. A line no command matches fails in pass ONE whatever its pass, so the passes only
+# order the execution errors; each pass restarts with the group stack cut back to the
+# root (net/atmp/CucaDiagram.java:161-166).
+#
+# Group stack. `state X {` / `state X begin` (CommandCreatePackageState) and `frame X {`
+# (CommandCreatePackage2) push a group (CucaDiagram.gotoGroup, :344-365); `}`, `end
+# state` and `endstate` (CommandEndState) pop it and fail at the root with "No inner
+# state defined" (statediagram/command/CommandEndState.java:79-81). A group still open
+# at the end of the block is accepted (no final check), so the bodies need no
+# `require_pop`. `--`/`||` (CommandConcurrentState) open a concurrent region: they close
+# the current region if one is open and push a new CONCURRENT_STATE group
+# (StateDiagram.concurrentState, StateDiagram.java:194-208), and a closer pops the region
+# together with the state that holds it (StateDiagram.endGroup, :210-217). Regions are
+# valid at the root too; a closer there pops the region and then the root itself, which
+# leaves the stack empty, so the next line touching the current group, at the latest the
+# region line itself in pass TWO, throws IllegalStateException (CucaDiagram.java:177-186).
+# Contexts, each running the whole generated list after a few head entries:
+# * main             the root;
+# * main_concurrent  the root after `--`/`||` (StateConcurrentAtRoot sets it);
+# * state_body       inside a composite state or a frame, regions included (a region
+#                    inside a composite changes nothing a line can see).
+# The generated CommandEndState is removed; each context has its own closer at the head.
+# No earlier upstream rule takes a closer or region line, so head placement keeps
+# upstream's first match.
+#
+# Position stereotypes. A state declared at the root whose whole stereotype label is
+# `<<entrypoint>>`, `<<exitpoint>>`, `<<inputpin>>`, `<<outputpin>>`,
+# `<<expansioninput>>` or `<<expansionoutput>>` (any case) fails with "You cannot use
+# this stereotype here" (statediagram/command/CommandCreateState.java:236-237,
+# abel/Entity.java:327-347, abel/EntityPosition.java:153-176), and `<<port>>` throws
+# UnsupportedOperationException on the same check (EntityPosition.java:154-155). The
+# other stereotypes the factory gives a meaning (choice, fork, join, start, end, history,
+# history*: stereo/Stereogroup.java:110-132; sdlreceive: svek/GeneralImageBuilder.java:
+# 139) and portin/portout are valid anywhere. "At the root" means the new state's parent
+# is the root: a dotted name (`P.X`, `"P.X"`) has the parent P, a leading dot (`.X`) means
+# the root (CucaDiagram.java:263-264). `main` rejects these lines at its head; no
+# earlier upstream rule takes a `state` line. Emitters drop the reject, so they accept
+# these lines everywhere.
+#
+# Known gaps (tests/fixtures/state/gap): facts about entities declared on other lines.
+# * quarkInContext reuses the only state of that name anywhere (CucaDiagram.java:267-273),
+#   so a root declaration may land on a nested state; a state that already exists as a
+#   pseudo-state keeps its leaf type (Entity.java:337-338). Both are accepted upstream.
+# * Names ending in the separator or containing it twice throw (CucaDiagram.java:258-259,
+#   :290-297), but `set separator` changes the separator for the whole diagram, which a
+#   context stack cannot follow; not modeled.
+# * Link endpoints: a dotted name whose parent was never declared, or a state owned by
+#   another concurrent region, "cannot be used here" (statediagram/command/
+#   CommandLinkStateCommon.java:270-278, StateDiagram.java:75-90); a link leaving a
+#   concurrent region fails the final check (StateDiagram.java:232-242).
+# * Notes: "Not known" / "Nothing to note to" (command/note/CommandFactoryNoteOnEntity.
+#   java:298-307).
+schema_version: 1
+id: state
+layer: diagram
+diagram: STATE
+factory: StateDiagramFactory
+include: [gen-state-diagram, common]
+
+variables:
+  # CommandCreateState.getRegexConcat (CommandCreateState.java:80-117), the generated shape.
+  ST_CREATE_STATE:
+    seq:
+      - {literal: state, ci: true}
+      - {regex: "[\\s\_]+", ci: true}
+      - alt:
+          - {ref: CODE1_2}
+          - seq:
+              - {regex: "[\"“”]([^\"“”]+)[\"“”]", ci: true, name: DISPLAY2}
+              - {regex: "[\\s\_]+", ci: true}
+              - {literal: as, ci: true}
+              - {regex: "[\\s\_]+", ci: true}
+              - {regex: "([\\p{L}\\p{N}_.]+)", ci: true, name: CODE2}
+          - {regex: "([\\p{L}\\p{N}_.]+)", ci: true, name: CODE3}
+          - {regex: "[\"“”]([^\"“”]+)[\"“”]", ci: true, name: CODE4}
+      - {regex: "[\\s\_]*", ci: true}
+      - {ref: TAGS1}
+      - opt: {regex: "(<<[^<>]+>>(?:[\\s\_]*<<[^<>]+>>)*)", ci: true, name: STEREOGROUP}
+      - {ref: TAGS2}
+      - {regex: "[\\s\_]*", ci: true}
+      - opt: {ref: URL}
+      - {regex: "[\\s\_]*", ci: true}
+      - {ref: COLOR}
+      - {regex: "[\\s\_]*", ci: true}
+      - opt: {regex: "##(?:\\[(dotted|dashed|bold)\\])?(\\w+)?", ci: true, name: LINECOLOR}
+      - {regex: "[\\s\_]*", ci: true}
+      - opt:
+          seq:
+            - {literal: ":", ci: true}
+            - {regex: "[\\s\_]*", ci: true}
+            - {regex: "(.*)", ci: true, name: ADDFIELD}
+  # A CommandCreateState line whose state would be a child of the current group and
+  # whose STEREOGROUP is exactly one position stereotype (see header). The code is
+  # CODE1/CODE2/CODE3 or the content of CODE4 without a separator after an optional
+  # leading one; TAGS1 may touch the stereotype; a second stereotype would join the
+  # group and change the label.
+  ST_POSITION_LINE:
+    regex: "(?=state[\\s\_]+(?:\\.?[\\p{L}\\p{N}_]+[\\s\_]+as[\\s\_]+[\"“”][^\"“”]+[\"“”]|[\"“”][^\"“”]+[\"“”][\\s\_]+as[\\s\_]+\\.?[\\p{L}\\p{N}_]+|\\.?[\\p{L}\\p{N}_]+|[\"“”]\\.?[^\"“”.]+[\"“”])[\\s\_]*(?:\\$[^\\s\_{}\"“”<>$]+(?:[\\s\_]+\\$[^\\s\_{}\"“”<>$]+)*)?<<(?:entrypoint|exitpoint|inputpin|outputpin|expansioninput|expansionoutput|port)>>(?![\\s\_]*<<))"
+    ci: true
+  # CommandEndState.getRegexConcat (CommandEndState.java:61-64), the generated shape.
+  ST_END:
+    alt:
+      - {regex: "end[\\s\_]?state", ci: true}
+      - {literal: "}", ci: true}
+  # CommandConcurrentState.getRegexConcat (CommandConcurrentState.java:60-64).
+  ST_CONCURRENT: {regex: "(--+|\\|\\|+)", ci: true, name: TYPE}
+
+overrides:
+  # StateDiagramFactory.java:91-92 (CucaDiagram.gotoGroup, :344-365).
+  CommandCreatePackageState: {push: state_body}
+  CommandCreatePackage2: {push: state_body}
+  # StateDiagramFactory.java:93. Replaced by the closer at the head of each context.
+  CommandEndState: {remove: true}
+
+contexts:
+  main:
+    - command: StateEndAtRoot
+      provenance:
+        class: net.sourceforge.plantuml.statediagram.StateDiagram
+        file: src/main/java/net/sourceforge/plantuml/statediagram/command/CommandEndState.java
+        line: 80
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/statediagram/command/CommandEndState.java:61-64
+          - src/main/java/net/sourceforge/plantuml/statediagram/StateDiagramFactory.java:93
+      kind: single
+      reject: true
+      parts: {ref: ST_END}
+    - command: StateConcurrentAtRoot
+      provenance:
+        class: net.sourceforge.plantuml.statediagram.command.CommandConcurrentState
+        file: src/main/java/net/sourceforge/plantuml/statediagram/command/CommandConcurrentState.java
+        line: 60
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java:194-208]
+      kind: single
+      parts: {ref: ST_CONCURRENT}
+      set: main_concurrent
+    - command: StatePositionStereotypeAtRoot
+      provenance:
+        class: net.sourceforge.plantuml.abel.Entity
+        file: src/main/java/net/sourceforge/plantuml/statediagram/command/CommandCreateState.java
+        line: 236
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/abel/Entity.java:327-347
+          - src/main/java/net/sourceforge/plantuml/abel/EntityPosition.java:153-176
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: ST_POSITION_LINE}, {ref: ST_CREATE_STATE}]
+    - include: gen-state-diagram#main
+  main_concurrent:
+    # A closer pops the root region and then the root (StateDiagram.endGroup); every
+    # later use of the current group throws (see header).
+    - command: StateEndConcurrentRoot
+      provenance:
+        class: net.sourceforge.plantuml.statediagram.StateDiagram
+        file: src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java
+        line: 211
+        engine: IRegex
+        also:
+          - src/main/java/net/atmp/CucaDiagram.java:367-374
+          - src/main/java/net/atmp/CucaDiagram.java:177-186
+          - src/main/java/net/atmp/CucaDiagram.java:161-166
+          - src/main/java/net/sourceforge/plantuml/statediagram/command/CommandEndState.java:79-84
+      kind: single
+      reject: true
+      parts: {ref: ST_END}
+    - include: gen-state-diagram#main
+  state_body:
+    - command: StateEnd
+      provenance:
+        class: net.sourceforge.plantuml.statediagram.StateDiagram
+        file: src/main/java/net/sourceforge/plantuml/statediagram/StateDiagram.java
+        line: 211
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/statediagram/command/CommandEndState.java:61-64
+          - src/main/java/net/sourceforge/plantuml/statediagram/command/CommandEndState.java:83
+      kind: single
+      parts: {ref: ST_END}
+      pop: true
+    - include: gen-state-diagram#main
+

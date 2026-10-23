@@ -1,0 +1,10 @@
+' description: CommandPackageWithUSymbol, CommandCreateElementFull, CommandLinkElement
+@startuml
+component C {
+  port p1
+  portin i1
+  portout o1
+}
+p1 --> i1
+[X] --> o1
+@enduml

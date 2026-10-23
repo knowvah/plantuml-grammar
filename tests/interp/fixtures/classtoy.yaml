@@ -1,0 +1,88 @@
+schema_version: 1
+id: classtoy
+layer: diagram
+diagram: CLASS
+include: [shared]
+variables:
+  END_NOTE: {literal: end note, ci: true}
+contexts:
+  main:
+    - command: CommandBeta
+      provenance: {class: toy.CommandBeta}
+      kind: single
+      parts: {seq: [{literal: beta, ci: true}, {regex: "\\s+"}, {ref: WORD}]}
+    - command: CommandNoteMulti
+      provenance: {class: toy.CommandNoteMulti}
+      kind: multiline
+      parts: {literal: note, ci: true}
+      end: {ref: END_NOTE}
+    - command: CommandNoteSingle
+      provenance: {class: toy.CommandNoteSingle}
+      kind: single
+      parts: {seq: [{literal: note, ci: true}, {opt: {regex: "\\s+\\w+"}}]}
+    - command: CommandOpen
+      provenance: {class: toy.CommandOpen}
+      kind: single
+      parts: {seq: [{literal: open, ci: true}, {regex: "\\s*\\{"}]}
+      push: body
+    - command: CommandPackage
+      provenance: {class: toy.CommandPackage}
+      kind: multiline-bracket
+      parts: {seq: [{literal: package, ci: true}, {regex: "\\s+\\w+\\s*\\{"}]}
+    - command: CommandFirst
+      provenance: {class: toy.CommandFirst}
+      kind: single
+      parts: {literal: dup, ci: true}
+      push: ctx_one
+    - command: CommandSecond
+      provenance: {class: toy.CommandSecond}
+      kind: single
+      parts: {literal: dup, ci: true}
+      push: ctx_two
+    - command: CommandSwap
+      provenance: {class: toy.CommandSwap}
+      kind: single
+      parts: {literal: swap, ci: true}
+      set: ctx_two
+    - command: CommandWrap
+      provenance: {class: toy.CommandWrap}
+      kind: multiline
+      parts:
+        seq:
+          - {literal: wrap, ci: true}
+          - {regex: "\\s+\\w+\ue100\\w+"}
+          - {opt: {regex: "\ue100\\w+"}}
+      join: {max_lines: 2}
+    - command: CommandWrapFar
+      provenance: {class: toy.CommandWrapFar}
+      kind: multiline
+      parts: {regex: "far\ue100\\w+\ue100\\w+\ue100\\w+"}
+      join: {max_lines: 2}
+    - command: CommandWrapOpt
+      provenance: {class: toy.CommandWrapOpt}
+      kind: multiline
+      parts: {regex: "opt(?:\ue100\\w+)?"}
+      join: {max_lines: 1}
+    - include: common
+  body:
+    - command: CommandMember
+      provenance: {class: toy.CommandMember}
+      kind: single
+      parts: {seq: [{literal: member, ci: true}, {regex: "\\s+"}, {ref: WORD}]}
+    - command: CommandClose
+      provenance: {class: toy.CommandClose}
+      kind: single
+      parts: {regex: "\\}"}
+      pop: true
+  ctx_one:
+    - command: CommandOne
+      provenance: {class: toy.CommandOne}
+      kind: single
+      parts: {literal: one, ci: true}
+      pop: true
+  ctx_two:
+    - command: CommandTwo
+      provenance: {class: toy.CommandTwo}
+      kind: single
+      parts: {literal: two, ci: true}
+      pop: true

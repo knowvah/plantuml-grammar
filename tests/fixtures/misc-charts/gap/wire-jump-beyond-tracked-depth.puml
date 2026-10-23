@@ -1,0 +1,11 @@
+' misc-charts: WireComponentBeyondLevel3
+' gap: depth is tracked exactly up to 4; beyond it (wire_deep) a level jump is accepted
+@startwire
+* a
+	* b
+		* c
+			* d
+				* e
+					* f
+							* g
+@endwire

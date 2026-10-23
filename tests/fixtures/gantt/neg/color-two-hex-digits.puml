@@ -1,0 +1,5 @@
+' gantt: CommandColorTask
+@startgantt
+[A] -> [B]
+[A] #ab
+@endgantt

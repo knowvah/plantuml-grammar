@@ -1,0 +1,4 @@
+' timing: CommandAnalog
+@startuml
+analog A between 0 and 5
+@enduml

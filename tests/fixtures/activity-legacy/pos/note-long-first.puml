@@ -1,0 +1,8 @@
+' activity-legacy: ActivityNoteLongFirst
+@startuml
+note left
+  several lines
+end note
+--> B
+B --> (*)
+@enduml

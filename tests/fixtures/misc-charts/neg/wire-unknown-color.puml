@@ -1,0 +1,4 @@
+' misc-charts: WireComponentFails
+@startwire
+* a #ff
+@endwire

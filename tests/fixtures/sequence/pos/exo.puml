@@ -1,0 +1,16 @@
+' sequence: CommandExoArrowLeft, CommandExoArrowRight
+@startuml
+participant Alice
+[-> Alice : found
+[o-> Alice
+[x-> Alice
+[<- Alice
+?-> Alice : short found
+& [-> Alice : parallel
+Alice ->] : lost
+Alice ->o]
+Alice ->x]
+Alice ->? : short lost
+Alice <-] : back
+Alice ->] ++ : activate
+@enduml

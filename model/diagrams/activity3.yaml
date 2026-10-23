@@ -1,0 +1,55 @@
+# Activity diagrams, new syntax (ActivityDiagramFactory3; T21a core, T21b structure).
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Upstream. ActivityDiagramFactory3.initCommandsList (activitydiagram3/
+# ActivityDiagramFactory3.java:103-165) registers CommandFootboxIgnored, the common block,
+# then the activity commands; `gen-activity-diagram3` holds them in that order.
+# ActivityDiagram3 keeps one instruction stack: openers push an instruction
+# (`setCurrent`), and every closer checks that the innermost open instruction is its own
+# kind before popping (ActivityDiagram3.java:216-435). The stack never has to be empty at
+# the end (no checkFinalError override; activity3-core-flow.yaml).
+#
+# Files.
+# * activity3-core-flow.yaml (T21a): transitions of the flow openers and closers
+#   (if/switch/repeat/while/fork/split) and the body contexts.
+# * activity3-core-reject.yaml (T21a): one `reject` context per closer family, spliced
+#   at the head of every body the closer does not belong to.
+# * activity3-core-actions.yaml (T21a): CommandKill3's regex (`^kill|detach;?$`).
+# * activity3-structure*.yaml (T21b): swimlanes, partitions/groups, notes.
+#
+# Context architecture. Every body is `[head rejects..., include: a3_statements]`, where
+# `a3_statements` splices the generated command list (with the patches of all included
+# models). Names are prefixed `a3_`:
+#   a3_main         top level (this file's `main` splices it)
+#   a3_if_then      then-branches of an if, incl. elseif branches
+#   a3_if_else      the else branch
+#   a3_switch_head  between `switch` and the first `case`
+#   a3_switch_case  inside a case
+#   a3_repeat_body, a3_while_body, a3_fork_body, a3_split_body
+#   a3_reject_*     reject families (else, endif, if = else+endif, switch, repeat_while,
+#                   backward, while, fork, split, flow = all of them, before_case)
+# T21b's contexts take the same shape and must not reuse these names (suggested:
+# a3_group_body).
+#
+# T21b hook. Add ONE line: `activity3-structure` in `include`, right after `common` and
+# BEFORE the core models. Context lookup takes the first definition in include order, so
+# a context of the same name in activity3-structure shadows the core one (e.g. a3_main,
+# if the swimlane strategy needs head entries at top level). Patches (overrides,
+# insert_*) from a shared model apply to this model. For a group body:
+#   overrides:  CommandPartition3: {push: a3_group_body}
+#               CommandCloseGroup3 / CommandCloseGroupLegacy3: {reject: true}
+#               (closeGroup fails unless a group is innermost, ActivityDiagram3.java:429-435)
+#   contexts:   a3_group_body: [<group closers, pop: true>, include: a3_reject_flow,
+#                               include: a3_statements]
+# The head entries of a3_group_body run before the generated list; no command registered
+# before CommandCloseGroup3 matches `}` or `end group`.
+schema_version: 1
+id: activity3
+layer: diagram
+diagram: ACTIVITY
+factory: ActivityDiagramFactory3
+include: [gen-activity-diagram3, common, activity3-structure, activity3-core-flow, activity3-core-reject, activity3-core-actions]
+
+contexts:
+  main:
+    - include: a3_main

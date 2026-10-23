@@ -1,0 +1,7 @@
+' board-files-git: CommandBoardPlus, BoardRelease
+@startboard
+World
++++Paris
++Europe
+++France
+@endboard

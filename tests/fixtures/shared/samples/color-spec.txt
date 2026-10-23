@@ -1,0 +1,21 @@
+class A #pink;line:red;line.bold;text:red
+class B #back:lightblue;header:white
+class C #red|blue
+x #line.dashed:Red-Blue;
+#transparent
+#a
+opt#transparent expand?
+class Order #ff0000
+is &#8734; long"
+package kpeophayibcgy.siwd #DDDDDD{
+skinparam interfaceColor #FF6655
+state dummy #Blue
+<circle cx="50" cy="50" r="40" fill="url(#circleGrad)" stroke="#333333" stroke-width="2"/>
+!define _dockertextcolor #FFFFFF
+note top of () "a brain new interface" #blue
+WU is Waiting #LightCyan;line:Aqua
+box "A box" #LightBlue
+skinparam SwimlaneTitleBackgroundColor #EEE
+adapterCS1 -[hidden]down- adapterCS2
+rectangle inside
+return #red Negative Response

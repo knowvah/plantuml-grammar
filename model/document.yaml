@@ -1,0 +1,460 @@
+# Hand-written (T13). L0 document layer: how a file splits into @startX ... @endX blocks
+# and which factories each start keyword is offered to. Citations at upstream 97a5992.
+#
+# Blocks (BlockUmlBuilder.java:100-135): a start directive (StartUtils.isStartDirective,
+# utils/StartUtils.java:51-63: optional whitespace, '@' or '\', the case-sensitive word
+# "start", at least one more character) opens a block and discards an unterminated one
+# (:101-104, hence `set` in block contexts); the first end directive
+# (StartUtils.isEndDirective, :119-121: '@' or '\' then "end", any suffix) closes it
+# (:126-135), so @startuml ... @endmindmap is one block. Text outside blocks is ignored
+# (:113: lines are kept only while a block is open). @pause/@unpause/!exit (:105-125) are
+# not modelled.
+#
+# Keyword: DiagramType.findStartTypes (core/DiagramType.java:69-92) reads the word after
+# "start" case-insensitively and by PREFIX (:220-232): @startumlfoo is uml. The rest of
+# the line is a free-form name (@startuml foo, @startuml(id=x); StartUtils.java:45-46).
+# The 30 directive pairs are LanguageDescriptor.java:56-85; any other word still opens a
+# block (StartOther) whose diagram is PSystemUnsupported (error/PSystemErrorUtils.java:58-59).
+#
+# start_map: keyword -> factories tried, in PSystemBuilder.java:133-200 order, keeping
+# those whose DiagramType (constructor super(DiagramType.X); single-line factories via
+# command/PSystemSingleLineFactory.java:60) is in the keyword's type set
+# (DiagramType.java:94-218). chronology and jcckit have no registered factory
+# (PSystemBuilder.java:162,184 are commented out) so they are absent: upstream answers
+# PSystemUnsupported (PSystemBuilder.java:283-284). PSystemPathFactory is registered only
+# under SecurityProfile INSECURE (PSystemBuilder.java:178-179); the default is LEGACY
+# (security/SecurityProfile.java:134), so it is omitted.
+#
+# D4 opaque bodies (dot, ditaa, math, latex, yaml, hcl) enter embed_<kw> contexts: the
+# body is handed to the factory unparsed.
+schema_version: 1
+id: document
+layer: document
+start_map:
+  bpm: [BpmDiagramFactory]
+  board: [BoardDiagramFactory]
+  chart: [ChartDiagramFactory]
+  creole: [PSystemCreoleFactory]
+  chen: [ChenEerDiagramFactory]
+  crash: [CrashDiagramFactory]
+  dot: [PSystemDotFactory]
+  ditaa: [PSystemDitaaFactory]
+  def: [PSystemDefinitionFactory]
+  ebnf: [PSystemEbnfFactory]
+  flow: [FlowDiagramFactory]
+  files: [FilesDiagramFactory]
+  gantt: [GanttDiagramFactory]
+  git: [GitDiagramFactory]
+  hcl: [HclDiagramFactory]
+  json: [JsonDiagramFactory]
+  latex: [PSystemLatexFactory]
+  math: [PSystemMathFactory]
+  mindmap: [MindMapDiagramFactory]
+  nwdiag: [NwDiagramFactory]
+  project: [GanttDiagramFactory]
+  packetdiag: [PacketDiagramFactory]
+  regex: [PSystemRegexFactory]
+  salt: [PSystemSaltFactory]
+  sprites: [ListSpriteDiagramFactory]
+  uml: [PSystemWelcomeFactory, PSystemColorsFactory, SequenceDiagramFactory, ClassDiagramFactory, ActivityDiagramFactory, DescriptionDiagramFactory, StateDiagramFactory, ActivityDiagramFactory3, PSystemLicenseFactory, PSystemVersionFactory, PSystemDonorsFactory, PSystemSkinparameterListFactory, PSystemListFontsFactory, PSystemListEmojiFactory, PSystemOpenIconicFactory, PSystemListOpenIconicFactory, PSystemListArchimateSpritesFactory, PSystemSudokuFactory, ListSpriteDiagramFactory, PSystemEggFactory, PSystemAppleTwoFactory, PSystemRIPFactory, PSystemCharlieFactory, PSystemDedicationFactory, TimingDiagramFactory, HelpFactory]
+  wire: [WireDiagramFactory]
+  wbs: [WBSDiagramFactory]
+  yaml: [YamlDiagramFactory]
+variables:
+  START: {regex: "[@\\\\]start", scope: keyword.control.directive}
+  END: {regex: "[@\\\\]end.*", scope: keyword.control.directive}
+  NAME: {regex: ".*", name: NAME, scope: entity.name.section}
+contexts:
+  main:
+    - command: StartBoard
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 56}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: board, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartBpm
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 57}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: bpm, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartChart
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 58}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: chart, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartChen
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 59}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: chen, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartChronology
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 60}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: chronology, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartCreole
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 61}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: creole, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartDef
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 62}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: def, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartDitaa
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 63}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: ditaa, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: embed_ditaa
+    - command: StartDot
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 64}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: dot, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: embed_dot
+    - command: StartEbnf
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 65}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: ebnf, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartFiles
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 66}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: files, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartFlow
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 67}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: flow, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartGantt
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 68}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: gantt, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartGit
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 69}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: git, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartHcl
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 70}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: hcl, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: embed_hcl
+    - command: StartJcckit
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 71}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: jcckit, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartJson
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 72}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: json, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartLatex
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 73}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: latex, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: embed_latex
+    - command: StartMath
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 74}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: math, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: embed_math
+    - command: StartMindmap
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 75}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: mindmap, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartNwdiag
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 76}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: nwdiag, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartProject
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 77}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: project, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartRegex
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 78}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: regex, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartSalt
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 79}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: salt, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartSprites
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 80}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: sprites, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartUml
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 81}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: uml, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartWbs
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 82}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: wbs, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartWire
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 83}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: wire, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartYaml
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 84}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: yaml, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: embed_yaml
+    - command: StartPacketdiag
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 85}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: packetdiag, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      push: block
+    - command: StartOther
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 51}
+      kind: single
+      parts: {seq: [{ref: START}, {regex: ".+"}]}
+      push: block
+    - command: OutsideText
+      provenance: {class: net.sourceforge.plantuml.BlockUmlBuilder, file: src/main/java/net/sourceforge/plantuml/BlockUmlBuilder.java, line: 113}
+      kind: single
+      parts: {regex: ".*"}
+  block:
+    - command: EndDirective
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 119}
+      kind: single
+      parts: {ref: END}
+      pop: true
+    - include: restart
+    - command: DiagramLine
+      provenance: {class: net.sourceforge.plantuml.BlockUmlBuilder, file: src/main/java/net/sourceforge/plantuml/BlockUmlBuilder.java, line: 114}
+      kind: single
+      parts: {regex: ".*"}
+  embed_dot:
+    - command: EndDirective
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 119}
+      kind: single
+      parts: {ref: END}
+      pop: true
+    - include: restart
+    - command: OpaqueLine
+      provenance: {class: net.sourceforge.plantuml.BlockUmlBuilder, file: src/main/java/net/sourceforge/plantuml/BlockUmlBuilder.java, line: 114}
+      kind: single
+      parts: {regex: ".*", scope: string.unquoted.embedded}
+  embed_ditaa:
+    - command: EndDirective
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 119}
+      kind: single
+      parts: {ref: END}
+      pop: true
+    - include: restart
+    - command: OpaqueLine
+      provenance: {class: net.sourceforge.plantuml.BlockUmlBuilder, file: src/main/java/net/sourceforge/plantuml/BlockUmlBuilder.java, line: 114}
+      kind: single
+      parts: {regex: ".*", scope: string.unquoted.embedded}
+  embed_math:
+    - command: EndDirective
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 119}
+      kind: single
+      parts: {ref: END}
+      pop: true
+    - include: restart
+    - command: OpaqueLine
+      provenance: {class: net.sourceforge.plantuml.BlockUmlBuilder, file: src/main/java/net/sourceforge/plantuml/BlockUmlBuilder.java, line: 114}
+      kind: single
+      parts: {regex: ".*", scope: string.unquoted.embedded}
+  embed_latex:
+    - command: EndDirective
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 119}
+      kind: single
+      parts: {ref: END}
+      pop: true
+    - include: restart
+    - command: OpaqueLine
+      provenance: {class: net.sourceforge.plantuml.BlockUmlBuilder, file: src/main/java/net/sourceforge/plantuml/BlockUmlBuilder.java, line: 114}
+      kind: single
+      parts: {regex: ".*", scope: string.unquoted.embedded}
+  embed_yaml:
+    - command: EndDirective
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 119}
+      kind: single
+      parts: {ref: END}
+      pop: true
+    - include: restart
+    - command: OpaqueLine
+      provenance: {class: net.sourceforge.plantuml.BlockUmlBuilder, file: src/main/java/net/sourceforge/plantuml/BlockUmlBuilder.java, line: 114}
+      kind: single
+      parts: {regex: ".*", scope: string.unquoted.embedded}
+  embed_hcl:
+    - command: EndDirective
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 119}
+      kind: single
+      parts: {ref: END}
+      pop: true
+    - include: restart
+    - command: OpaqueLine
+      provenance: {class: net.sourceforge.plantuml.BlockUmlBuilder, file: src/main/java/net/sourceforge/plantuml/BlockUmlBuilder.java, line: 114}
+      kind: single
+      parts: {regex: ".*", scope: string.unquoted.embedded}
+  restart:
+    - command: StartBoard
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 56}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: board, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartBpm
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 57}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: bpm, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartChart
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 58}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: chart, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartChen
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 59}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: chen, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartChronology
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 60}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: chronology, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartCreole
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 61}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: creole, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartDef
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 62}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: def, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartDitaa
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 63}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: ditaa, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: embed_ditaa
+    - command: StartDot
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 64}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: dot, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: embed_dot
+    - command: StartEbnf
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 65}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: ebnf, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartFiles
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 66}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: files, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartFlow
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 67}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: flow, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartGantt
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 68}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: gantt, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartGit
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 69}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: git, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartHcl
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 70}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: hcl, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: embed_hcl
+    - command: StartJcckit
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 71}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: jcckit, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartJson
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 72}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: json, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartLatex
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 73}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: latex, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: embed_latex
+    - command: StartMath
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 74}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: math, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: embed_math
+    - command: StartMindmap
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 75}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: mindmap, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartNwdiag
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 76}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: nwdiag, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartProject
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 77}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: project, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartRegex
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 78}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: regex, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartSalt
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 79}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: salt, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartSprites
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 80}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: sprites, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartUml
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 81}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: uml, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartWbs
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 82}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: wbs, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartWire
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 83}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: wire, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartYaml
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 84}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: yaml, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: embed_yaml
+    - command: StartPacketdiag
+      provenance: {class: net.sourceforge.plantuml.syntax.LanguageDescriptor, file: src/main/java/net/sourceforge/plantuml/syntax/LanguageDescriptor.java, line: 85}
+      kind: single
+      parts: {seq: [{ref: START}, {literal: packetdiag, ci: true, scope: keyword.control.directive}, {ref: NAME}]}
+      set: block
+    - command: StartOther
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 51}
+      kind: single
+      parts: {seq: [{ref: START}, {regex: ".+"}]}
+      set: block

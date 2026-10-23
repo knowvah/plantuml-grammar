@@ -1,0 +1,6 @@
+' meta: RegexLineEmpty
+@startregex
+(?# only a comment)
+()
+((?#c))
+@endregex

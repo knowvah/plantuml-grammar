@@ -1,0 +1,3 @@
+@startuml
+a -> b : %upper("x") %strlen("abc")
+@enduml

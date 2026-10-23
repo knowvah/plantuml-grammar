@@ -1,0 +1,7 @@
+' timing: CommandTimeMessage
+' gap: no player table: `No such element` (CommandTimeMessage.java:115-121)
+@startuml
+robust "R" as R
+@0
+R -> A : x
+@enduml

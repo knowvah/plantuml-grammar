@@ -1,0 +1,13 @@
+' activity-legacy: UBrexCommandIf, ActivityElse, ActivityEndif, ActivityEndifRoot
+@startuml
+(*) --> if "a" then
+  --> if "b" then
+    --> X
+  else
+    --> Y
+  end if
+else
+  --> Z
+endif
+--> (*)
+@enduml

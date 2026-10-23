@@ -1,0 +1,7 @@
+' activity3: CommandSwimlane, CommandActivityLong3
+' gap: the swimlane strategy is tracked in the top-level frame only: the deciding copy of CommandActivityLong3 leaves out the color prefix that earlier commands also take
+@startuml
+#red:foo
+bar;
+|B|
+@enduml

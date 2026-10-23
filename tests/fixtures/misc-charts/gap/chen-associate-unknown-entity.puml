@@ -1,0 +1,7 @@
+' misc-charts: ChenAssociateChecked
+' gap: links look their entities up by name (CommandAssociate.java:100-110); the model keeps no entity table
+@startchen
+entity A {
+}
+A -1- B
+@endchen

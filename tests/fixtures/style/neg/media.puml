@@ -1,0 +1,7 @@
+' style: media header is the last token
+@startuml
+<style>
+@media dark { // comment
+</style>
+class Foo
+@enduml

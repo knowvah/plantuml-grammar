@@ -1,0 +1,6 @@
+' json: JsonStyle, JsonStyleUnclosed
+@startjson
+<style>
+jsonDiagram { }
+{"a": 1}
+@endjson

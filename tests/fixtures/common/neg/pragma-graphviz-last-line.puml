@@ -1,0 +1,6 @@
+' common: CommandPragma
+' factory: SequenceDiagramFactory
+@startuml
+Alice -> Bob : hello
+!pragma graphviz_dot dot
+@enduml

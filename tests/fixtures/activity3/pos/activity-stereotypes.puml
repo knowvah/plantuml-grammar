@@ -1,0 +1,15 @@
+' activity3: CommandStart3, CommandActivity3, CommandStop3
+@startuml
+start
+:a; <<input>>
+:b; <<output>>
+:c; <<procedure>>
+:d; <<load>>
+:e; <<save>>
+:f; <<continuous>>
+:g; <<task>>
+:h; <<#red>>
+<<foo>> :i;
+:j; [[http://plantuml.com]]
+stop
+@enduml

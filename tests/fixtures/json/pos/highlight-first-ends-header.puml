@@ -1,0 +1,7 @@
+' json: JsonHighlight, JsonText
+' A #highlight line is a list line, so the header ends there.
+@startjson
+#highlight "a"
+skinparam x {
+{"a": 1}
+@endjson

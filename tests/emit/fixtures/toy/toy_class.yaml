@@ -1,0 +1,99 @@
+schema_version: 1
+id: toy_class
+layer: diagram
+diagram: CLASS
+include: [toy_shared]
+contexts:
+  main:
+    - command: CommandCreateClass
+      provenance: {class: toy.CommandCreateClass}
+      kind: single
+      parts:
+        seq:
+          - {literal: class, ci: true}
+          - {regex: "\\s+"}
+          - {ref: NAME}
+    - command: CommandNote
+      provenance: {class: toy.CommandNote}
+      kind: multiline
+      parts:
+        seq:
+          - {literal: note, ci: true}
+          - {regex: "\\s+"}
+          - alt: [{literal: left, ci: true}, {literal: right, ci: true}]
+      end: {literal: end note, ci: true}
+    - command: CommandPackage
+      provenance: {class: toy.CommandPackage}
+      kind: single
+      parts:
+        seq:
+          - {literal: package, ci: true}
+          - {regex: "\\s+"}
+          - {ref: NAME}
+          - {regex: "\\s*"}
+          - {literal: "{", ci: false}
+      push: pkg
+      require_pop: true
+    - command: CommandHide
+      provenance: {class: toy.CommandHide}
+      kind: single
+      parts:
+        seq:
+          - {literal: hide, ci: true}
+          - {regex: "^(?:\\s+\\w+)?$"}
+    - command: CommandPath
+      provenance: {class: toy.CommandPath}
+      kind: opaque
+      parts:
+        seq:
+          - {literal: path, ci: false}
+          - {regex: "\\s+/\\w+/(?:\\w+)"}
+    - command: CommandTitle
+      provenance: {class: toy.CommandTitle}
+      kind: single
+      parts:
+        seq:
+          - {literal: title, ci: true}
+          - {regex: "\\s+"}
+          - {regex: "(.*?)", name: TITLE}
+    - command: CommandKind
+      provenance: {class: toy.CommandKind}
+      kind: single
+      parts:
+        seq:
+          - {regex: "(par|partition)", ci: true}
+          - {regex: "\\s+"}
+          - {regex: "\\w+"}
+    - command: CommandStereo
+      provenance: {class: toy.CommandStereo}
+      kind: single
+      parts:
+        seq:
+          - {literal: sx, ci: true}
+          - {regex: "\\s+"}
+          - {regex: "(\\<\\<.+?\\>\\>)"}
+          - {regex: "\\s*"}
+          - {literal: "!", ci: false}
+    - command: CommandCard
+      provenance: {class: toy.CommandCard}
+      kind: single
+      parts:
+        seq:
+          - {literal: card, ci: true}
+          - {regex: "\\s+"}
+          - {regex: "(\"[^\"]+\"|.*)"}
+          - opt: {literal: "!", ci: false}
+  pkg:
+    - command: CommandInnerClass
+      provenance: {class: toy.CommandInnerClass}
+      kind: single
+      parts:
+        seq:
+          - {literal: item, ci: true}
+          - {regex: "\\s+"}
+          - {ref: NAME}
+    - command: CommandClosePackage
+      provenance: {class: toy.CommandClosePackage}
+      kind: single
+      parts: {literal: "}", ci: false}
+      pop: true

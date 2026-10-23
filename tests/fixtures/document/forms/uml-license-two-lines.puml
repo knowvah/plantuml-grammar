@@ -1,0 +1,4 @@
+@startuml
+license
+class A
+@enduml

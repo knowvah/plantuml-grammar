@@ -1,0 +1,5 @@
+@startpacketdiag
+packetdiag {
+  0-7: A
+}
+@endpacketdiag

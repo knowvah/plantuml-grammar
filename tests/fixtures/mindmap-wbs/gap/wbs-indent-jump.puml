@@ -1,0 +1,7 @@
+' mindmap-wbs: CommandWBSItemNew_44
+' gap: four leading blanks make level 4 under the root (wbs/WBSDiagram.java:194-199, :230); the last level is cross-line state the model does not track
+@startwbs
+* R
+    * Line 1
+        * L11
+@endwbs

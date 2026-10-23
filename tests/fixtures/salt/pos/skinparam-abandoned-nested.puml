@@ -1,0 +1,8 @@
+' salt: CommandAnything, SaltSkinParamBodyInconsistent
+@startsalt
+skinparam {
+a {
+[bad]
+}
+}
+@endsalt

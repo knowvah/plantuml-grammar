@@ -1,0 +1,7 @@
+' gantt: NaturalGanttTask
+' jar: rejected
+' gap: task lookup by name (AbstractComplementTaskInstant.java:53-56): [B] does not exist
+@startgantt
+[A] lasts 5 days
+[C] starts at [B]'s end
+@endgantt

@@ -1,0 +1,7 @@
+' json: JsonSkinparamBlock, JsonText
+@startjson
+skinparam json {
+  BackgroundColor red
+}
+[1]
+@endjson

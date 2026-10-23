@@ -1,0 +1,9 @@
+' mindmap-wbs: CommandWBSItemNew_43, CommandWBSItemOld_46, CommandWBSLink
+@startwbs
+* root
+** "x" as c1
+**[#red] "y" as c2
+**<[#red] "z" as c3
+c1 -> c2
+c3 -> c1
+@endwbs

@@ -1,0 +1,21 @@
+#a
+#AliceBlue
+#transparent
+#ff00ff80
+#
+#F
+<$bs1,color=#00990055>
+box "Interco" #red
+class Demo1 #back:lightgreen|yellow;header:blue/red
+!$CUAtLeastOne = '-[#blue]-#'
+skinparam EntityBorderColor #00f
+note left of cl2 #blue;line.bold:purple;text:777 : some info
+SO -[#black]> ASO: INVITE
+BackgroundColor  #feae2d
+sh0014->sh0013[arrowtail=none,arrowhead=empty,arrowsize=0.5,minlen=1,color="#00001B"];
+note over A , ASO #skyblue: une session MSRP de chat va etre etablit entre A, et L'AS.
+BackgroundColor #FFFF00
+-[#blue]-> callback received;
+aggregation : AggregationKind
+Analyze -right-> Plan
+note left [[http://plantuml.com]]

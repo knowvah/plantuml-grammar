@@ -1,0 +1,12 @@
+' board-files-git: GitCommitLine, GitGraphLine
+@startgit
+*-.---------------.   2d2a6c2 (HEAD -> master) merge
+|\ \              |  
+| | |             * arnaud
+| | * 2300c18 2 
+| * | 7e096cb 1
+| |/  
+* | 50aa125 3
+|/  
+* a1e94fd root
+@endgit

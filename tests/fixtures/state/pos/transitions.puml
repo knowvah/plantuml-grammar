@@ -1,0 +1,26 @@
+' state: CommandLinkState, CommandLinkStateReverse
+@startuml
+state A
+state B
+A -> B
+A --> B
+A ---> B
+A -left-> B
+A -l-> B
+A -down-> B
+A -[#red]-> B
+A -[dotted]-> B
+A -[#red,dashed]-> B
+A -right[#red]-> B
+A -[#blue]up-> B
+A x--> B
+A -->o B
+A <-- B
+A <- B
+A <-up- B
+A -up-> B : label
+A --> B <<stereo>> : with stereotype
+A --> B: tight label
+==bar== --> A
+B --> ==bar==
+@enduml

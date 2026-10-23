@@ -1,0 +1,23 @@
+' style: media query
+@startuml
+<style>
+@media (prefers-color-scheme:dark) {
+root {
+LineColor red
+}
+}
+</style>
+class Foo
+@enduml
+
+' style: media header on two lines
+@startuml
+<style>
+@media dark
+{
+root {
+}
+}
+</style>
+class Foo
+@enduml

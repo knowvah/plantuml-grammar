@@ -1,0 +1,8 @@
+@startuml
+!if 1
+a -> b
+!ELSE
+!ENDIF
+!while 0
+!ENDWHILE
+@enduml

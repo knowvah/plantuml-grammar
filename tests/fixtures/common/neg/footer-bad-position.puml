@@ -1,0 +1,6 @@
+' common: CommandFooter
+' factory: SequenceDiagramFactory
+@startuml
+top footer text
+Alice -> Bob : hello
+@enduml

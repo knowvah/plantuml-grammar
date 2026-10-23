@@ -1,0 +1,6 @@
+' activity-legacy: ActivityIfFirst, ActivityEndGroupOrphan
+@startuml
+(*) --> if x then
+}
+--> (*)
+@enduml

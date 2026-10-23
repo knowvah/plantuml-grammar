@@ -1,0 +1,7 @@
+' description: CommandFactoryNoteOnLink_1
+' gap: an empty multiline note on a link fails (CommandFactoryNoteOnLink.java:140-145); a reject entry is single-line only
+@startuml
+[a] --> [b]
+note on link
+end note
+@enduml

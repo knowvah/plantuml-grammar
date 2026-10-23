@@ -1,0 +1,4 @@
+' gantt: NaturalGanttTaskUnmatched
+@startgantt
+[A] lasts 5 days and foo
+@endgantt

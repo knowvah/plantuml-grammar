@@ -1,0 +1,380 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "CrashDiagramFactory",
+  "factoryOrder": 51,
+  "diagramType": "CRASH",
+  "commands": [
+    {
+      "order": 0,
+      "class": "net.sourceforge.plantuml.crash.CommandSelectCrash",
+      "kind": "single",
+      "engine": "UBrex",
+      "start": {
+        "t": "ub-CompositeList",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {
+            "t": "ub-CompositeList",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "c",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              },
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "r",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              },
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "a",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              },
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "s",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              },
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "h",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              }
+            ]
+          },
+          {
+            "t": "ub-CompositeList",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "ub-ChallengeOneOrMore",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {
+                    "t": "ub-ChallengeCharClass",
+                    "name": null,
+                    "pattern": null,
+                    "children": [],
+                    "charClass": "SPACE",
+                    "negated": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "t": "ub-CompositeList",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "w",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              },
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "h",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              },
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "e",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              },
+              {
+                "t": "ub-ChallengeSingleChar",
+                "name": null,
+                "pattern": "n",
+                "children": [],
+                "caseMode": "CASE_INSENSITIVE"
+              }
+            ]
+          },
+          {
+            "t": "ub-CompositeList",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "ub-ChallengeOneOrMore",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {
+                    "t": "ub-ChallengeCharClass",
+                    "name": null,
+                    "pattern": null,
+                    "children": [],
+                    "charClass": "SPACE",
+                    "negated": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "t": "ub-CompositeNamed",
+            "name": "TYPE",
+            "pattern": null,
+            "children": [
+              {
+                "t": "ub-ChallengeAlternative",
+                "name": null,
+                "pattern": null,
+                "children": [
+                  {
+                    "t": "ub-CompositeList",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "p",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "a",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "r",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "s",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "i",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "n",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "g",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      }
+                    ]
+                  },
+                  {
+                    "t": "ub-CompositeList",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "f",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "i",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "n",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "a",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "l",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "i",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "z",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "i",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "n",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "g",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      }
+                    ]
+                  },
+                  {
+                    "t": "ub-CompositeList",
+                    "name": null,
+                    "pattern": null,
+                    "children": [
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "d",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "r",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "a",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "w",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "i",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "n",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      },
+                      {
+                        "t": "ub-ChallengeSingleChar",
+                        "name": null,
+                        "pattern": "g",
+                        "children": [],
+                        "caseMode": "CASE_INSENSITIVE"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    },
+    {
+      "order": 1,
+      "class": "net.sourceforge.plantuml.crash.CommandCrashAny",
+      "kind": "single",
+      "engine": "UBrex",
+      "start": {
+        "t": "ub-ChallengeZeroOrMore",
+        "name": null,
+        "pattern": null,
+        "children": [
+          {
+            "t": "ub-CompositeList",
+            "name": null,
+            "pattern": null,
+            "children": [
+              {
+                "t": "ub-ChallengeCharClass",
+                "name": null,
+                "pattern": null,
+                "children": [],
+                "charClass": "ANY",
+                "negated": false
+              }
+            ]
+          }
+        ]
+      },
+      "end": null,
+      "finalBracket": false,
+      "doTrim": true
+    }
+  ],
+  "unreachable": []
+}

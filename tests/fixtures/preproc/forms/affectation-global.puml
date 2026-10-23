@@ -1,0 +1,6 @@
+@startuml
+!global $x = 1
+! $y ?= "two"
+!z = %strlen("abc")
+a -> b
+@enduml

@@ -1,0 +1,7 @@
+' board-files-git: CommandBoardPlus, CommandStyleMultilinesCSSReject, BoardStyleBodyLine
+@startboard
+A
+<style>
+*
+</style>
+@endboard

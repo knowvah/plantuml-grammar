@@ -1,0 +1,5 @@
+' meta: RegexLineWellFormed
+@startregex
+title a|
+abc
+@endregex

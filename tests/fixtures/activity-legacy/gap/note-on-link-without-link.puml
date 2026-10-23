@@ -1,0 +1,6 @@
+' activity-legacy: ActivityNoteFirst, CommandFactoryNoteOnLink_2
+' gap: a note creates the start node but no link; the model does not track links
+@startuml
+note right: n
+note on link: x
+@enduml

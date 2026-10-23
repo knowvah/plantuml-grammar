@@ -1,0 +1,8 @@
+' misc-charts: ChenMultiSubclassFails
+@startchen
+entity A {
+}
+entity B {
+}
+A =>= o { B } #text
+@endchen

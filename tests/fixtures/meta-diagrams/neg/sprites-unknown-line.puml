@@ -1,0 +1,4 @@
+' meta: CommandListSprite
+@startsprites
+foo
+@endsprites

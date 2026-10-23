@@ -1,0 +1,6 @@
+' single-line: (PSystemErrorUtils.checkBasicError)
+@startuml
+digraph G {
+a -> b
+}
+@enduml

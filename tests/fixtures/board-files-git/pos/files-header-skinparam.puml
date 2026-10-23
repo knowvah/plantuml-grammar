@@ -1,0 +1,7 @@
+' board-files-git: FilesHeaderSkinparam, FilesStyleBlock
+@startfiles
+skinparam handwritten true
+<style>
+root { FontColor red }
+</style>
+@endfiles

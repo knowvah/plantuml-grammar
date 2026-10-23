@@ -1,0 +1,4 @@
+' refines: stereotype | <<>>
+@startuml
+class A <<>>
+@enduml

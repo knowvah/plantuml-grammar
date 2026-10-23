@@ -1,0 +1,5 @@
+' sequence: CommandGrouping
+@startuml
+Alice -> Bob : x
+else no group
+@enduml

@@ -1,0 +1,10 @@
+' description: CommandCreateDomain, CommandCreateDomainGroup, GroupEnd
+@startuml
+domain "Domain" as d <<Machine>>
+requirement "Req" as r
+domain "Group" as g {
+  requirement "Inner" as i
+  port p
+}
+d --> r
+@enduml

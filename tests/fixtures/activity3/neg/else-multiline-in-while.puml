@@ -1,0 +1,7 @@
+' activity3: CommandWhile3, CommandDecoratorMultine_60
+@startuml
+while (a)
+else (foo
+bar)
+endwhile
+@enduml

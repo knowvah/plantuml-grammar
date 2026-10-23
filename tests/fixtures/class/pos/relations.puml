@@ -1,0 +1,18 @@
+' class: CommandLinkClass, CommandLinkLollipop, CommandDiamondAssociation
+@startuml
+class A
+class B
+class C
+A "1" *-- "many" B : contains >
+A o-- C
+A <|-- B
+A ..|> C
+A }o--o{ B
+A ||--|{ C
+A -[#red,dashed]-> B
+A::field --> B::other
+A --() I
+<> d
+d -- A
+(A, B) .. C
+@enduml

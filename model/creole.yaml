@@ -1,0 +1,476 @@
+# Creole (layer L3, decision D3): inline and line markup inside labels. Upstream pin
+# 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Creole is a HIGHLIGHTING/STRUCTURE layer and does not change acceptance. No command
+# regex describes it. Labels are parsed by klimt/creole/legacy/CreoleParser.java:142-185
+# (createSheetSlow) when the diagram is drawn, not when commands are matched. Malformed
+# markup renders literally: unmatched input becomes plain text
+# (klimt/creole/legacy/StripeSimple.java:272-282). Unclosed tags fall back to the
+# end-of-line form registered after the closing form (CommandCreoleBuilder.java:76-122).
+# Unknown colors are ignored (klimt/creole/command/CommandCreoleColorChange.java:94-101).
+# Unknown sprites and icons are dropped (StripeSimple.java:228-243). Missing images
+# render placeholder text (klimt/creole/atom/AtomImg.java:171-190). Verified: the stock
+# jar accepts every fixture in tests/fixtures/creole/pos/ and tests/fixtures/creole/
+# malformed/ (test_oracle_accepts_every_creole_fixture_even_malformed). Exception, at
+# render time only: an out-of-range number (`<size:99999999999>`) throws
+# NumberFormatException (CommandCreoleSizeChange.java:86) while drawing. The syntax
+# check still accepts it.
+#
+# Dispatch (StripeSimple.java:297-311): a CASE-SENSITIVE two-character starter picks
+# the candidate commands (`<c`, `<s`, `<b`/`<B`, ...). Their bodies are then matched
+# case-insensitively: Pattern2 (regex/Pattern2.java:114) or UBrex
+# (com/plantuml/ubrex/ChallengeSingleChar.java lowercases both sides). So a tag name is
+# modelled as a case-sensitive first letter plus a `(?i:...)` rest, e.g. `c(?i:olor)`.
+# Hand-coded escapes (Display.java, AtomText.java, CharHidder.java) and the table line
+# test (Pattern.compile, CreoleParser.java:117) are case-sensitive.
+#
+# Line constructs run before inline ones: a whole line `--x--` is a rule, not strike
+# (CreoleStripeSimpleParser.java:92-117 precede :162-171). Lists, numbered lists and
+# `__underline__` need CreoleMode.FULL (CreoleStripeSimpleParser.java:119-147,
+# CommandCreoleBuilder.java:85-86).
+schema_version: 1
+id: creole
+layer: shared
+include: [shared]
+variables:
+  # --- grouped entry points ------------------------------------------------------
+  # Escapes first: they are handled before creole commands (Display.java:288-314,
+  # utils/CharHidder.java:44-90). Then commands in registration order
+  # (CommandCreoleBuilder.java:76-122), then AtomText-level escapes (AtomText.java:98-133).
+  CREOLE_INLINE:
+    alt:
+    - {ref: CREOLE_BACKSLASH_ESCAPE}
+    - {ref: CREOLE_TILDE_ESCAPE}
+    - {ref: CREOLE_BOLD}
+    - {ref: CREOLE_HTML_BOLD}
+    - {ref: CREOLE_ITALIC}
+    - {ref: CREOLE_HTML_ITALIC}
+    - {ref: CREOLE_HTML_PLAIN}
+    - {ref: CREOLE_UNDERLINE}
+    - {ref: CREOLE_HTML_UNDERLINE}
+    - {ref: CREOLE_STRIKE}
+    - {ref: CREOLE_HTML_STRIKE}
+    - {ref: CREOLE_WAVE}
+    - {ref: CREOLE_HTML_WAVE}
+    - {ref: CREOLE_BACK}
+    - {ref: CREOLE_SIZE}
+    - {ref: CREOLE_COLOR}
+    - {ref: CREOLE_FONT_ATTRIBUTES}
+    - {ref: CREOLE_SUP}
+    - {ref: CREOLE_SUB}
+    - {ref: CREOLE_IMG}
+    - {ref: CREOLE_QRCODE}
+    - {ref: CREOLE_OPENICON}
+    - {ref: CREOLE_EMOJI}
+    - {ref: CREOLE_MATH}
+    - {ref: CREOLE_LATEX}
+    - {ref: CREOLE_SPRITE}
+    - {ref: CREOLE_SPACE}
+    - {ref: CREOLE_FONT_FAMILY}
+    - {ref: CREOLE_MONOSPACE}
+    - {ref: CREOLE_URL}
+    - {ref: CREOLE_UNICODE}
+    - {ref: CREOLE_ENTITY}
+  # Whole-line constructs in dispatch order: raw blocks and tables/trees
+  # (CreoleParser.java:91-108), then CreoleStripeSimpleParser.java:92-155.
+  CREOLE_LINE:
+    alt:
+    - {ref: CREOLE_BLOCK_DELIMITER}
+    - {ref: CREOLE_TABLE_ROW}
+    - {ref: CREOLE_TREE}
+    - {ref: CREOLE_RULE}
+    - {ref: CREOLE_LIST_BULLET}
+    - {ref: CREOLE_LIST_NUMBERED}
+    - {ref: CREOLE_HEADING}
+
+  # --- tag punctuation ---------------------------------------------------------------
+  CREOLE_LT: {literal: '<', ci: false, scope: punctuation.definition.tag.begin}
+  CREOLE_LT_SLASH: {literal: '</', ci: false, scope: punctuation.definition.tag.begin}
+  CREOLE_GT: {literal: '>', ci: false, scope: punctuation.definition.tag.end}
+  CREOLE_TAG_SEP: {regex: '[\s:]+', ci: true, scope: punctuation.separator.key-value}
+  # `:#RRGGBB` or `:name` after u/s/w (klimt/font/FontStyle.java:124-136).
+  CREOLE_TAG_COLOR:
+    opt:
+      seq:
+      - {literal: ':', ci: false, scope: punctuation.separator.key-value}
+      - alt:
+        - seq: [{ref: COLOR_HASH}, {regex: '[0-9a-f]{6}', ci: true, scope: constant.other.color.rgb-value}]
+        - {ref: COLOR_WORD}
+
+  # --- creole styles (UBrex `**〶$V=〄+〴.->〘**〙`, CommandCreoleStyle.java:68-70) ----
+  # Syntax per style: klimt/font/FontStyle.java:207-221.
+  CREOLE_BOLD:
+    seq:
+    - {literal: '**', ci: true, scope: punctuation.definition.bold}
+    - {regex: '.+?', ci: true, scope: markup.bold}
+    - {literal: '**', ci: true, scope: punctuation.definition.bold}
+  CREOLE_ITALIC:
+    seq:
+    - {literal: //, ci: true, scope: punctuation.definition.italic}
+    - {regex: '.+?', ci: true, scope: markup.italic}
+    - {literal: //, ci: true, scope: punctuation.definition.italic}
+  CREOLE_UNDERLINE:
+    seq:
+    - {literal: __, ci: true, scope: punctuation.definition.underline}
+    - {regex: '.+?', ci: true, scope: markup.underline}
+    - {literal: __, ci: true, scope: punctuation.definition.underline}
+  CREOLE_STRIKE:
+    seq:
+    - {literal: '--', ci: true, scope: punctuation.definition.strikethrough}
+    - {regex: '.+?', ci: true, scope: markup.strikethrough}
+    - {literal: '--', ci: true, scope: punctuation.definition.strikethrough}
+  CREOLE_WAVE:
+    seq:
+    - {literal: '~~', ci: true, scope: punctuation.definition.wave}
+    - {regex: '.+?', ci: true, scope: markup.underline.wave}
+    - {literal: '~~', ci: true, scope: punctuation.definition.wave}
+  # `""x""` (klimt/creole/command/CommandCreoleMonospaced.java:57).
+  CREOLE_MONOSPACE:
+    seq:
+    - {literal: '""', ci: true, scope: punctuation.definition.raw}
+    - {regex: '.*?', ci: true, scope: markup.raw.monospace}
+    - {literal: '""', ci: true, scope: punctuation.definition.raw}
+
+  # --- HTML-like styles: closed form, else to end of line ---------------------------
+  # Activation/deactivation: FontStyle.java:115-161; closing and EOL forms:
+  # CommandCreoleStyle.java:73-82. An empty body never matches (:120-127).
+  CREOLE_HTML_BOLD:
+    seq:
+    - {ref: CREOLE_LT}
+    - {literal: b, ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.+?', ci: true, scope: markup.bold}, {ref: CREOLE_LT_SLASH}, {literal: b, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.+', ci: true, scope: markup.bold}
+  CREOLE_HTML_ITALIC:
+    seq:
+    - {ref: CREOLE_LT}
+    - {literal: i, ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.+?', ci: true, scope: markup.italic}, {ref: CREOLE_LT_SLASH}, {literal: i, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.+', ci: true, scope: markup.italic}
+  CREOLE_HTML_PLAIN:
+    seq:
+    - {ref: CREOLE_LT}
+    - {literal: plain, ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.+?', ci: true, scope: markup.other.plain}, {ref: CREOLE_LT_SLASH}, {literal: plain, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.+', ci: true, scope: markup.other.plain}
+  CREOLE_HTML_UNDERLINE:
+    seq:
+    - {ref: CREOLE_LT}
+    - {literal: u, ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_TAG_COLOR}
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.+?', ci: true, scope: markup.underline}, {ref: CREOLE_LT_SLASH}, {literal: u, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.+', ci: true, scope: markup.underline}
+  CREOLE_HTML_STRIKE:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: '(?:strike|s|del)', ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_TAG_COLOR}
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.+?', ci: true, scope: markup.strikethrough}, {ref: CREOLE_LT_SLASH}, {regex: '(?:strike|s|del)', ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.+', ci: true, scope: markup.strikethrough}
+  # Only `<w` is a starter (FontStyle.java:68); the closing tag is case-insensitive.
+  CREOLE_HTML_WAVE:
+    seq:
+    - {ref: CREOLE_LT}
+    - {literal: w, ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_TAG_COLOR}
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.+?', ci: true, scope: markup.underline.wave}, {ref: CREOLE_LT_SLASH}, {literal: w, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.+', ci: true, scope: markup.underline.wave}
+  # `<back:c1>` or a gradient `<back:c1-c2>` (FontStyle.java:129-133, :158).
+  CREOLE_BACK:
+    seq:
+    - {ref: CREOLE_LT}
+    - {literal: back, ci: true, scope: entity.name.tag}
+    - opt:
+        seq:
+        - {literal: ':', ci: false, scope: punctuation.separator.key-value}
+        - alt:
+          - seq: [{ref: COLOR_HASH}, {regex: '[0-9a-f]{6}', ci: true, scope: constant.other.color.rgb-value}]
+          - {ref: COLOR_WORD}
+        - opt:
+            seq: [{ref: COLOR_GRADIENT_SEP}, {ref: COLOR_WORD}]
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.+?', ci: true, scope: markup.other.highlight}, {ref: CREOLE_LT_SLASH}, {literal: back, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.+', ci: true, scope: markup.other.highlight}
+  # Closed form only (CommandCreoleExposantChange.java:57, :66-67).
+  CREOLE_SUP:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 's(?i:up)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+    - {regex: '.+?', ci: true, scope: markup.other.superscript}
+    - {ref: CREOLE_LT_SLASH}
+    - {literal: sup, ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+  CREOLE_SUB:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 's(?i:ub)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+    - {regex: '.+?', ci: true, scope: markup.other.subscript}
+    - {ref: CREOLE_LT_SLASH}
+    - {literal: sub, ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+
+  # --- size / color / font (Java regex via Pattern2; Splitter.java:52-60) ------------
+  # Each has a closed form `...</tag>` and an end-of-line form.
+  CREOLE_SIZE:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 's(?i:ize)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_TAG_SEP}
+    - {regex: '\d+', ci: true, scope: constant.numeric.integer}
+    - {ref: SPACE_ANY}
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.*?', ci: true, scope: markup.other.sized}, {ref: CREOLE_LT_SLASH}, {literal: size, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.*', ci: true, scope: markup.other.sized}
+  CREOLE_COLOR:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 'c(?i:olor)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_TAG_SEP}
+    - alt:
+      - seq: [{ref: COLOR_HASH}, {regex: '[0-9a-f]{1,6}', ci: true, scope: constant.other.color.rgb-value}]
+      - seq: [{opt: {ref: COLOR_HASH}}, {ref: COLOR_WORD}]
+    - {ref: SPACE_ANY}
+    - {ref: CREOLE_GT}
+    - alt:
+      - seq: [{regex: '.*?', ci: true, scope: markup.other.colored}, {ref: CREOLE_LT_SLASH}, {literal: color, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+      - {regex: '.*', ci: true, scope: markup.other.colored}
+  # `<font size=12 color=red>` (CommandCreoleColorAndSizeChange.java:60-64).
+  CREOLE_FONT_ATTRIBUTE:
+    alt:
+    - seq:
+      - {ref: SPACE_SOME}
+      - {literal: size, ci: true, scope: entity.other.attribute-name}
+      - {ref: SPACE_ANY}
+      - {literal: '=', ci: true, scope: punctuation.separator.key-value}
+      - {ref: SPACE_ANY}
+      - opt: {ref: URL_QUOTE_OPEN}
+      - {regex: '\d+', ci: true, scope: constant.numeric.integer}
+      - opt: {ref: URL_QUOTE_CLOSE}
+    - seq:
+      - {ref: SPACE_SOME}
+      - {literal: color, ci: true, scope: entity.other.attribute-name}
+      - {ref: SPACE_ANY}
+      - {literal: '=', ci: true, scope: punctuation.separator.key-value}
+      - {ref: SPACE_ANY}
+      - opt: {ref: URL_QUOTE_OPEN}
+      - alt:
+        - seq: [{ref: COLOR_HASH}, {regex: '[0-9a-f]{6}', ci: true, scope: constant.other.color.rgb-value}]
+        - {ref: COLOR_WORD}
+      - opt: {ref: URL_QUOTE_CLOSE}
+  CREOLE_FONT_ATTRIBUTES:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 'f(?i:ont)', ci: false, scope: entity.name.tag}
+    - plus: {ref: CREOLE_FONT_ATTRIBUTE}
+    - {ref: SPACE_ANY}
+    - {ref: CREOLE_GT}
+    - {ref: CREOLE_FONT_BODY}
+  # `<font:Courier>` (Splitter.java:59, CommandCreoleFontFamilyChange.java:54-56).
+  CREOLE_FONT_FAMILY:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 'f(?i:ont)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_TAG_SEP}
+    - {regex: '[^>]+?', ci: true, scope: entity.name.font}
+    - opt: {literal: /, ci: true, scope: punctuation.definition.tag.end}
+    - {ref: CREOLE_GT}
+    - {ref: CREOLE_FONT_BODY}
+  CREOLE_FONT_BODY:
+    alt:
+    - seq: [{regex: '.*?', ci: true, scope: markup.other.font}, {ref: CREOLE_LT_SLASH}, {literal: font, ci: true, scope: entity.name.tag}, {ref: CREOLE_GT}]
+    - {regex: '.*', ci: true, scope: markup.other.font}
+
+  # --- images, icons, sprites, emoji, qrcode, space (Splitter.java:56-74) -------------
+  CREOLE_SCALE:
+    opt:
+      seq:
+      - {literal: '{scale=', ci: true, scope: variable.parameter.scale}
+      - {regex: '[0-9.]+', ci: true, scope: constant.numeric.float}
+      - {literal: '}', ci: true, scope: punctuation.section.parameters.end}
+  CREOLE_IMG:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 'i(?i:mg)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_TAG_SEP}
+    - {regex: '[^>{}]+', ci: true, scope: markup.underline.link.image}
+    - {ref: CREOLE_SCALE}
+    - {ref: CREOLE_GT}
+  CREOLE_QRCODE:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 'q(?i:rcode)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_TAG_SEP}
+    - {regex: '[^>{}]+', ci: true, scope: string.unquoted.qrcode}
+    - {ref: CREOLE_SCALE}
+    - {ref: CREOLE_GT}
+  # `scaleOrColor` (Splitter.java:62-67): `{scale=2,color=red}`, `*1.5`, `,color:red`.
+  CREOLE_SCALE_OR_COLOR:
+    opt:
+      seq:
+      - opt: {regex: '[\{,]', ci: true, scope: punctuation.section.parameters.begin}
+      - opt:
+          seq:
+          - alt:
+            - {literal: scale=, ci: true, scope: variable.parameter.scale}
+            - {literal: '*', ci: true, scope: keyword.operator.scale}
+          - {regex: '[0-9.]+', ci: true, scope: constant.numeric.float}
+      - opt:
+          seq:
+          - opt: {literal: ',', ci: true, scope: punctuation.separator.comma}
+          - {literal: color, ci: true, scope: variable.parameter.color}
+          - {regex: '[= :]', ci: true, scope: punctuation.separator.key-value}
+          - alt:
+            - seq: [{ref: COLOR_HASH}, {regex: '[0-9a-f]{1,8}', ci: true, scope: constant.other.color.rgb-value}]
+            - {ref: COLOR_WORD}
+      - opt: {literal: '}', ci: true, scope: punctuation.section.parameters.end}
+  # `<$name>`, `<#red$name{scale=2}>`; SPRITE_NAME is klimt/sprite/SpriteUtils.java:45.
+  CREOLE_SPRITE:
+    seq:
+    - {ref: CREOLE_LT}
+    - opt: {ref: COLOR_REF}
+    - {literal: $, ci: true, scope: punctuation.definition.sprite}
+    - {regex: '[-\p{L}0-9_/]+', ci: true, scope: entity.name.sprite}
+    - {ref: CREOLE_SCALE_OR_COLOR}
+    - {ref: CREOLE_GT}
+  # `<&icon>` OpenIconic (Splitter.java:72).
+  CREOLE_OPENICON:
+    seq:
+    - {ref: CREOLE_LT}
+    - opt: {ref: COLOR_REF}
+    - {literal: '&', ci: true, scope: punctuation.definition.icon}
+    - {regex: '[-\w]+', ci: true, scope: entity.name.icon}
+    - {ref: CREOLE_SCALE_OR_COLOR}
+    - {ref: CREOLE_GT}
+  # `<:name:>` (Splitter.java:71).
+  CREOLE_EMOJI:
+    seq:
+    - {ref: CREOLE_LT}
+    - opt: {ref: COLOR_REF}
+    - {literal: ':', ci: true, scope: punctuation.definition.emoji.begin}
+    - {regex: '[0-9a-z][0-9_a-z]*', ci: true, scope: constant.other.emoji}
+    - {literal: ':', ci: true, scope: punctuation.definition.emoji.end}
+    - {ref: CREOLE_SCALE_OR_COLOR}
+    - {ref: CREOLE_GT}
+  CREOLE_SPACE:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 's(?i:pace)', ci: false, scope: entity.name.tag}
+    - {literal: ':', ci: true, scope: punctuation.separator.key-value}
+    - {regex: '\d+', ci: true, scope: constant.numeric.integer}
+    - opt: {literal: /, ci: true, scope: punctuation.definition.tag.end}
+    - {ref: CREOLE_GT}
+  # `[[url]]` in a label: same regex as the command-level URL (CommandCreoleUrl.java:56,
+  # url/UrlBuilder.java:82-88).
+  CREOLE_URL: {ref: URL_LINK}
+
+  # --- opaque math/latex (Splitter.java:79-80) ------------------------------------
+  CREOLE_MATH:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 'm(?i:ath)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+    - {regex: '.+?', ci: true, scope: markup.raw.math}
+    - {ref: CREOLE_LT_SLASH}
+    - {literal: math, ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+  CREOLE_LATEX:
+    seq:
+    - {ref: CREOLE_LT}
+    - {regex: 'l(?i:atex)', ci: false, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+    - {regex: '.+?', ci: true, scope: markup.raw.latex}
+    - {ref: CREOLE_LT_SLASH}
+    - {literal: latex, ci: true, scope: entity.name.tag}
+    - {ref: CREOLE_GT}
+
+  # --- escapes ------------------------------------------------------------------
+  # `\n`, `\r`, `\l` row breaks, `\t`, `\\` (klimt/creole/Display.java:288-310).
+  CREOLE_BACKSLASH_ESCAPE: {regex: '\\[nrlt\\]', ci: false, scope: constant.character.escape}
+  # `~` hides the next markup char; `\~` is a literal `~` (utils/CharHidder.java:44-90).
+  CREOLE_TILDE_ESCAPE: {regex: '~[-_"#\]\[*./<]|\\~', ci: false, scope: constant.character.escape}
+  # `<U+1F600>` (klimt/creole/legacy/AtomText.java:120-133).
+  CREOLE_UNICODE: {regex: '<U\+[0-9a-fA-F]{4,5}>', ci: false, scope: constant.character.escape.unicode}
+  # `&#233;` decimal only (AtomText.java:98-119).
+  CREOLE_ENTITY: {regex: '&#[0-9]+;', ci: false, scope: constant.character.entity}
+
+  # --- whole-line constructs -------------------------------------------------------
+  # Raw blocks: the whole line equals the tag (klimt/creole/Parser.java:45-59).
+  CREOLE_BLOCK_DELIMITER:
+    alt:
+    - {literal: <code>, ci: false, scope: entity.name.tag}
+    - {literal: </code>, ci: false, scope: entity.name.tag}
+    - {literal: <latex>, ci: false, scope: entity.name.tag}
+    - {literal: </latex>, ci: false, scope: entity.name.tag}
+  # Row `<#back,#line>|= h1 |= h2 |` (CreoleParser.java:117, StripeTable.java:104-157).
+  CREOLE_TABLE_ROW:
+    seq:
+    - opt:
+        seq:
+        - {ref: CREOLE_LT}
+        - {ref: COLOR_REF}
+        - opt:
+            seq:
+            - {literal: ',', ci: false, scope: punctuation.separator.comma}
+            - opt: {ref: COLOR_HASH}
+            - {ref: COLOR_WORD}
+        - {ref: CREOLE_GT}
+    - {literal: '|', ci: false, scope: punctuation.separator.table}
+    - plus:
+        seq:
+        - opt: {literal: '=', ci: false, scope: punctuation.definition.table.header}
+        - {regex: '[^|]*', ci: false, scope: markup.table}
+        - {literal: '|', ci: false, scope: punctuation.separator.table}
+  # `|_ item`, nested by indentation (Parser.java:61-65, StripeTree.java:84-109).
+  CREOLE_TREE:
+    seq:
+    - {regex: '[ \t]*\|_', ci: false, scope: punctuation.definition.list.tree}
+    - {regex: '.*', ci: false, scope: markup.list.tree}
+  # `----`, `--title--`, `==title==`, `====`, `..title..`
+  # (CreoleStripeSimpleParser.java:66-68, :73, dispatch :92-117).
+  CREOLE_RULE:
+    alt:
+    - seq:
+      - {literal: '--', ci: true, scope: meta.separator}
+      - {regex: '[^-]*', ci: true, scope: markup.heading.separator}
+      - {literal: '--', ci: true, scope: meta.separator}
+    - seq:
+      - {literal: '==', ci: true, scope: meta.separator}
+      - {regex: '[^=]*', ci: true, scope: markup.heading.separator}
+      - {literal: '==', ci: true, scope: meta.separator}
+    - {regex: '===*==', ci: true, scope: meta.separator}
+    - seq:
+      - {literal: .., ci: true, scope: meta.separator}
+      - {regex: '[^.]*', ci: true, scope: markup.heading.separator}
+      - {literal: .., ci: true, scope: meta.separator}
+  # `* item`, `** item` (CreoleStripeSimpleParser.java:69-70, :119-137).
+  CREOLE_LIST_BULLET:
+    seq:
+    - {regex: '\*+', ci: true, scope: punctuation.definition.list}
+    - alt:
+      - {regex: '[^*]+(?:[^*]|\*\*[^*]+\*\*)*', ci: true, scope: markup.list.unnumbered}
+      - {regex: "[\\s\_].+", ci: true, scope: markup.list.unnumbered}
+  # `# item` (CreoleStripeSimpleParser.java:71, :139-147).
+  CREOLE_LIST_NUMBERED:
+    seq:
+    - {regex: '#+', ci: true, scope: punctuation.definition.list}
+    - {regex: '.+', ci: true, scope: markup.list.numbered}
+  # `= Title` .. `==== Title` (CreoleStripeSimpleParser.java:72, :149-155).
+  CREOLE_HEADING:
+    seq:
+    - {regex: '=+', ci: true, scope: punctuation.definition.heading}
+    - {regex: '.+', ci: true, scope: markup.heading}

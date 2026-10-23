@@ -1,0 +1,11 @@
+# Classifications for the `json` family (T29). Upstream pin 97a5992; `cite` paths are
+# relative to the upstream repository root. The family covers @startjson (modeled,
+# model/diagrams/json.yaml + json-style.yaml) and @startyaml / @starthcl (opaque per D4,
+# model/embedded/embedded-yaml.yaml and embedded-hcl.yaml, accepted without parsing).
+# vega and plantuml-ts have no JSON/YAML/HCL blocks. pdiff (93 blocks: 50 json,
+# 39 yaml, 3 hcl, some expanded from `!theme`) has FR 0 and FA 0, so no case needs a
+# classification. The model's known gaps (all absent from the corpora) are strict-xfail
+# fixtures in tests/fixtures/json/gap: an unclosed `<style>` after content is not
+# checked, all style regions share one StyleParser run upstream, a `{{` line inside a
+# style region, and a bad `#highlight` line hidden by an unclosed `<style>`.
+cases: {}

@@ -1,0 +1,4 @@
+' activity-legacy: ActivityLinkFirst
+@startuml
+(*) --> iff x then
+@enduml

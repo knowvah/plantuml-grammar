@@ -1,0 +1,7 @@
+' style: <style> as the second-to-last body line
+' gap: the reject entry consumes the only line after it
+@startuml
+class Foo
+<style>
+root {
+@enduml

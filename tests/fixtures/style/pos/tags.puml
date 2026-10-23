@@ -1,0 +1,57 @@
+' style: basic block
+@startuml
+<style>
+classDiagram {
+  class {
+    BackgroundColor red
+  }
+}
+</style>
+class Foo
+@enduml
+
+' style: tags are case-insensitive
+@startuml
+<STYLE>
+root {
+}
+</Style>
+class Foo
+@enduml
+
+' style: spaces and no-break spaces around the closing tag
+@startuml
+  <style>  
+root {
+}
+  </style> 
+class Foo
+@enduml
+
+' style: a second <style> also closes the block
+@startuml
+<style>
+root {
+}
+<style>
+class Foo
+@enduml
+
+' style: empty body
+@startuml
+<style>
+</style>
+class Foo
+@enduml
+
+' style: two blocks
+@startuml
+<style>
+root {
+}
+</style>
+<style>
+root { FontSize 12 }
+</style>
+class Foo
+@enduml

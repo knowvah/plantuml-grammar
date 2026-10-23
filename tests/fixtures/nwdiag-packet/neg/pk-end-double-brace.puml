@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandPacketDiagEnd
+@startpacketdiag
+0-7: A
+}}
+@endpacketdiag

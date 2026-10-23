@@ -1,0 +1,5 @@
+' gantt: NaturalGanttTaskInvalid
+@startgantt
+[A] lasts 5 days
+[A] ends D+2147483648
+@endgantt

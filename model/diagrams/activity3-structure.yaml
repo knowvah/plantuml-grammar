@@ -1,0 +1,92 @@
+# Activity (new syntax), T21b: swimlanes, partitions/groups, notes. Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# T21b refines 8 generated entries of ActivityDiagramFactory3 (class split, decision
+# journal row 67): CommandFootboxIgnored, CommandSwimlane, CommandSwimlane2,
+# CommandPartition3, CommandCloseGroup3, CommandCloseGroupLegacy3, CommandNote3,
+# CommandNoteLong3; plus the swimlane strategy and group closing of ActivityDiagram3.
+# activity3.yaml includes this model right after `common`, before the core models, so a
+# context defined here (or in activity3-structure-lanes.yaml) shadows a core one of the
+# same name.
+#
+# Files.
+# * activity3-structure.yaml (this file): partitions and groups.
+# * activity3-structure-lanes.yaml: the swimlane strategy (top-level contexts).
+#
+# Groups. CommandPartition3 (`partition|package|rectangle|card|group name [{]`,
+# activitydiagram3/command/CommandPartition3.java:71-87) calls startGroup
+# (ActivityDiagram3.java:421-427), which pushes an InstructionGroup on the ONE
+# instruction stack T21a models (activity3-core-flow.yaml); `{` is optional (a missing
+# bracket is only a warning, CommandPartition3.java:154-157). CommandCloseGroup3 (`}`)
+# and CommandCloseGroupLegacy3 (`end group`, `endgroup`, `groupend`) call closeGroup
+# (:429-435), which fails unless a group is the innermost open instruction. So:
+# * CommandPartition3 pushes a3_group_body; inside it, `}` and the legacy closer pop
+#   (head entries), and every flow closer fails (a3_reject_flow: the group, not the
+#   flow construct, is innermost).
+# * The generated CommandCloseGroup3 / CommandCloseGroupLegacy3 are rejects everywhere
+#   else: at the top level, and in every flow body (a `}` inside a fork inside a group
+#   fails, plantuml-ts activity/veducu-71-tika634).
+# Like the flow constructs, a group need not be closed (no checkFinalError override,
+# activity3-core-flow.yaml), so the push carries no `require_pop`. startGroup ignores the
+# result of `current().add` (:425), so a group opened in a switch before the first case
+# is accepted, and activities inside it go to the group's own list.
+#
+# Notes. CommandNote3 / CommandNoteLong3 call addNote (ActivityDiagram3.java:478-486),
+# which fails only when `current().addNote` returns false; no Instruction at the pin
+# returns false (activitydiagram3/WithNote.java:56-59, InstructionList.java:190-196,
+# InstructionGroup.java:125-131, ...). The generated rules are exact apart from unknown
+# colors (NoSuchColorException, klimt/color/HColorSet.java:69-73), which are a shared
+# gap (also for swimlane and partition colors; gap fixtures).
+#
+# CommandFootboxIgnored (command/CommandFootboxIgnored.java:52) accepts and ignores
+# `[hide|show] footbox`; the generated rule is exact.
+schema_version: 1
+id: activity3-structure
+layer: shared
+include: [activity3-structure-lanes, activity3-core-flow, activity3-core-reject]
+
+overrides:
+  # ActivityDiagramFactory3.java:110.
+  CommandPartition3: {push: a3_group_body}
+  # :111, :113. closeGroup fails unless a group is innermost (ActivityDiagram3.java:434).
+  CommandCloseGroup3: {reject: true}
+  CommandCloseGroupLegacy3: {reject: true}
+
+contexts:
+  a3_group_body:
+    # CommandCloseGroup3.java:55-60 -> closeGroup (ActivityDiagram3.java:429-433).
+    - command: Activity3GroupClose
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 431
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandCloseGroup3.java:55
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:111
+      kind: single
+      parts: {literal: "}", ci: true}
+      pop: true
+    # CommandCloseGroupLegacy3.java:56-61 (a warning, then closeGroup). CommandPartition3,
+    # registered earlier (ActivityDiagramFactory3.java:110), takes `group end` and
+    # `group end;` as a group named "end": the guard leaves those lines to it.
+    - command: Activity3GroupCloseLegacy
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 431
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/command/CommandCloseGroupLegacy3.java:56
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:113
+      kind: single
+      parts:
+        seq:
+          - {ref: A3_NOT_PARTITION}
+          - {regex: "(end ?group|group ?end)", ci: true, name: CMD}
+          - {regex: ";?", ci: true}
+      pop: true
+    - include: a3_reject_flow
+    - include: a3_statements
+
+variables:
+  # Not a line CommandPartition3 takes (`group end`: TYPE `group`, a space, NAME `end`).
+  A3_NOT_PARTITION: {regex: "(?!group )", ci: true}

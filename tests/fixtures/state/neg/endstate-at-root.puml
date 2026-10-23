@@ -1,0 +1,5 @@
+' state: StateEndAtRoot
+@startuml
+state A
+end state
+@enduml

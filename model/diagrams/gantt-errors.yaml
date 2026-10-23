@@ -1,0 +1,251 @@
+# Execution errors of the gantt commands (T24), included by `gantt`. Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Each refined command below matches its generated regex upstream and then fails in its
+# execute step: CommandExecutionResult.error, or an exception that ProtectedCommand turns
+# into one (command/ProtectedCommand.java:65-76), so the factory stops with an EXECUTION_
+# ERROR (command/PSystemCommandFactory.java:180-187) and no later command sees the line.
+# As in `common-errors`, the override narrows the rule to the lines that execute and the
+# `insert_after` entry rejects every other line of the generated shape; emitters drop the
+# rejects and keep the narrowed rules.
+#
+# CommandLanguage is only narrowed: Pattern2 has no UNICODE_CHARACTER_CLASS, so `\w` is
+# [A-Za-z0-9_] upstream (regex/Pattern2.java:114) and `language é` matches nothing at all.
+# The stateful checks (task lookups, notes without tasks, group depth) are in `gantt`.
+schema_version: 1
+id: gantt-errors
+layer: shared
+include: [gantt-dates, shared, common, gen-shared]
+
+variables:
+  GE_COLOR_OK:
+    alt: [{ref: COLOR_SPECIAL}, {ref: COLOR_NAME}, {ref: COLOR_HEX}, {ref: COLOR_HEX_GRAY}]
+  GE_SIGNED_INT:
+    alt:
+      - seq: [{regex: "-?", ci: true}, {ref: JAVA_INT}]
+      - {regex: "-0*2147483648", ci: true, scope: constant.numeric.integer}
+  GE_PRINT_BETWEEN_HEAD:
+    seq:
+      - {literal: print, ci: true}
+      - plus: {regex: '[ ]'}
+      - {literal: between, ci: true}
+      - plus: {regex: '[ ]'}
+  GE_PRINT_BETWEEN_AND:
+    seq:
+      - plus: {regex: '[ ]'}
+      - {literal: and, ci: true}
+      - plus: {regex: '[ ]'}
+  GE_TASK_DEFAULT_HEAD:
+    seq:
+      - {literal: task, ci: true}
+      - {regex: "[\\s ]+", ci: true}
+      - alt:
+          - {regex: "default[\\s ]+completion", ci: true}
+          - {regex: "completion[\\s ]+default", ci: true}
+      - {regex: "[\\s ]+", ci: true}
+      - {literal: to, ci: true}
+      - {regex: "[\\s ]+", ci: true}
+  GE_PRINT_SCALE_HEAD:
+    seq:
+      - alt:
+          - {literal: projectscale, ci: true}
+          - {literal: ganttscale, ci: true}
+          - {literal: printscale, ci: true}
+      - {regex: "[\\s ]+", ci: true}
+      - alt:
+          - {literal: yearly, ci: true}
+          - {literal: quarterly, ci: true}
+          - {literal: monthly, ci: true}
+          - {literal: daily, ci: true}
+          - {literal: weekly, ci: true}
+  GE_WEEK_HEAD:
+    seq:
+      - {regex: 'weeks?', ci: true}
+      - {regex: "[\\s ]+", ci: true}
+      - {regex: 'starts?', ci: true}
+      - {regex: '[^0-9]*?', ci: true}
+      - {regex: "[\\s ]+", ci: true}
+      - {regex: '(MON[a-z]*|TUE[a-z]*|WED[a-z]*|THU[a-z]*|FRI[a-z]*|SAT[a-z]*|SUN[a-z]*)', ci: true, name: WEEKDAY}
+      - {regex: "[\\s ]+", ci: true}
+      - {regex: '[^0-9]*?', ci: true}
+
+overrides:
+  # gantt/command/CommandColorTask.java:79-80: HColorSet.getColor throws
+  # NoSuchColorException for an unknown color (klimt/color/HColorSet.java:69-73). A `\w+`
+  # word is a color when it is special, named or 1/3/6/8 hex digits (:78-157).
+  CommandColorTask:
+    parts:
+      seq:
+        - {regex: '\[([\p{L}\p{N}_.]+)\]', ci: true, name: CODE}
+        - {regex: "[\\s ]+", ci: true}
+        - {literal: '#', ci: true, scope: punctuation.definition.color}
+        - {ref: GE_COLOR_OK}
+        - opt:
+            seq:
+              - {literal: /, ci: true}
+              - {regex: '#?', ci: true, scope: punctuation.definition.color}
+              - {ref: GE_COLOR_OK}
+        - {regex: "[\\s ]*", ci: true}
+  # gantt/command/CommandWeekNumberStrategy.java:78: Integer.parseInt(NUM).
+  CommandWeekNumberStrategy:
+    parts:
+      seq:
+        - {ref: GE_WEEK_HEAD}
+        - {ref: JAVA_INT}
+        - {regex: '[^0-9]*?', ci: true}
+  # Not an execute error: `\w` is ASCII upstream (see header).
+  CommandLanguage:
+    parts:
+      seq:
+        - {literal: language, ci: true}
+        - {regex: "[\\s ]+", ci: true}
+        - {regex: '([A-Za-z0-9_]+)', ci: true, name: LANG}
+  # gantt/command/CommandPrintScale.java:92 Double.parseDouble(ZOOM) and :100
+  # Integer.parseInt(NUMBER).
+  CommandPrintScale:
+    parts:
+      seq:
+        - {ref: GE_PRINT_SCALE_HEAD}
+        - opt:
+            seq:
+              - {regex: "[\\s ]+", ci: true}
+              - alt:
+                  - {regex: (with\s+calendar\s+date), ci: true}
+                  - seq:
+                      - {regex: 'with\s+week\s+numbering\s+from\s+', ci: true}
+                      - {ref: GE_SIGNED_INT}
+        - opt:
+            seq:
+              - {regex: "[\\s ]+", ci: true}
+              - {literal: zoom, ci: true}
+              - {regex: "[\\s ]+", ci: true}
+              - {ref: JAVA_DOUBLE}
+  # gantt/command/CommandPrintBetween.java:93-94: ComplementDate.getMe parses the dates
+  # (see gantt-dates).
+  CommandPrintBetween:
+    parts:
+      seq:
+        - {ref: GE_PRINT_BETWEEN_HEAD}
+        - {ref: GD_DATE_ANY_OK}
+        - {ref: GE_PRINT_BETWEEN_AND}
+        - {ref: GD_DATE_ANY_OK}
+  # gantt/command/CommandFootboxGantt.java:56: TYPE is optional in the regex
+  # (sequencediagram/command/CommandFootbox.java:51-55) and `null.equalsIgnoreCase` throws.
+  CommandFootboxGantt:
+    parts:
+      seq:
+        - {regex: '(hide|show)', ci: true, name: TYPE}
+        - {regex: "[\\s ]*", ci: true}
+        - {literal: footbox, ci: true}
+  # gantt/command/CommandTaskCompleteDefault.java:75-77: Integer.parseInt(VALUE), then
+  # values above 100 fail. VALUE is the whole first digit run (`(\d+)` is greedy).
+  CommandTaskCompleteDefault:
+    parts:
+      seq:
+        - {ref: GE_TASK_DEFAULT_HEAD}
+        - {regex: '0*(?:100|[1-9]?[0-9])(?![0-9])', ci: true, name: VALUE, scope: constant.numeric.integer}
+        - {regex: .*, ci: true}
+
+insert_after:
+  CommandColorTask:
+    - command: CommandColorTaskError
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.CommandColorTask
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/CommandColorTask.java
+        line: 79
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java:69-73]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {regex: '\[([\p{L}\p{N}_.]+)\]', ci: true, name: CODE}
+          - {regex: "[\\s ]+", ci: true}
+          - {regex: '#(\w+)(?:/(#?\w+))?', ci: true, name: COLORS}
+          - {regex: "[\\s ]*", ci: true}
+  CommandWeekNumberStrategy:
+    - command: CommandWeekNumberStrategyError
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.CommandWeekNumberStrategy
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/CommandWeekNumberStrategy.java
+        line: 78
+        engine: IRegex
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: GE_WEEK_HEAD}
+          - {regex: '([0-9]+)', ci: true, name: NUM}
+          - {regex: '[^0-9]*?', ci: true}
+  CommandPrintScale:
+    - command: CommandPrintScaleError
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.CommandPrintScale
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/CommandPrintScale.java
+        line: 92
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandPrintScale.java:100]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: GE_PRINT_SCALE_HEAD}
+          - opt:
+              seq:
+                - {regex: "[\\s ]+", ci: true}
+                - alt:
+                    - {regex: (with\s+calendar\s+date), ci: true}
+                    - {regex: '(?:with\s+week\s+numbering\s+from\s+(-?\d+))', ci: true, name: NUMBER}
+          - opt:
+              seq:
+                - {regex: "[\\s ]+", ci: true}
+                - {literal: zoom, ci: true}
+                - {regex: "[\\s ]+", ci: true}
+                - {regex: '([.\d]+)', ci: true, name: ZOOM}
+  CommandPrintBetween:
+    - command: CommandPrintBetweenError
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.CommandPrintBetween
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/CommandPrintBetween.java
+        line: 93
+        engine: UBrex
+        also:
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/ComplementDate.java:104-127
+          - src/main/java/net/sourceforge/plantuml/gantt/lang/DayPattern.java:89-108
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: GE_PRINT_BETWEEN_HEAD}
+          - {ref: COMPLEMENT_DATE_ANY}
+          - {ref: GE_PRINT_BETWEEN_AND}
+          - {ref: COMPLEMENT_DATE_ANY}
+  CommandFootboxGantt:
+    - command: CommandFootboxGanttError
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.CommandFootboxGantt
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/CommandFootboxGantt.java
+        line: 56
+        engine: IRegex
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {regex: '(hide|show)?', ci: true, name: TYPE}
+          - {regex: "[\\s ]*", ci: true}
+          - {literal: footbox, ci: true}
+  CommandTaskCompleteDefault:
+    - command: CommandTaskCompleteDefaultError
+      provenance:
+        class: net.sourceforge.plantuml.gantt.command.CommandTaskCompleteDefault
+        file: src/main/java/net/sourceforge/plantuml/gantt/command/CommandTaskCompleteDefault.java
+        line: 75
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandTaskCompleteDefault.java:76-77]
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: GE_TASK_DEFAULT_HEAD}
+          - {regex: (\d+), ci: true, name: VALUE}
+          - {regex: .*, ci: true}

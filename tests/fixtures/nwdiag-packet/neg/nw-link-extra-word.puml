@@ -1,0 +1,4 @@
+' nwdiag-packet: CommandLink
+@startnwdiag
+a -- b c
+@endnwdiag

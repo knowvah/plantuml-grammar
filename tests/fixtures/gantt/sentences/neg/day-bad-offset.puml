@@ -1,0 +1,5 @@
+' gantt: NaturalGanttDayAsDateInvalid
+@startgantt
+[A] lasts 5 days
+d+2147483648 is closed
+@endgantt

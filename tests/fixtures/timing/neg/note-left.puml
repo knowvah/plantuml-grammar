@@ -1,0 +1,5 @@
+' timing: CommandNote, CommandNoteLong
+@startuml
+robust "R" as R
+note left of R : x
+@enduml

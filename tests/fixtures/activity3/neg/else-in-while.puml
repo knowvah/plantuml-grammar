@@ -1,0 +1,8 @@
+' activity3: CommandIf2, CommandWhile3, CommandElse3
+@startuml
+if (a) then
+while (b)
+else
+endwhile
+endif
+@enduml

@@ -1,0 +1,10 @@
+' activity3: CommandActivityLong3, CommandActivity3
+@startuml
+start
+:line one
+line two;
+#red:colored
+multiline;
+:input
+box; <<input>>
+@enduml

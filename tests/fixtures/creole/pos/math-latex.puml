@@ -1,0 +1,7 @@
+' creole: CREOLE_MATH | <math>x^2+y_1</math>
+' creole: CREOLE_LATEX | <latex>\frac{a}{b}</latex>
+@startuml
+note as N
+  inline <math>x^2+y_1</math> and <latex>\frac{a}{b}</latex>
+end note
+@enduml

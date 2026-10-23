@@ -1,0 +1,13 @@
+' description: RootTogether, GroupTogether, GroupEnd
+@startuml
+together {
+  [A]
+  [B]
+}
+package P {
+  together {
+    [C]
+    port p
+  }
+}
+@enduml

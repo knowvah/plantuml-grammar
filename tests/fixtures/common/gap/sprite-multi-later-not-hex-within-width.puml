@@ -1,0 +1,10 @@
+' common: CommandFactorySprite_1
+' factory: SequenceDiagramFactory
+' gap: approximation: gray-16 data is checked per column only up to the first line's width (SpriteGrayLevel.java:190-199)
+@startuml
+sprite $foo {
+FFFF
+F!
+}
+Alice -> Bob : hello
+@enduml

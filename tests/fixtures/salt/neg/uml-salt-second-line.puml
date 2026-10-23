@@ -1,0 +1,5 @@
+' salt: CommandAnything
+@startuml
+salt
+A -> B
+@enduml

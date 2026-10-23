@@ -1,0 +1,15 @@
+@startuml
+' a line comment
+/' block
+comment '/
+!include common.puml
+title "My Title"
+class Foo <<entity>> #red
+Foo --> Bar
+note left
+free text
+end note
+package core {
+  item Inner
+}
+@enduml

@@ -1,0 +1,47 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# Shared pieces of the D4 PSystemBasicFactory models whose initDiagram never returns null
+# (ditaa, math, latex). createSystem (command/PSystemBasicFactory.java:74-102):
+# removeInitialNoise (core/UmlSource.java:79-106) drops leading "" lines and column-0
+# `skinparam `/`skinparamlocked `/`!pragma ` lines; leading lines that trim to empty are
+# skipped (:84-85); at the end line the block is an empty-description error only if two
+# lines are left (:88-90), otherwise the diagram is returned (:92). executeLine never
+# refuses for these factories, so: accepted iff a line survives noise removal. Noise lines
+# `need` such a line (`basic_line`); a non-empty blank line `gives` one (it stops noise
+# removal), as does every other line (the factory's own entry). `empty` is the body made only
+# of lines that trim to empty, run with the end line: one non-empty blank line suffices.
+schema_version: 1
+id: single-line-basic
+layer: shared
+contexts:
+  basic_lead:
+    - command: BasicNoise
+      provenance: {class: net.sourceforge.plantuml.core.UmlSource, file: src/main/java/net/sourceforge/plantuml/core/UmlSource.java, line: 95, also: [src/main/java/net/sourceforge/plantuml/core/UmlSource.java:79-93, src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:77]}
+      kind: single
+      trim: false
+      needs: basic_line
+      parts: {regex: "(?:skinparam |skinparamlocked |!pragma )[\\s\\S]*"}
+    - command: BasicBlankLine
+      provenance: {class: net.sourceforge.plantuml.command.PSystemBasicFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java, line: 84, also: [src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:88-92]}
+      kind: single
+      trim: false
+      gives: basic_line
+      parts: {regex: "[\\x00-\\x09\\x0B\\x0C\\x0E-\\x20]+"}
+  empty:
+    - command: BasicEmptyBlankLine
+      provenance: {class: net.sourceforge.plantuml.command.PSystemBasicFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java, line: 84, also: [src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:88-92]}
+      kind: single
+      trim: false
+      set: basic_empty_rest
+      parts: {regex: "[\\x00-\\x09\\x0B\\x0C\\x0E-\\x20]+"}
+    - command: BasicEmptyEnd
+      provenance: {class: net.sourceforge.plantuml.command.PSystemBasicFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java, line: 89, also: [src/main/java/net/sourceforge/plantuml/core/UmlSource.java:95-97]}
+      kind: single
+      trim: false
+      reject: true
+      parts: {regex: "[\\s\\S]+"}
+  basic_empty_rest:
+    - command: BasicEmptyRest
+      provenance: {class: net.sourceforge.plantuml.command.PSystemBasicFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java, line: 92}
+      kind: single
+      trim: false
+      parts: {regex: "[\\s\\S]*"}

@@ -1,0 +1,5 @@
+' meta: RegexLineStackedUnparsable
+@startregex
+b
+(a
+@endregex

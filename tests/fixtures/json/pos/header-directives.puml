@@ -1,0 +1,6 @@
+' json: JsonAssume, JsonPragma, JsonText
+@startjson
+!assume transparent light
+!pragma layout smetana
+[1, 2]
+@endjson

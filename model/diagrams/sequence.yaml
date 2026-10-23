@@ -1,0 +1,188 @@
+# Sequence diagrams (T17). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/.
+#
+# Upstream. SequenceDiagramFactory.initCommandsList (sequencediagram/
+# SequenceDiagramFactory.java:99-156) registers the common block, then the sequence
+# commands. `gen-sequence-diagram` holds them in that order; this model refines them and
+# adds the group and box structure the extractor cannot see. `!pragma teoz true` only
+# selects the renderer (SequenceDiagram.java:311-319); parsing is the same, so teoz
+# syntax (anchors, `{a} <-> {b}`, `&`) needs no separate context.
+#
+# Groups and boxes. `alt|opt|loop|par|par2|break|critical|group|partition` open a group
+# and `end` closes the innermost one; `else|also` need an open group
+# (SequenceDiagram.grouping, SequenceDiagram.java:413-447, error at
+# sequencediagram/command/CommandGrouping.java:153-157). `box` opens a box, `end box`
+# closes it (SequenceDiagram.java:502-519, error at CommandBoxEnd.java:72-74). Groups and
+# boxes are two independent stacks, and nothing checks at the end of the block that they
+# are closed (SequenceDiagram.checkFinalError, :595-600), so an unclosed group or box is
+# accepted. Model: a group start pushes `group_body`, `box` pushes `box_body`; neither
+# requires a pop.
+#
+# Closers are rules at the TAIL of each context, after the spliced generated commands:
+# * The generated CommandGrouping matches starts and closers with one regex, and
+#   CommandBoxEnd has one action, but a closer must be rejected in `main`, pop in its
+#   own context and be tolerated in the other one. Patches apply to every splice of an
+#   entry alike, so CommandGrouping is narrowed to the start types, CommandBoxEnd is
+#   removed, and the closers live in per-context tail entries.
+# * Tail placement keeps upstream's first match: a line reaches the tail only if no
+#   generated command matched it. Upstream tries CommandBoxEnd and CommandGrouping before
+#   every command that follows them, and the only later command that can match a
+#   closer-shaped line is CommandActivate2 (`end ++`); it is narrowed here so that such
+#   lines reach the tail, as they reach CommandGrouping upstream.
+# * Mixed nesting is lenient: a group closer inside `box_body` and `end box` inside
+#   `group_body` are accepted without a pop, because the context cannot see whether the
+#   other kind is open below. A frame is popped only on a closer upstream also applies
+#   (or rejects), so the model never sits in `main` while upstream has a group or box
+#   open: top-level rejects never reject a valid block (gap/group-closer-in-box).
+#
+# Line-local execution errors (illegal arrows, `accross`, int overflow) are in
+# `sequence-errors`. State checks are known gaps, pinned by tests/fixtures/sequence/gap:
+# create/message pairing, activate after a delay, activation stack (deactivate, return),
+# autonumber state, unknown colors (klimt/color/HColorSet.java:69-73), DecimalFormat
+# patterns, and isIncomplete (no participant, SequenceDiagram.java:591-593 with
+# command/PSystemCommandFactory.java:161-162).
+schema_version: 1
+id: sequence
+layer: diagram
+diagram: SEQUENCE
+factory: SequenceDiagramFactory
+include: [gen-sequence-diagram, common, sequence-errors]
+
+variables:
+  GROUP_PARALLEL: {regex: "(&[\\s\_]*)?", ci: true, scope: keyword.operator.parallel}
+  # CommandGrouping.java:64-75: COLORS. The lookbehinds keep a color from touching
+  # `else`, `also` or `end`.
+  GROUP_COLORS: {regex: "((?<!else)(?<!also)(?<!end)#\\w+)?(?:[\\s\_]+(#\\w+))?", ci: true, scope: constant.other.color}
+  GROUP_COMMENT:
+    opt:
+      seq:
+        - {ref: SPACE_SOME}
+        - {regex: "(.*?)", ci: true, scope: string.unquoted.group-label}
+  GROUP_START_TYPE:
+    regex: "(opt|alt|loop|par|par2|break|critical|group|partition)"
+    ci: true
+    scope: keyword.control.group
+  GROUP_END:
+    seq:
+      - {ref: GROUP_PARALLEL}
+      # Not `end box` (BOX_END), which every context handles before the group closers;
+      # the guard only keeps the emitted grammars unambiguous.
+      - {regex: "(end)(?![^\\S\\r\\n]*box[^\\S\\r\\n]*(?:\\r?\\n|\\Z))", ci: true, scope: keyword.control.group}
+      - {ref: GROUP_COLORS}
+      - {ref: GROUP_COMMENT}
+  GROUP_ELSE:
+    seq:
+      - {ref: GROUP_PARALLEL}
+      - {regex: "(else|also)", ci: true, scope: keyword.control.group}
+      - {ref: GROUP_COLORS}
+      - {ref: GROUP_COMMENT}
+  GROUP_CLOSER:
+    alt:
+      - {ref: GROUP_END}
+      - {ref: GROUP_ELSE}
+  # CommandBoxEnd.java:55-60.
+  BOX_END: {regex: "end[\\s\_]*box", ci: true, scope: keyword.control.box}
+  # CommandActivate2.java:58-66 NAME, minus the closer keywords followed by a blank,
+  # which CommandGrouping (registered before it) takes upstream.
+  ACTIVATE2_NAME:
+    regex: "(?!(?:end|else|also)[\\s\_])([\\p{L}\\p{N}_.@]+)"
+    ci: true
+    scope: variable.other.participant
+
+overrides:
+  # SequenceDiagramFactory.java:126. Only the start types; closers are tail entries.
+  CommandGrouping:
+    push: group_body
+    parts:
+      seq:
+        - {ref: GROUP_PARALLEL}
+        - {ref: GROUP_START_TYPE}
+        - {ref: GROUP_COLORS}
+        - {ref: GROUP_COMMENT}
+  # SequenceDiagramFactory.java:124.
+  CommandBoxStart: {push: box_body}
+  # SequenceDiagramFactory.java:125. Replaced by the tail entries of each context.
+  CommandBoxEnd: {remove: true}
+  # SequenceDiagramFactory.java:128.
+  CommandActivate2:
+    parts:
+      seq:
+        - {ref: ACTIVATE2_NAME}
+        - {ref: SPACE_ANY}
+        - {regex: "(\\+\\+|--)", ci: true, scope: keyword.operator.activation}
+        - {ref: SPACE_ANY}
+        - {regex: "(#\\w+)?", ci: true, scope: constant.other.color}
+
+contexts:
+  main:
+    - include: gen-sequence-diagram#main
+    - command: SequenceBoxEndWithoutBox
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.SequenceDiagram
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java
+        line: 517
+        also:
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandBoxEnd.java:72-74
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagramFactory.java:125
+      kind: single
+      reject: true
+      parts: {ref: BOX_END}
+    - command: SequenceGroupCloserWithoutGroup
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.SequenceDiagram
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java
+        line: 415
+        also:
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandGrouping.java:153-157
+          - src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagramFactory.java:126
+      kind: single
+      reject: true
+      parts: {ref: GROUP_CLOSER}
+
+  group_body:
+    - include: gen-sequence-diagram#main
+    - command: SequenceBoxEndInGroup
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.SequenceDiagram
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java
+        line: 510
+        also: [src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandBoxEnd.java:72-77]
+      kind: single
+      parts: {ref: BOX_END}
+    - command: SequenceGroupEnd
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.SequenceDiagram
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java
+        line: 441
+        also: [src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandGrouping.java:153]
+      kind: single
+      parts: {ref: GROUP_END}
+      pop: true
+    - command: SequenceGroupElse
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.SequenceDiagram
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java
+        line: 430
+        also: [src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandGrouping.java:153]
+      kind: single
+      parts: {ref: GROUP_ELSE}
+
+  box_body:
+    - include: gen-sequence-diagram#main
+    - command: SequenceBoxEnd
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.SequenceDiagram
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java
+        line: 510
+        also: [src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandBoxEnd.java:72-77]
+      kind: single
+      parts: {ref: BOX_END}
+      pop: true
+    - command: SequenceGroupCloserInBox
+      provenance:
+        class: net.sourceforge.plantuml.sequencediagram.SequenceDiagram
+        file: src/main/java/net/sourceforge/plantuml/sequencediagram/SequenceDiagram.java
+        line: 413
+        also: [src/main/java/net/sourceforge/plantuml/sequencediagram/command/CommandGrouping.java:153-157]
+      kind: single
+      parts: {ref: GROUP_CLOSER}

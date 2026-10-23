@@ -1,0 +1,17 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+# goLowerCase(line) equals listfont(s) or starts with `listfont(s) ` (:48-50).
+schema_version: 1
+id: single-line-list-fonts
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemListFontsFactory
+include: [embedded-list-fonts, single-line-base]
+overrides:
+  PSystemListFontsFactory:
+    provenance: {class: net.sourceforge.plantuml.font.PSystemListFontsFactory, file: src/main/java/net/sourceforge/plantuml/font/PSystemListFontsFactory.java, line: 49, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "[lL][iI][sS][tT][fF][oO][nN][tT][sS]?(?: [\\s\\S]*)?"}
+    set: sl_done
+    gives: single_line

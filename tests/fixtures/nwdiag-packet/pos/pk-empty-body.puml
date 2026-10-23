@@ -1,0 +1,5 @@
+' nwdiag-packet: CommandPacketDiagStart, CommandPacketDiagEnd
+@startpacketdiag
+packetdiag {
+}
+@endpacketdiag

@@ -1,0 +1,11 @@
+' state: CommandCreateState, CommandCreatePackageState
+@startuml
+state A1 <<exitpoint>> <<foo>>
+state A2 << exitpoint >>
+state A3 <<(E,red)exitpoint>>
+state A4 <<exitpoint>><<exitpoint>>
+state P.X <<exitpoint>>
+state "Q.Y" <<entrypoint>>
+state Comp <<exitpoint>> {
+}
+@enduml

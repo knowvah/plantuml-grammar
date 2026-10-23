@@ -1,0 +1,4 @@
+@startuml
+$q()
+a -> b
+@enduml

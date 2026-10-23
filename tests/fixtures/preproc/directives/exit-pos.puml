@@ -1,0 +1,5 @@
+@startuml
+a -> b
+!exit
+not a diagram line
+@enduml

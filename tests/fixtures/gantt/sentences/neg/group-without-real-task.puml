@@ -1,0 +1,6 @@
+' gantt: NaturalGanttResource
+@startgantt
+group [G]
+{R} is off on monday
+end group
+@endgantt

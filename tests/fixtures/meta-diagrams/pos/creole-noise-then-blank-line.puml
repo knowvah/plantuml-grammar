@@ -1,0 +1,5 @@
+' meta: CreoleNoiseLine, CreoleBlankLine
+@startcreole
+skinparam a b
+ 
+@endcreole

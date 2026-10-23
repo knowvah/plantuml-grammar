@@ -1,0 +1,7 @@
+@startuml
+title "Seq"
+participant Alice
+@enduml
+@startsalt
+[Button]
+@endsalt

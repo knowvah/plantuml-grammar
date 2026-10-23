@@ -1,0 +1,8 @@
+' json: JsonMemberLine, JsonText
+@startjson
+{
+  "firstName": "John",
+  "age": 27,
+  "tags": ["a", "b"]
+}
+@endjson

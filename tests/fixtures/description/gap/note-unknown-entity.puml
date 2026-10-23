@@ -1,0 +1,6 @@
+' description: CommandFactoryNoteOnEntity_1
+' gap: a note on an undefined entity fails (CommandFactoryNoteOnEntity.java:306-307): entity state
+@startuml
+[A]
+note left of compo : x
+@enduml

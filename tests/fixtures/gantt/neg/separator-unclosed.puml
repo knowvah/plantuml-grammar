@@ -1,0 +1,5 @@
+' gantt: CommandSeparator
+@startgantt
+[A] -> [B]
+-- abc
+@endgantt

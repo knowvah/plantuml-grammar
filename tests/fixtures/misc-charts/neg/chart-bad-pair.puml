@@ -1,0 +1,5 @@
+' misc-charts: ChartLineFails
+@startchart
+h-axis 0 --> 5
+line [(1,2) (3,4)]
+@endchart

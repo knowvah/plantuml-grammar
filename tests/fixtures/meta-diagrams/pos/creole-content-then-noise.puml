@@ -1,0 +1,5 @@
+' meta: CreoleNoiseLine, CreoleText
+@startcreole
+x
+!pragma a b
+@endcreole

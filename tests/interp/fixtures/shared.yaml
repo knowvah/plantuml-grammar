@@ -1,0 +1,13 @@
+schema_version: 1
+id: shared
+layer: shared
+variables:
+  WORD: {regex: "[\\p{L}\\p{N}_]+"}
+contexts:
+  common:
+    - command: CommandTitle
+      provenance: {class: toy.CommandTitle}
+      kind: single
+      parts: {seq: [{literal: title, ci: true}, {regex: "\\s+.+"}]}
+  main:
+    - include: common

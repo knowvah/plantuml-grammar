@@ -1,0 +1,6 @@
+' salt: CommandAnything
+@startsalt
+title a b
+{
+}
+@endsalt

@@ -1,0 +1,7 @@
+' activity3: CommandStart3, CommandStop3, CommandKill3
+' gap: InstructionStop.kill returns false (InstructionStop.java:86-88)
+@startuml
+start
+stop
+kill
+@enduml

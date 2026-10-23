@@ -1,0 +1,7 @@
+' salt: CommandAnything
+@startsalt
+{
+[OK]
+{
+x
+@endsalt

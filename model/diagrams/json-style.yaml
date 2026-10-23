@@ -1,0 +1,128 @@
+# Style regions of `@startjson` blocks (T29, included by `json`). Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# StyleExtractor collects every `<style>` ... `</style>` region (trimmed lines, exact and
+# case-sensitive: jsondiagram/StyleExtractor.java:69-75, :105-111) and StyleParser parses
+# them in JsonDiagramFactory.java:99-104. A StyleParsingException is caught there, but an
+# IllegalStateException (style/parser/StyleParser.java:112, :172) or a
+# NullPointerException on a missing next token (:104, :107, :116, :121, :129, :153-161,
+# :209) escapes createSystem and PSystemBuilder.java:275-280 reports an error.
+# JSON_STYLE_ERROR_REGION matches one closed region whose first such statement follows
+# only valid statements. It reuses the token grammar of `style` (T33): STYLE_STATEMENT,
+# STYLE_GAP, STYLE_STRING, STYLE_KEY, STYLE_MEDIA, STYLE_VALUE, STYLE_SKIP_NEWLINES.
+schema_version: 1
+id: json-style
+layer: shared
+include: [style]
+
+variables:
+  # ---- style regions (StyleExtractor.java:69-75, :105-111) ----
+  JSON_STYLE_OPEN: {literal: "<style>", ci: false, scope: entity.name.tag}
+  JSON_STYLE_CLOSE: {literal: "</style>", ci: false, scope: entity.name.tag}
+  # Joined text after `<style>`: the first closing line is the last joined line, so the
+  # join spans exactly the region and `style`'s END-line conventions hold.
+  JSON_STYLE_END_IS_LAST: {regex: "(?=(?:(?!</style>)[^]*)*</style>$)"}
+  # First StyleParser statement that throws IllegalStateException (or NPE on a missing
+  # token), after valid statements (StyleParser.java:88-176). Tokens as in `style`.
+  JSON_STYLE_ISE:
+    alt:
+      # Any token, then COMMA: readWithComma, newlines, then not OPEN (:104-113).
+      - seq:
+          - alt: [{ref: STYLE_KEY}, {ref: STYLE_MEDIA}, {regex: "[*:{},]"}]
+          - {ref: STYLE_GAP}
+          - {literal: ",", ci: false}
+          - star: {seq: [{ref: STYLE_GAP}, {alt: [{ref: STYLE_STRING}, {literal: ",", ci: false}]}]}
+          - {ref: STYLE_GAP}
+          - alt:
+              - seq: [{ref: STYLE_NEWLINE}, {ref: STYLE_SKIP_NEWLINES}, {regex: "(?=[^{])"}]
+              - {regex: "(?=[;}*:@])"}
+              # A `//` comment ate the last newline: `</style>` is read as a STRING,
+              # then skipNewLines finds no token (:107 NPE).
+              - {regex: "(?=</style>$)"}
+      # STAR or COMMA not followed by COMMA: no branch takes it (:172).
+      - seq: [{literal: "*", ci: false}, {ref: STYLE_GAP}, {regex: "(?=[^,])"}]
+      - seq: [{literal: ",", ci: false}, {ref: STYLE_GAP}, {regex: "(?=[^,])"}]
+      # COLON not followed by STRING [STAR] OPEN on adjacent tokens (:153-172).
+      - seq: [{literal: ":", ci: false}, {ref: STYLE_GAP}, {regex: "(?=[;}{*:@]|</style>$)"}]
+      - seq:
+          - {literal: ":", ci: false}
+          - {ref: STYLE_GAP}
+          - {ref: STYLE_STRING}
+          - {ref: STYLE_GAP}
+          - {regex: "(?=[^{*])"}
+      - seq:
+          - {literal: ":", ci: false}
+          - {ref: STYLE_GAP}
+          - {ref: STYLE_STRING}
+          - {ref: STYLE_GAP}
+          - {literal: "*", ci: false}
+          - {ref: STYLE_GAP}
+          - {regex: "(?=[^{])"}
+      # The stream ends early (NPE on a missing next token): after OPEN, CLOSE or `@`
+      # (:104); after STRING [STAR] and newlines (:104, :116, :121); after STRING and
+      # colons (:129, not for `--` keys); after a value's COLON (:209).
+      - seq: [{alt: [{regex: "[{}]"}, {ref: STYLE_MEDIA}]}, {ref: JSON_STYLE_END}]
+      - seq: [{ref: JSON_STYLE_KEY_HEAD}, {ref: JSON_STYLE_INNER_NEWLINES}, {ref: JSON_STYLE_END}]
+      - seq:
+          - {regex: "(?!\"?--)"}
+          - {ref: JSON_STYLE_KEY_HEAD}
+          - {ref: JSON_STYLE_INNER_NEWLINES}
+          - plus: {seq: [{literal: ":", ci: false}, {ref: JSON_STYLE_GAP_CLOSED}]}
+          - {ref: JSON_STYLE_END}
+      - seq:
+          - {regex: "(?!\"?--)"}
+          - {ref: JSON_STYLE_KEY_HEAD}
+          - {ref: JSON_STYLE_INNER_NEWLINES}
+          - {ref: JSON_STYLE_COLONS}
+          - {ref: STYLE_STRING}
+          - {ref: STYLE_VALUE}
+          - {ref: JSON_STYLE_VALUE_COLON_END}
+      - seq:
+          - {regex: "(?=\"?--)"}
+          - {ref: JSON_STYLE_KEY_HEAD}
+          - {ref: JSON_STYLE_INNER_NEWLINES}
+          - {ref: JSON_STYLE_COLONS}
+          - plus: {seq: [{ref: STYLE_GAP}, {alt: [{ref: STYLE_STRING}, {literal: ",", ci: false}, {seq: [{literal: ":", ci: false}, {ref: STYLE_GAP}, {ref: STYLE_STRING}]}]}]}
+          - {ref: JSON_STYLE_VALUE_COLON_END}
+  # STYLE_GAP without its two end-of-text forms: no unclosed comment, and a `//`
+  # comment never takes the last newline (the one before `</style>`).
+  JSON_STYLE_GAP_CLOSED: {regex: "(?>(?:[ \\t]+|//[^\uE100]*\uE100(?=[^\uE100]*\uE100)|/(?=\\*)(?:(?!\\*/)(?:[^\uE100]|\uE100(?=[^\uE100]*\uE100)))*\\*/|/(?=')(?:(?!'/)(?:[^\uE100]|\uE100(?=[^\uE100]*\uE100)))*'/)*)"}
+  # End of the token stream: an unclosed `/*` or `/'` comment, or the token just read
+  # (an unclosed quote or `@` token), swallowed the last newline and `</style>`
+  # (StyleParser.java:291-310, :312-326, :328-341).
+  JSON_STYLE_END:
+    seq:
+      - {ref: JSON_STYLE_GAP_CLOSED}
+      - alt:
+          - {regex: "/(?=\\*)(?:(?!\\*/)(?:[^\uE100]|\uE100(?=[^\uE100]*\uE100)))*\uE100"}
+          - {regex: "/(?=')(?:(?!'/)(?:[^\uE100]|\uE100(?=[^\uE100]*\uE100)))*\uE100"}
+          - {regex: "(?<=\uE100)"}
+      - {regex: "(?=</style>$)"}
+  # STRING [STAR] (StyleParser.java:114-119).
+  JSON_STYLE_KEY_HEAD:
+    seq:
+      - {ref: STYLE_KEY}
+      - {ref: JSON_STYLE_GAP_CLOSED}
+      - opt: {seq: [{literal: "*", ci: false}, {ref: JSON_STYLE_GAP_CLOSED}]}
+  # skipNewLines (:221-228) that cannot take the last newline.
+  JSON_STYLE_INNER_NEWLINES:
+    star: {seq: [{regex: "\uE100(?=[^\uE100]*\uE100)"}, {ref: JSON_STYLE_GAP_CLOSED}]}
+  # skipColon (:230-237), maximal.
+  JSON_STYLE_COLONS:
+    seq:
+      - star: {seq: [{literal: ":", ci: false}, {ref: JSON_STYLE_GAP_CLOSED}]}
+      - {regex: "(?!:)"}
+  JSON_STYLE_VALUE_COLON_END:
+    seq:
+      - {ref: JSON_STYLE_GAP_CLOSED}
+      - {literal: ":", ci: false}
+      - {ref: JSON_STYLE_END}
+  JSON_STYLE_ERROR_REGION:
+    seq:
+      - {ref: JSON_STYLE_OPEN}
+      - {ref: JSON_STYLE_END_IS_LAST}
+      - {ref: STYLE_NEWLINE}
+      - star: {seq: [{ref: STYLE_GAP}, {ref: STYLE_STATEMENT}]}
+      - {ref: STYLE_GAP}
+      - {ref: JSON_STYLE_ISE}
+      - {regex: "[\\s\\S]*"}

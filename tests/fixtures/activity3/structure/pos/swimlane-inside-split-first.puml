@@ -1,0 +1,12 @@
+' activity3: CommandSwimlane, CommandSplit3, CommandSplitAgain3, CommandSplitEnd3
+@startuml
+split
+  |A|
+  :a;
+split again
+  |B|
+  :b;
+end split
+|A|
+:c;
+@enduml

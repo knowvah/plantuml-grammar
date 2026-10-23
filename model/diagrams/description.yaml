@@ -1,0 +1,291 @@
+# Usecase, component and deployment diagrams (T19): DescriptionDiagramFactory
+# (descdiagram/DescriptionDiagramFactory.java:86-138 at 97a5992; paths below are
+# relative to src/main/java/net/sourceforge/plantuml/ unless they start with net/atmp/).
+#
+# Element keywords. The full USymbol list is CommandCreateElementFull.ALL_TYPES
+# (descdiagram/command/CommandCreateElementFull.java:76): person, artifact, actor/,
+# actor, folder, card, file, package, rectangle, hexagon, label, node, frame, cloud,
+# action, process, database, queue, stack, storage, agent, usecase/, usecase,
+# component, boundary, control, entity, interface, circle, collections, port, portin,
+# portout, plus `()`. The short forms `[x]`, `(x)`, `:x:`, `()x` and a trailing `/`
+# override the keyword (:237-268). Group keywords are CommandPackageWithUSymbol's
+# (descdiagram/command/CommandPackageWithUSymbol.java:78). The generated rules carry
+# these regexes; this model adds what upstream checks outside them.
+#
+# Execute-time errors (`reject` after the narrowed rule, so emitters keep the
+# narrowed regex):
+# * A trimmed line that is one bare word `[\p{L}0-9_.]+` (`foo`, `licenses`) matches
+#   CommandCreateElementFull, whose isForbidden (:134-139) makes execute fail
+#   (command/SingleLineCommand2.java:164-165). Without it this factory, tried before
+#   the single-line factories, took `license`, `version`, `emojis` blocks.
+# * CommandCreateElementMultilines with `actor/`, `port`, `portin` or `portout`:
+#   USymbols.fromString returns null (decoration/symbol/USymbols.java:98-119) and
+#   executeNow throws (descdiagram/command/CommandCreateElementMultilines.java:182-185),
+#   which ProtectedCommand turns into an error (command/ProtectedCommand.java:65-76).
+#
+# Group stack. Like class diagrams (CucaDiagram, net/atmp/CucaDiagram.java:132,
+# :339-374) the stack starts with the root. CommandPackageWithUSymbol,
+# CommandArchimatePackage and CommandCreateDomain with `{` push an entity group;
+# CommandTogether pushes a Together, which leaves the current group unchanged
+# (getCurrentGroup, :177-186). `}` pops (command/CommandEndPackage.java:67-71) and
+# pops the root when no group is open; afterwards every command that needs the
+# current group fails. Nothing checks that groups are closed. Contexts:
+# * main           the root;
+# * desc_together  a together block whose current group is the root;
+# * desc_group     inside an entity group (also a together nested in one);
+# * desc_orphan    after a `}` that closed the root.
+# `newpage` starts a fresh diagram with a new stack
+# (descdiagram/command/CommandNewpage.java:77-85), so it sets `main`.
+# Ports need an entity group: `port x` at the root fails
+# (CommandCreateElementFull.java:316-317), unless the short form makes it another
+# element. Each state context runs the whole generated list after head entries; a
+# head entry is a line no earlier upstream rule takes. `together {` and `}` are head
+# entries only (the generated CommandTogether and CommandEndPackage are removed): their
+# action depends on the state, and a second, state-blind derivation of the same line
+# would make every group ambiguous for a grammar without ordered choice.
+#
+# Maps and JSON reuse the class family's bodies (`class-objects`: the same upstream
+# commands, objectdiagram/command/). Known gaps (tests/fixtures/description/gap): entity
+# state (an element defined twice with another type, `Not known`, `Nothing to note
+# to`, `No link defined`, `Note already created`), an empty `note on link` body
+# (command/note/CommandFactoryNoteOnLink.java:140-145), unknown colors
+# (klimt/color/HColorSet.java:69-73), and a `hide`/`show`/`url`/`remove` line that is
+# really a link in the orphan state.
+schema_version: 1
+id: description
+layer: diagram
+diagram: DESCRIPTION
+factory: DescriptionDiagramFactory
+include: [gen-description-diagram, common, class-objects]
+
+variables:
+  # Generated shapes (gen-description-diagram; tests/families/test_description.py checks
+  # each copy against the generated rule).
+  # CommandCreateElementFull.getRegexConcat (:82-116).
+  D_ELEMENT_FULL: {"seq": [{"regex": "(?:(person|artifact|actor/|actor|folder|card|file|package|rectangle|hexagon|label|node|frame|cloud|action|process|database|queue|stack|storage|agent|usecase/|usecase|component|boundary|control|entity|interface|circle|collections|port|portin|portout|\\(\\))[\\s ]+)?", "ci": true, "name": "SYMBOL"}, {"regex": "((?:#(?:\\w+[-\\\\|/]?\\w+;)?(?:(?:text|back|header|line|line\\.dashed|line\\.dotted|line\\.bold|shadowing)(?::\\w+[-\\\\|/]?\\w+)?(?:;|(?![\\w;:.])))+)|(?:#\\w+[-\\\\|/]?\\w+))?", "ci": true, "name": "COLOR2"}, {"regex": "[\\s ]*", "ci": true}, {"alt": [{"ref": "CODE1"}, {"ref": "DISPLAY2"}, {"seq": [{"ref": "CODE3"}, {"seq": [{"regex": "[\\s ]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true, "name": "STEREOTYPE3"}}, {"regex": "[\\s ]*", "ci": true}]}, {"literal": "as", "ci": true}, {"regex": "[\\s ]*", "ci": true}, {"ref": "DISPLAY3"}]}, {"seq": [{"ref": "DISPLAY4"}, {"seq": [{"regex": "[\\s ]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true, "name": "STEREOTYPE4"}}, {"regex": "[\\s ]*", "ci": true}]}, {"literal": "as", "ci": true}, {"regex": "[\\s ]+", "ci": true}, {"ref": "CODE4"}]}]}, {"regex": "[\\s ]*", "ci": true}, {"ref": "TAGS1"}, {"seq": [{"regex": "[\\s ]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true, "name": "STEREOTYPE"}}, {"regex": "[\\s ]*", "ci": true}]}, {"ref": "TAGS2"}, {"regex": "[\\s ]*", "ci": true}, {"opt": {"ref": "URL"}}, {"regex": "[\\s ]*", "ci": true}, {"ref": "COLOR"}]}
+  # Its leading color COLOR2 (:85) and everything after the code/display (:108-115).
+  D_COLOR2: {"regex": "((?:#(?:\\w+[-\\\\|/]?\\w+;)?(?:(?:text|back|header|line|line\\.dashed|line\\.dotted|line\\.bold|shadowing)(?::\\w+[-\\\\|/]?\\w+)?(?:;|(?![\\w;:.])))+)|(?:#\\w+[-\\\\|/]?\\w+))?", "ci": true, "name": "COLOR2"}
+  D_ELEMENT_TAIL: {"seq": [{"regex": "[\\s ]*", "ci": true}, {"ref": "TAGS1"}, {"seq": [{"regex": "[\\s ]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true, "name": "STEREOTYPE"}}, {"regex": "[\\s ]*", "ci": true}]}, {"ref": "TAGS2"}, {"regex": "[\\s ]*", "ci": true}, {"opt": {"ref": "URL"}}, {"regex": "[\\s ]*", "ci": true}, {"ref": "COLOR"}]}
+  # CommandCreateElementMultilines TYPE0 and TYPE1 after TYPE (:94-121).
+  D_ELEMENT_ML0_TAIL: {"seq": [{"regex": "([\\p{L}\\p{N}_.]+)", "ci": true, "name": "CODE"}, {"seq": [{"regex": "[\\s ]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true, "name": "STEREO"}}, {"regex": "[\\s ]*", "ci": true}]}, {"opt": {"ref": "URL"}}, {"regex": "[\\s ]*", "ci": true}, {"ref": "COLOR"}, {"regex": "[\\s ]*", "ci": true}, {"literal": "as", "ci": true}, {"regex": "[\\s ]*", "ci": true}, {"regex": "[\"“”]", "ci": true}, {"regex": "([^\"“”]*)", "ci": true, "name": "DESC"}]}
+  D_ELEMENT_ML1_TAIL: {"seq": [{"regex": "([\\p{L}\\p{N}_.]+)", "ci": true, "name": "CODE"}, {"seq": [{"regex": "[\\s ]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true, "name": "STEREO"}}, {"regex": "[\\s ]*", "ci": true}]}, {"opt": {"ref": "URL"}}, {"regex": "[\\s ]*", "ci": true}, {"ref": "COLOR"}, {"regex": "[\\s ]*", "ci": true}, {"literal": "[", "ci": true}, {"regex": "(.*)", "ci": true, "name": "DESC"}]}
+  # CommandCreateDomain.getRegexConcat (descdiagram/CommandCreateDomain.java:73-85)
+  # without the optional GROUP `{`.
+  D_DOMAIN_HEAD: {"seq": [{"regex": "(requirement|domain)", "ci": true, "name": "TYPE"}, {"regex": "[\\s ]+", "ci": true}, {"regex": "[\"“”](.+?)(?:\\<([^\\<\\>/](?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<(?:[^\\<\\>/]|\\<\\>)*\\>)*\\>)*\\>)*\\>)*)\\>)?[\"“”]", "ci": true, "name": "DISPLAY"}, {"regex": "[\\s ]+", "ci": true}, {"literal": "as", "ci": true}, {"regex": "[\\s ]+", "ci": true}, {"regex": "([a-zA-Z0-9]+)", "ci": true, "name": "CODE"}, {"seq": [{"regex": "[\\s ]*", "ci": true}, {"opt": {"regex": "(\\<\\<.+?\\>\\>)", "ci": true, "name": "STEREO"}}, {"regex": "[\\s ]*", "ci": true}]}]}
+  # CommandCreateElementFull.FORBIDDEN_PATTERN (:134), a plain case-sensitive Pattern
+  # with ASCII digits only.
+  D_FORBIDDEN: {regex: "[\\p{L}0-9_.]+", ci: false, scope: invalid.illegal.bare-word}
+  D_NOT_FORBIDDEN: {regex: "(?![\\p{L}0-9_.]+(?:[\\r\\n]|$))", ci: false}
+  # ALL_TYPES (:76) without the four symbols USymbols.fromString cannot resolve.
+  D_ML_TYPE_OK:
+    regex: "(person|artifact|actor|folder|card|file|package|rectangle|hexagon|label|node|frame|cloud|action|process|database|queue|stack|storage|agent|usecase/|usecase|component|boundary|control|entity|interface|circle|collections)[\\s\_]+"
+    ci: true
+    name: TYPE
+    scope: storage.type.element
+  D_ML_TYPE_BAD:
+    regex: "(actor/|port|portin|portout)[\\s\_]+"
+    ci: true
+    name: TYPE
+    scope: invalid.illegal.element-type
+  # The port element at the root: CommandCreateElementFull with SYMBOL port, portin or
+  # portout, whose code and display are not short forms that select another symbol
+  # (:237-268): a plain name or a quoted string.
+  D_WORD: {regex: "[\\p{L}\\p{N}_.]+", ci: true, scope: entity.name.type.element}
+  D_QUOTED:
+    regex: "[\"“”].+?[\"“”]"
+    ci: true
+    scope: string.quoted.double.element
+  D_STEREO_OPT:
+    seq:
+      - {ref: SPACE_ANY}
+      - opt: {regex: "(\\<\\<.+?\\>\\>)", ci: true, scope: entity.other.attribute-name.stereotype}
+      - {ref: SPACE_ANY}
+  D_AS: {literal: as, ci: true, scope: keyword.other.as}
+  D_PORT_ROOT:
+    seq:
+      - {regex: "(?:port|portin|portout)[\\s\_]+", ci: true, scope: storage.type.port}
+      - {ref: D_COLOR2}
+      - {ref: SPACE_ANY}
+      - alt:
+          - alt: [{ref: D_WORD}, {ref: D_QUOTED}]
+          - seq: [{ref: D_QUOTED}, {ref: D_STEREO_OPT}, {ref: D_AS}, {ref: SPACE_SOME}, {ref: D_WORD}]
+          - seq: [{ref: D_WORD}, {ref: D_STEREO_OPT}, {ref: D_AS}, {ref: SPACE_ANY}, {ref: D_QUOTED}]
+          - seq:
+              - alt: [{ref: D_QUOTED}, {ref: D_WORD}]
+              - {ref: D_STEREO_OPT}
+              - {ref: D_AS}
+              - {ref: SPACE_SOME}
+              - {ref: D_WORD}
+      - {ref: D_ELEMENT_TAIL}
+  D_BLOCK_OPEN: {literal: "{", ci: true, scope: punctuation.section.block.begin}
+  D_BLOCK_CLOSE: {literal: "}", ci: true, scope: punctuation.section.block.end}
+  # CommandTogether (descdiagram/command/CommandTogether.java:58), the generated shape.
+  D_TOGETHER:
+    seq:
+      - {literal: together, ci: true, scope: keyword.other.together}
+      - {ref: SPACE_ANY}
+      - {ref: D_BLOCK_OPEN}
+  # Any line except the commands that never touch the group stack, checked one by one
+  # against the jar in this factory: titles, header/footer/caption/mainframe, legends,
+  # skin/skinparam, scale, minwidth, page, rotate, newpage, direction, pragma, assume,
+  # sprites, styles, `set separator`, hide/show/remove/restore (entities included),
+  # `url of`, footbox. Elements, links, openers, `together`, `}`, notes, archimate,
+  # domains, maps and JSON fail.
+  D_ORPHAN_UNSAFE:
+    regex: "(?!(?:(?:title|mainframe|caption|legend|skinparam|skinparamlocked|skin|minwidth|page|rotate|newpage|sprite|scale|set|hide|show|remove|restore|url|footbox)(?![\\p{L}\\p{N}_])|(?:(?:left|right|center)[\\s\_]*)?(?:header|footer)(?![\\p{L}\\p{N}_])|(?:left|top)[\\s\_]+to[\\s\_]|!pragma|!assume|<style))\\S.*"
+    ci: true
+
+overrides:
+  CommandCreateElementFull:
+    parts:
+      seq: [{ref: D_NOT_FORBIDDEN}, {ref: D_ELEMENT_FULL}]
+  CommandCreateElementMultilines_59:
+    parts:
+      seq: [{ref: D_ML_TYPE_OK}, {ref: D_ELEMENT_ML0_TAIL}]
+  CommandCreateElementMultilines_60:
+    parts:
+      seq: [{ref: D_ML_TYPE_OK}, {ref: D_ELEMENT_ML1_TAIL}]
+  CommandCreateDomain:
+    parts: {ref: D_DOMAIN_HEAD}
+  CommandPackageWithUSymbol: {push: desc_group}
+  CommandArchimatePackage: {push: desc_group}
+  # Replaced by the head entries RootTogether/GroupTogether and RootEnd/GroupEnd.
+  CommandTogether: {remove: true}
+  CommandEndPackage: {remove: true}
+  CommandNewpage: {set: main}
+
+insert_after:
+  CommandCreateElementFull:
+    - command: CommandCreateElementFullForbidden
+      provenance:
+        class: net.sourceforge.plantuml.descdiagram.command.CommandCreateElementFull
+        file: src/main/java/net/sourceforge/plantuml/descdiagram/command/CommandCreateElementFull.java
+        line: 137
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/SingleLineCommand2.java:164-165]
+      kind: single
+      reject: true
+      parts: {ref: D_FORBIDDEN}
+  CommandCreateElementMultilines_59:
+    - command: CommandCreateElementMultilinesBadSymbol0
+      provenance:
+        class: net.sourceforge.plantuml.descdiagram.command.CommandCreateElementMultilines
+        file: src/main/java/net/sourceforge/plantuml/descdiagram/command/CommandCreateElementMultilines.java
+        line: 185
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/decoration/symbol/USymbols.java:98-119
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: D_ML_TYPE_BAD}, {ref: D_ELEMENT_ML0_TAIL}]
+  CommandCreateElementMultilines_60:
+    - command: CommandCreateElementMultilinesBadSymbol1
+      provenance:
+        class: net.sourceforge.plantuml.descdiagram.command.CommandCreateElementMultilines
+        file: src/main/java/net/sourceforge/plantuml/descdiagram/command/CommandCreateElementMultilines.java
+        line: 185
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/decoration/symbol/USymbols.java:98-119
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: D_ML_TYPE_BAD}, {ref: D_ELEMENT_ML1_TAIL}]
+  # `requirement|domain ... {` opens a group (descdiagram/CommandCreateDomain.java:85,
+  # :165-169); the generated rule is narrowed to the leaf form above.
+  CommandCreateDomain:
+    - command: CommandCreateDomainGroup
+      provenance:
+        class: net.sourceforge.plantuml.descdiagram.CommandCreateDomain
+        file: src/main/java/net/sourceforge/plantuml/descdiagram/CommandCreateDomain.java
+        line: 85
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/descdiagram/CommandCreateDomain.java:165-169]
+      kind: single
+      parts:
+        seq: [{ref: D_DOMAIN_HEAD}, {ref: D_BLOCK_OPEN}]
+      push: desc_group
+
+contexts:
+  main:
+    - include: desc_root_heads
+    # `}` with no group open pops the root (net/atmp/CucaDiagram.java:367-374).
+    - command: RootEnd
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/command/CommandEndPackage.java:67-71]
+      kind: single
+      parts: {ref: D_BLOCK_CLOSE}
+      set: desc_orphan
+    - include: gen-description-diagram#main
+  desc_together:
+    - include: desc_group_end
+    - include: desc_root_heads
+    - include: gen-description-diagram#main
+  desc_group:
+    - include: desc_group_end
+    - command: GroupTogether
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 339
+        also: [src/main/java/net/sourceforge/plantuml/descdiagram/command/CommandTogether.java:58-75]
+      kind: single
+      parts: {ref: D_TOGETHER}
+      push: desc_group
+    - include: gen-description-diagram#main
+  desc_orphan:
+    - command: GroupStackEmpty
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 177
+        also:
+          - src/main/java/net/atmp/CucaDiagram.java:367-374
+          - src/main/java/net/sourceforge/plantuml/command/CommandEndPackage.java:67-71
+      kind: single
+      reject: true
+      parts: {ref: D_ORPHAN_UNSAFE}
+    - include: gen-description-diagram#main
+
+  # `}` closing a group (net/atmp/CucaDiagram.java:367-374).
+  desc_group_end:
+    - command: GroupEnd
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/command/CommandEndPackage.java:67-71]
+      kind: single
+      parts: {ref: D_BLOCK_CLOSE}
+      pop: true
+  # While the current group is the root. Head entries cite CucaDiagram or
+  # DescriptionDiagram: a class-name override key (CommandTogether,
+  # CommandCreateElementFull) would also patch an entry citing that class.
+  desc_root_heads:
+    # A port needs an entity group.
+    - command: PortAtRoot
+      provenance:
+        class: net.sourceforge.plantuml.descdiagram.DescriptionDiagram
+        file: src/main/java/net/sourceforge/plantuml/descdiagram/command/CommandCreateElementFull.java
+        line: 316
+        engine: IRegex
+        also: [src/main/java/net/atmp/CucaDiagram.java:177-186]
+      kind: single
+      reject: true
+      parts: {ref: D_PORT_ROOT}
+    # A Together leaves the current group unchanged (CucaDiagram.java:339-342).
+    - command: RootTogether
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 339
+        also: [src/main/java/net/sourceforge/plantuml/descdiagram/command/CommandTogether.java:58-75]
+      kind: single
+      parts: {ref: D_TOGETHER}
+      push: desc_together

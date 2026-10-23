@@ -1,0 +1,6 @@
+' common: CommandScale
+' factory: SequenceDiagramFactory
+@startuml
+scale 1.2.3
+Alice -> Bob : hello
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+!if 1
+a -> b
+!else
+b -> a
+!endif
+@enduml

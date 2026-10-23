@@ -1,0 +1,7 @@
+' misc-charts: FlowLinkToBox
+' gap: link targets are looked up among the boxes by id (FlowDiagram.java:113-120); the model keeps no id table
+@startflow
+10 "A"
+s 20 "B"
+n 99
+@endflow

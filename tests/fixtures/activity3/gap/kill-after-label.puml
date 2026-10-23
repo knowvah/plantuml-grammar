@@ -1,0 +1,6 @@
+' activity3: CommandLabel, CommandKill3
+' gap: InstructionLabel.kill returns false (InstructionLabel.java:73-75)
+@startuml
+label x
+kill
+@enduml

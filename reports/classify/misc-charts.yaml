@@ -1,0 +1,26 @@
+# Classifications for the `misc-charts` family (T30: chart, chen, wire, bpm, flow).
+# Upstream pin 97a5992; `cite` paths are relative to the upstream repository root.
+# FR and FA are 0 on every corpus (vega 6 blocks, plantuml-ts none, pdiff 55). The only
+# listed cases are informational diagram-type mismatches: `@startcrash` blocks whose
+# oracle type is BPM because CrashDiagram is built with DiagramType.BPM.
+cases:
+  vega:crash/crash-not-crashing.puml#0:
+    class: semantic
+    note: "@startcrash block: CrashDiagram passes DiagramType.BPM to its constructor, so the jar reports BPM while the interpreter's model (embedded crash) reports CRASH; both accept"
+    cite: src/main/java/net/sourceforge/plantuml/crash/CrashDiagram.java:58
+  vega:crash/crash-when-drawing.puml#0:
+    class: semantic
+    note: "@startcrash block: CrashDiagram passes DiagramType.BPM to its constructor, so the jar reports BPM while the interpreter's model (embedded crash) reports CRASH; both accept (the crash happens only when drawing)"
+    cite: src/main/java/net/sourceforge/plantuml/crash/CrashDiagram.java:58
+exclusions:
+  net.sourceforge.plantuml.cheneer.command.CommandCreateAttribute: >-
+    modeled by the per-context tail entries ChenAttributeWithoutOwner (main, reject) and
+    ChenAttributeOwnerChecked, ChenAttributeChecked, ChenAttributeFails, ChenAttributeOwner,
+    ChenAttribute (chen_owner) in model/diagrams/misc-charts-chen.yaml, which cite
+    ChenEerDiagram.pushOwner/peekOwner (ChenEerDiagram.java:52-94); the generated entry is
+    removed because one entry cannot act differently with and without an owner
+  net.sourceforge.plantuml.cheneer.command.CommandEndGroup: >-
+    modeled by the tail entries ChenEndGroupUnbalanced (main, reject) and ChenEndGroup
+    (chen_owner, pop) in model/diagrams/misc-charts-chen.yaml, which cite
+    ChenEerDiagram.popOwner (ChenEerDiagram.java:70-76); the generated entry is removed
+    because one entry cannot act differently with and without an owner

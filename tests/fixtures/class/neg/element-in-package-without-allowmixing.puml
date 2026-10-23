@@ -1,0 +1,8 @@
+' class: ElementNeedsAllowMixing
+@startuml
+class A {
+}
+package P {
+  rectangle R
+}
+@enduml

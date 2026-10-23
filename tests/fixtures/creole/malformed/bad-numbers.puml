@@ -1,0 +1,10 @@
+' creole: CREOLE_SIZE | <size:99999999999>huge
+' creole: CREOLE_IMG | <img:x.png{scale=1.2.3}>
+' creole: CREOLE_HTML_UNDERLINE | <u:#abc>short hex
+@startuml
+note as N
+  <size:99999999999>huge
+  <img:x.png{scale=1.2.3}>
+  <u:#abc>short hex
+end note
+@enduml

@@ -1,0 +1,4 @@
+@startuml
+class Foo {
+  garbage ??? !!
+@enduml

@@ -1,0 +1,8 @@
+' common: CommandPage
+' factory: PSystemSaltFactory
+@startsalt
+page 0x1
+{
+  Login
+}
+@endsalt

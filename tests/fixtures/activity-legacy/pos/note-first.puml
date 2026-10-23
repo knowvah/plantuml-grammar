@@ -1,0 +1,6 @@
+' activity-legacy: ActivityNoteFirst
+@startuml
+note right: starts at the start node
+--> B
+B --> (*)
+@enduml

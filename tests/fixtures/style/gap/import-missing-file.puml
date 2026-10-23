@@ -1,0 +1,6 @@
+' style: missing file
+' gap: the file is read at execution (CommandStyleImport.java:111-122)
+@startuml
+<style file=no-such-style-file.css>
+class Foo
+@enduml

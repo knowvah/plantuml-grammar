@@ -1,0 +1,4 @@
+' gantt: CommandPrintScale
+@startgantt
+printscale weekly zoom 1.2.3
+@endgantt

@@ -1,0 +1,6 @@
+' timing: CommandScalePixel
+' gap: tick * unit factor wraps below 1 (CommandScalePixel.java:114-117)
+@startuml
+robust "R" as R
+scale 292271023046 y as 10 pixels
+@enduml

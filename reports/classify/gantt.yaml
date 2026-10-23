@@ -1,0 +1,38 @@
+# Classifications for the `gantt` family (T24 commands, T25 sentences). Upstream pin
+# 97a5992; `cite` paths are relative to the upstream repository root. FR is 0 on every
+# corpus; there are no plantuml-ts gantt blocks. The pdiff false accepts are checks that
+# span lines: task lookups by name and the 20-year span limit. (The start date that
+# absolute task dates need is modeled with the `project_start` diagram flag.)
+cases:
+  # `starts at [T2]'s end` before [T2] exists ("No such task T2").
+  pdiff:dbhum/l_it/lituri-55-caju105.puml#0:
+    class: semantic
+    note: "task lookup by name: [T2] is declared on a later line; sentences/gap/task-lookup"
+    cite: src/main/java/net/sourceforge/plantuml/gantt/lang/AbstractComplementTaskInstant.java:53-56
+  # `occurs from [P_start2] to [P_end]` with no task P_start2.
+  pdiff:dbhum/r_ec/recufa-28-desi167.puml#0:
+    class: semantic
+    note: "task lookup by name in `occurs from [A] to [B]`: [P_start2] was never declared"
+    cite: src/main/java/net/sourceforge/plantuml/gantt/lang/SubjectTask.java:240-246
+  # `ends at [Production 0.2]'s start` before that task exists.
+  pdiff:dbhum/s_ar/saricu-01-funu594.puml#0:
+    class: semantic
+    note: "task lookup by name: [Production 0.2] is declared on a later line; sentences/gap/task-lookup"
+    cite: src/main/java/net/sourceforge/plantuml/gantt/lang/AbstractComplementTaskInstant.java:53-56
+  # `[Nomination] happens 2022-03-31` with no `project starts`: the span from 1970-01-01.
+  pdiff:dbhum/n_ak/nakude-77-suji787.puml#0:
+    class: semantic
+    note: "20-year limit: date arithmetic over the whole diagram (without `project starts` the span starts at 1970-01-01); sentences/gap/twenty-years"
+    cite: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java:172-181
+
+exclusions:
+  CommandGroupStart: >-
+    modeled by the per-state head entries GanttFirstGroup (main, set gantt_group_1),
+    GanttGroupAtRoot, GanttGroupInFirstGroup and GanttGroupInGroup (push gantt_group) in
+    model/diagrams/gantt.yaml, which cite GanttDiagram.addGroup (GanttDiagram.java:316-325);
+    the generated entry is removed because one entry cannot act differently per state
+  CommandGroupEnd: >-
+    modeled by the per-state head entries GanttGroupEndWithoutGroup and GanttGroupEndAtRoot
+    (reject), GanttFirstGroupEnd (set gantt_tasks) and GanttGroupEnd (pop) in
+    model/diagrams/gantt.yaml, which cite GanttDiagram.endGroup (GanttDiagram.java:327-334);
+    the generated entry is removed because one entry cannot act differently per state

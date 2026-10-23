@@ -1,0 +1,11 @@
+' creole: CREOLE_BOLD | **unclosed
+' creole: CREOLE_COLOR | <color:red>to end of line
+' creole: CREOLE_HTML_BOLD | <b>bold forever
+' creole: CREOLE_SUP | <sup>never closed
+@startuml
+note as N
+  **unclosed <color:red>to end of line
+  <b>bold forever
+  x<sup>never closed
+end note
+@enduml

@@ -1,0 +1,6 @@
+' sequence: CommandAutonumberResume
+' gap: the format is checked by java.text.DecimalFormat (CommandAutonumberResume.java:101-107)
+@startuml
+Alice -> Bob : x
+autonumber resume "0.0.0.0#,#"
+@enduml

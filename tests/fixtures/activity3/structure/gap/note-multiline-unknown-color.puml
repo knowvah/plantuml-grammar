@@ -1,0 +1,8 @@
+' activity3: CommandNoteLong3
+' gap: unknown color: NoSuchColorException at execution (HColorSet.java:69-73), no shared valid-color variable yet
+@startuml
+:a;
+note left #zzzz
+x
+end note
+@enduml

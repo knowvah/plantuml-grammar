@@ -1,0 +1,9 @@
+' nwdiag-packet: NwNetworkInNetwork
+@startnwdiag
+nwdiag {
+  network n {
+    a
+  network m {
+  }
+}
+@endnwdiag

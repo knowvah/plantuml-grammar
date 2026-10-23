@@ -1,0 +1,5 @@
+' board-files-git: GitCommitLine
+@startgit
+x * a
+* b 
+@endgit

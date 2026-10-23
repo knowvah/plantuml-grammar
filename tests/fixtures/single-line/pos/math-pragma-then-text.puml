@@ -1,0 +1,6 @@
+' single-line: single-line-math
+@startmath
+!pragma x
+
+x^2
+@endmath

@@ -1,0 +1,9 @@
+' board-files-git: FilesEntry, FilesOtherLine, FilesStyleOpen, FilesStyleLine
+@startfiles
+/a
+skinparam x {
+<style>
+*
+</style>
+}
+@endfiles

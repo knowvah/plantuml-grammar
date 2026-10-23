@@ -1,0 +1,4 @@
+@startuml
+!endprocedurex
+a -> b
+@enduml

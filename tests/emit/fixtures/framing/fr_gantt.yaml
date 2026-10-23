@@ -1,0 +1,11 @@
+schema_version: 1
+id: fr_gantt
+layer: diagram
+diagram: GANTT
+factory: ToyGanttFactory
+contexts:
+  main:
+    - command: CommandTask
+      provenance: {class: toy.CommandTask}
+      kind: single
+      parts: {seq: [{literal: task, ci: true}, {regex: "\\s+\\w+"}]}

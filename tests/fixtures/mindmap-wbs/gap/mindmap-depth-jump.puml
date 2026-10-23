@@ -1,0 +1,7 @@
+' mindmap-wbs: CommandMindMapOrgmode
+' gap: error42L: a child deeper than last+1 needs the previous idea's level (mindmap/Branch.java:87)
+@startmindmap
+* a
+** b
+**** c
+@endmindmap

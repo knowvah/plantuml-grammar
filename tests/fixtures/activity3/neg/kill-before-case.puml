@@ -1,0 +1,7 @@
+' activity3: CommandSwitch, CommandKill3
+@startuml
+switch (x)
+kill
+case (a)
+endswitch
+@enduml

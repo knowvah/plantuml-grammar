@@ -1,0 +1,5 @@
+' misc-charts: ChenEntityFails
+@startchen
+relationship R #zzzz {
+}
+@endchen

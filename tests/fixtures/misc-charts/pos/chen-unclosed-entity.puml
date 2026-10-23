@@ -1,0 +1,6 @@
+' misc-charts: ChenEntityChecked, ChenAttributeChecked
+@startchen
+entity A {
+  a
+  b
+@endchen

@@ -1,0 +1,9 @@
+' common: CommandFactorySprite_1
+' factory: SequenceDiagramFactory
+' gap: semantic: zlib decoding of z sprites (CommandFactorySprite.java:199-201)
+@startuml
+sprite $foo1 [4x4/16z] {
+!!!!
+}
+Alice -> Bob : hello
+@enduml

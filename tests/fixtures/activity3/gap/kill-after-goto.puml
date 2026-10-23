@@ -1,0 +1,7 @@
+' activity3: CommandActivity3, CommandGoto, CommandKill3
+' gap: InstructionGoto.kill returns false (InstructionGoto.java:73-75)
+@startuml
+:a;
+goto x
+kill
+@enduml

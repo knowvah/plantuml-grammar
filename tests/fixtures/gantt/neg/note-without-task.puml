@@ -1,0 +1,6 @@
+' gantt: CommandNoteBottom
+@startgantt
+note bottom
+x
+end note
+@endgantt

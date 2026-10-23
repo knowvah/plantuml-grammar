@@ -1,0 +1,178 @@
+# WBS diagrams (T26). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/wbs/ unless stated.
+#
+# Upstream. WBSDiagramFactory.initCommandsList (WBSDiagramFactory.java:56-65) registers
+# the common block and seven WBS commands, all in the generated model in that order:
+# CommandWBSItemNew mode 1 (`_43`, `"label" as code`) and mode 0 (`_44`, label
+# optional), CommandWBSItemMultilineNew (`**:text` ... `text;`), CommandWBSItemOld
+# modes 1 and 0 (`_46`, `_47`: color/code before the shape and direction) and
+# CommandWBSItemMultilineOld, then CommandWBSLink `code1 -> code2`. The shape `_` and the
+# directions `<`/`>` combine as `_`, `_<`, `<` but never `<_` (a three-way RegexOr,
+# CommandWBSItemNew.java:86-92). Nothing opens a nested body.
+#
+# Tree. The first item is the root whatever its marker count (getSmartLevel returns 0
+# while there is no root, WBSDiagram.java:187-193). A later level-0 item fails ("WBS
+# diagram only accepts one root", :160-162) and an item deeper than the last one plus one
+# fails ("Bad tree structure", :213-230). getSmartLevel counts leading blanks (:194-208)
+# and the item commands match the untrimmed line (SingleLineCommand2 doTrim=false,
+# CommandWBSItemNew.java:57-58, CommandWBSItemOld.java:58-59), so ` * x` under `* root`
+# is level 1 while `* x` is a second root. A tree check needs the root's marker run and
+# the last item's level from earlier lines (one context per reachable level, levels
+# counted from leading blanks). Not modeled; tree checks stay gaps
+# (tests/fixtures/mindmap-wbs/gap/wbs-*),
+# as do link codes, which must name a non-root item declared earlier
+# (WBSDiagram.java:237-243; the root's code is never stored, :160-165).
+#
+# Execution errors a line shows:
+# * A label-less item that is not a pseudo node (`_`) fails "Missing label for WBS node"
+#   (CommandWBSItemNew.java:121-125, CommandWBSItemOld.java:122-126). Only mode 0 of
+#   each command has an optional label. Both are narrowed to "a label, or a `_`" and
+#   followed by a `reject` with the remaining shape (insert_after), so emitters keep the
+#   narrowed rule.
+# * An unknown node color (klimt/color/HColorSet.java:69-73) fails every item command
+#   (CommandWBSItemNew.java:115-118, ...) and an unknown link color fails CommandWBSLink
+#   (CommandWBSLink.java:95). Interpreter-only `reject` entries go before the first
+#   command that could capture the color; emitters drop them and stay lenient on colors.
+# An empty body stays rejected (no `empty` context; command/PSystemCommandFactory.java:
+# 117-121).
+schema_version: 1
+id: mindmap-wbs-wbs
+layer: diagram
+diagram: WBS
+factory: WBSDiagramFactory
+include: [gen-wbs-diagram, common, mindmap-wbs-colors]
+
+variables:
+  # Generated TYPE of every item command (CommandWBSItemNew.java:85).
+  WBS_TYPE: {regex: "([ \t]*[*+-]+)", ci: true, name: TYPE}
+  # The generated shape/direction RegexOr (CommandWBSItemNew.java:86-92).
+  WBS_SHAPE_DIRECTION:
+    alt:
+      - seq:
+          - {regex: '(_)?', ci: true, name: SHAPE_1}
+          - {regex: '([<>])?', ci: true, name: DIRECTION_1}
+      - {regex: '([<>])?', ci: true, name: DIRECTION_2}
+      - {regex: '(_)?', ci: true, name: SHAPE_2}
+  # The shapes of that RegexOr that hold `_`: `_`, `_<`, `_>`.
+  WBS_PSEUDO_SHAPE:
+    seq:
+      - {regex: '(_)', ci: true, name: SHAPE_1}
+      - {regex: '([<>])?', ci: true, name: DIRECTION_1}
+  # The shapes without `_`: empty, `<`, `>`.
+  WBS_DIRECTION_ONLY: {regex: '([<>])?', ci: true, name: DIRECTION_2}
+  WBS_LABEL:
+    seq:
+      - {regex: "[\\s\_]+", ci: true}
+      - {regex: "([^\\s\_].*)", ci: true, name: LABEL}
+
+overrides:
+  # CommandWBSItemNew mode 0 (CommandWBSItemNew.java:63-82): a label, or a `_` shape.
+  CommandWBSItemNew_44:
+    parts:
+      alt:
+        - seq:
+            - {ref: WBS_TYPE}
+            - {ref: WBS_SHAPE_DIRECTION}
+            - {ref: BACKCOLOR_1}
+            - {ref: WBS_LABEL}
+        - seq:
+            - {ref: WBS_TYPE}
+            - {ref: WBS_PSEUDO_SHAPE}
+            - {ref: BACKCOLOR_1}
+  # CommandWBSItemOld mode 0 (CommandWBSItemOld.java:63-83): same, color/code first.
+  CommandWBSItemOld_47:
+    parts:
+      alt:
+        - seq:
+            - {ref: WBS_TYPE}
+            - {ref: BACKCOLOR_1}
+            - {ref: WBS_SHAPE_DIRECTION}
+            - {ref: WBS_LABEL}
+        - seq:
+            - {ref: WBS_TYPE}
+            - {ref: BACKCOLOR_1}
+            - {ref: WBS_PSEUDO_SHAPE}
+
+insert_after:
+  CommandWBSItemNew_44:
+    - command: WBSItemMissingLabel
+      provenance:
+        class: net.sourceforge.plantuml.wbs.CommandWBSItemNew
+        file: src/main/java/net/sourceforge/plantuml/wbs/CommandWBSItemNew.java
+        line: 125
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wbs/CommandWBSItemNew.java:121-124
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: WBS_TYPE}
+          - {ref: WBS_DIRECTION_ONLY}
+          - {ref: BACKCOLOR_1}
+  CommandWBSItemOld_47:
+    - command: WBSItemOldMissingLabel
+      provenance:
+        class: net.sourceforge.plantuml.wbs.CommandWBSItemOld
+        file: src/main/java/net/sourceforge/plantuml/wbs/CommandWBSItemOld.java
+        line: 126
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wbs/CommandWBSItemOld.java:122-125
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {ref: WBS_TYPE}
+          - {ref: BACKCOLOR_1}
+          - {ref: WBS_DIRECTION_ONLY}
+
+insert_before:
+  # A `[#...]` right after the markers, an optional shape/direction and an optional
+  # `(code)` is captured as BACKCOLOR by whichever item command matches
+  # (CommandWBSItemNew/Old, both multiline forms); a bracket that is not `#\w+` matches
+  # no item command at all. Either way the line fails.
+  CommandWBSItemNew_43:
+    - command: WBSItemUnknownColor
+      provenance:
+        class: net.sourceforge.plantuml.klimt.color.HColorSet
+        file: src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java
+        line: 69
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wbs/CommandWBSItemNew.java:115-118
+          - src/main/java/net/sourceforge/plantuml/wbs/CommandWBSItemOld.java:116-119
+          - src/main/java/net/sourceforge/plantuml/wbs/CommandWBSItemMultilineNew.java:112-115
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {regex: '[*+-]+_?[<>]?(?:\([\p{L}\p{N}_]+\))?', ci: true}
+          - {literal: '[#', ci: false}
+          - {ref: MW_BRACKET_COLOR_UNKNOWN}
+          - {regex: '[^\]]*\].*', ci: true}
+  # CommandWBSLink is the last command: a `#` after the second code can only be its
+  # COLOR (CommandWBSLink.java:61-72), whose run of word and separator characters is
+  # the whole color.
+  CommandWBSLink:
+    - command: WBSLinkUnknownColor
+      provenance:
+        class: net.sourceforge.plantuml.klimt.color.HColorSet
+        file: src/main/java/net/sourceforge/plantuml/klimt/color/HColorSet.java
+        line: 69
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wbs/CommandWBSLink.java:95
+      kind: single
+      reject: true
+      parts:
+        seq:
+          - {regex: '[\p{L}\p{N}_]+', ci: true}
+          - {regex: "[\\s\_]*", ci: true}
+          - {regex: '[.-]+>', ci: true}
+          - {regex: "[\\s\_]*", ci: true}
+          - {regex: '[\p{L}\p{N}_]+', ci: true}
+          - {regex: "[\\s\_]*", ci: true}
+          - {literal: '#', ci: false}
+          - {ref: MW_LINK_COLOR_UNKNOWN}
+          - {regex: '.*', ci: true}

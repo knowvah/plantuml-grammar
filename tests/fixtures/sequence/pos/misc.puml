@@ -1,0 +1,27 @@
+' sequence: CommandDivider, CommandDelay, CommandHSpace, CommandNewpage, CommandIgnoreNewpage, CommandAutoNewpage, CommandFootbox, CommandFootboxOld, CommandHideUnlinked, CommandUrl
+@startuml
+hide footbox
+show footbox
+footbox off
+footbox on
+hide unlinked
+show unlinked
+participant Alice
+url of Alice is [[http://example.org]]
+url for Alice [[http://example.org{tip}]]
+Alice -> Bob : one
+== Initialization ==
+...
+... 5 minutes later ...
+…
+|||
+||45||
+Alice -> Bob : two
+newpage
+newpage A title
+newpage: Another title
+autonewpage 4
+ignore newpage
+newpage ignored
+Alice -> Bob : three
+@enduml

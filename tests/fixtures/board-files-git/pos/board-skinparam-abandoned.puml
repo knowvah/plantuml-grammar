@@ -1,0 +1,7 @@
+' board-files-git: CommandSkinParamMultilines, BoardSkinParamBodyInconsistent, BoardSkinParamAbandonedLine, CommandBoardPlus, BoardRelease
+@startboard
+skinparam foo {
+[OK]
+}
++x
+@endboard

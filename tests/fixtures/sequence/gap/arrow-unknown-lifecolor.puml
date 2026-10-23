@@ -1,0 +1,6 @@
+' sequence: CommandArrow
+' gap: unknown color names are NoSuchColorException at execution (klimt/color/HColorSet.java:69-73)
+@startuml
+autonumber
+Alice -> Bob #zzzz : x
+@enduml

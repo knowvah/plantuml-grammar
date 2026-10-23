@@ -1,0 +1,9 @@
+' json: JsonTitle, JsonScale, JsonSkin, JsonHide, JsonSkinparam, JsonMemberLine, JsonText
+@startjson
+title My data
+scale 2
+skin rose
+hide empty members
+skinparam backgroundcolor transparent
+{"a": 1}
+@endjson

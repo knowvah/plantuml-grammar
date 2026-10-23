@@ -1,0 +1,4 @@
+@startuml
+!theme cerulean
+a -> b
+@enduml

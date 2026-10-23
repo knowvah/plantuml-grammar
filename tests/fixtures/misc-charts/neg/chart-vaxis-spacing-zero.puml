@@ -1,0 +1,4 @@
+' misc-charts: ChartVAxisFails
+@startchart
+v-axis spacing 0.0
+@endchart

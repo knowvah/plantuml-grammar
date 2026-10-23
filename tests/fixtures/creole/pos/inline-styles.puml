@@ -1,0 +1,11 @@
+' creole: CREOLE_BOLD | **bold**
+' creole: CREOLE_ITALIC | //italic//
+' creole: CREOLE_MONOSPACE | ""mono""
+' creole: CREOLE_STRIKE | --strike--
+' creole: CREOLE_UNDERLINE | __under__
+' creole: CREOLE_WAVE | ~~wave~~
+@startuml
+note as N
+  This is **bold**, //italic//, ""mono"", --strike--, __under__ and ~~wave~~.
+end note
+@enduml

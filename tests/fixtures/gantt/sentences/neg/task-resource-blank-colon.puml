@@ -1,0 +1,4 @@
+' gantt: NaturalGanttTaskInvalid
+@startgantt
+[S] on { : } lasts 1 day
+@endgantt

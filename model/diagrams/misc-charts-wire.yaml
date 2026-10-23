@@ -1,0 +1,273 @@
+# Wire diagrams (T30, `@startwire`, WireDiagramFactory). Upstream pin 97a5992; paths are
+# relative to src/main/java/net/sourceforge/plantuml/.
+#
+# wire/WireDiagramFactory.java:56-65: the common block, then seven wire commands. No final
+# check (WireDiagram keeps the core/AbstractDiagram.java:161-171 defaults).
+#
+# Depth. Components nest by indentation: a command at level k walks k times to the last
+# child (wire/WBlock.java:161-219) and getLastChild returns null when there is none
+# (:230-235), so the next call throws NullPointerException, an execution error
+# (command/ProtectedCommand.java:65-76). With D = the length of the last-child chain, a
+# component at level k <= D sets D = k + 1, and goto/move/`--`/print need k <= D. The
+# contexts track D exactly up to 4 (`main` is D = 0, `wire_dK` is D = K) and leniently
+# beyond (`wire_deep`); levels are lookaheads in misc-charts-wire-parts. The state heads are
+# interpreter-only (`emit: false`, rejects): the emitters keep the generated rules.
+#
+# Execute-time errors with a syntactic cause (narrowed rule, then a reject of the upstream
+# shape): unknown colors in component, spot and link (misc-charts-colors) and
+# Integer.parseInt overflow of a component size (CommandComponent.java:96-99).
+# Not modelled (name tables, gap fixtures): "Component exists already" for a name already
+# used by a sibling or by a node on the path (WBlock.java:203-205), "No such element" for a
+# spot or link whose (dotted) name is unknown (WireDiagram.java:110-118, :142-176).
+schema_version: 1
+id: misc-charts-wire
+layer: diagram
+diagram: WIRE
+factory: WireDiagramFactory
+include: [gen-wire-diagram, common, misc-charts-wire-parts]
+
+overrides:
+  CommandComponent:
+    parts: {seq: [{ref: WI_INDENT}, {ref: WI_COMPONENT_BODY_OK}]}
+  CommandSpot:
+    parts: {seq: [{ref: WI_SPOT_HEAD}, {ref: WI_COLOR_SLOT_OK}]}
+  CommandGoto:
+    parts: {seq: [{ref: WI_INDENT}, {ref: WI_GOTO_BODY}]}
+  CommandMove:
+    parts: {seq: [{ref: WI_INDENT}, {ref: WI_MOVE_BODY}]}
+  CommandWLink:
+    parts: {seq: [{ref: WI_LINK_HEAD}, {ref: WI_COLOR_SLOT_OK}, {ref: WI_LINK_MESSAGE}]}
+  CommandNewColumn:
+    parts: {seq: [{ref: WI_INDENT}, {ref: WI_NEW_COLUMN_BODY}]}
+  CommandPrint:
+    parts: {seq: [{ref: WI_INDENT}, {ref: WI_PRINT_BODY}]}
+
+insert_after:
+  CommandComponent:
+    - command: WireComponentFails
+      provenance:
+        class: net.sourceforge.plantuml.wire.WireDiagram
+        file: src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java
+        line: 100
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/CommandComponent.java:96-104
+      kind: single
+      trim: false
+      reject: true
+      parts: {seq: [{ref: WI_INDENT}, {ref: WI_COMPONENT_BODY}]}
+  CommandSpot:
+    - command: WireSpotFails
+      provenance:
+        class: net.sourceforge.plantuml.wire.WireDiagram
+        file: src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java
+        line: 110
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/CommandSpot.java:94-97
+      kind: single
+      trim: false
+      reject: true
+      parts: {seq: [{ref: WI_SPOT_HEAD}, {ref: WI_COLOR_SLOT_WIDE}]}
+  CommandWLink:
+    - command: WireLinkFails
+      provenance:
+        class: net.sourceforge.plantuml.wire.WireDiagram
+        file: src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java
+        line: 142
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/CommandWLink.java:107-110
+      kind: single
+      trim: false
+      reject: true
+      parts: {seq: [{ref: WI_LINK_HEAD}, {ref: WI_COLOR_SLOT_WIDE}, {ref: WI_LINK_MESSAGE}]}
+
+contexts:
+  # Component heads, cumulative: wire_levels_k accepts a component at levels 0..k.
+  wire_levels_0:
+    - command: WireComponentAtLevel0
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 199
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:206-218
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:100-103
+      kind: single
+      trim: false
+      emit: false
+      parts: {seq: [{ref: WI_LEVEL_IS_0}, {ref: WI_INDENT}, {ref: WI_COMPONENT_BODY_OK}]}
+      set: wire_d1
+  wire_levels_1:
+    - include: wire_levels_0
+    - command: WireComponentAtLevel1
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 199
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:206-218
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:100-103
+      kind: single
+      trim: false
+      emit: false
+      parts: {seq: [{ref: WI_LEVEL_IS_1}, {ref: WI_INDENT}, {ref: WI_COMPONENT_BODY_OK}]}
+      set: wire_d2
+  wire_levels_2:
+    - include: wire_levels_1
+    - command: WireComponentAtLevel2
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 199
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:206-218
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:100-103
+      kind: single
+      trim: false
+      emit: false
+      parts: {seq: [{ref: WI_LEVEL_IS_2}, {ref: WI_INDENT}, {ref: WI_COMPONENT_BODY_OK}]}
+      set: wire_d3
+  wire_levels_3:
+    - include: wire_levels_2
+    - command: WireComponentAtLevel3
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 199
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:206-218
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:100-103
+      kind: single
+      trim: false
+      emit: false
+      parts: {seq: [{ref: WI_LEVEL_IS_3}, {ref: WI_INDENT}, {ref: WI_COMPONENT_BODY_OK}]}
+      set: wire_d4
+  wire_levels_4:
+    - include: wire_levels_3
+    - command: WireComponentAtLevel4
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 199
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:206-218
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:100-103
+      kind: single
+      trim: false
+      emit: false
+      parts: {seq: [{ref: WI_LEVEL_IS_4}, {ref: WI_INDENT}, {ref: WI_COMPONENT_BODY_OK}]}
+      set: wire_deep
+  # Depth states: main is D = 0, wire_dK is D = K, wire_deep is D > 4 (lenient).
+  main:
+    - include: wire_levels_0
+    - command: WireTooDeep0
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 230
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:168
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:217
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:137-140
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      trim: false
+      reject: true
+      parts: {seq: [{ref: WI_LEVEL_OVER_0}, {ref: WI_INDENT}, {ref: WI_INDENTED_BODY}]}
+    - include: gen-wire-diagram#main
+  wire_d1:
+    - include: wire_levels_1
+    - command: WireTooDeep1
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 230
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:168
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:217
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:137-140
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      trim: false
+      reject: true
+      parts: {seq: [{ref: WI_LEVEL_OVER_1}, {ref: WI_INDENT}, {ref: WI_INDENTED_BODY}]}
+    - include: gen-wire-diagram#main
+  wire_d2:
+    - include: wire_levels_2
+    - command: WireTooDeep2
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 230
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:168
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:217
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:137-140
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      trim: false
+      reject: true
+      parts: {seq: [{ref: WI_LEVEL_OVER_2}, {ref: WI_INDENT}, {ref: WI_INDENTED_BODY}]}
+    - include: gen-wire-diagram#main
+  wire_d3:
+    - include: wire_levels_3
+    - command: WireTooDeep3
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 230
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:168
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:217
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:137-140
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      trim: false
+      reject: true
+      parts: {seq: [{ref: WI_LEVEL_OVER_3}, {ref: WI_INDENT}, {ref: WI_INDENTED_BODY}]}
+    - include: gen-wire-diagram#main
+  wire_d4:
+    - include: wire_levels_4
+    - command: WireTooDeep4
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 230
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:168
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:217
+          - src/main/java/net/sourceforge/plantuml/wire/WireDiagram.java:137-140
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+      kind: single
+      trim: false
+      reject: true
+      parts: {seq: [{ref: WI_LEVEL_OVER_4}, {ref: WI_INDENT}, {ref: WI_INDENTED_BODY}]}
+    - include: gen-wire-diagram#main
+  wire_deep:
+    - include: wire_levels_3
+    - command: WireComponentBeyondLevel3
+      provenance:
+        class: net.sourceforge.plantuml.wire.WBlock
+        file: src/main/java/net/sourceforge/plantuml/wire/WBlock.java
+        line: 199
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/wire/WBlock.java:206-218
+      kind: single
+      trim: false
+      emit: false
+      parts: {seq: [{ref: WI_LEVEL_OVER_3}, {ref: WI_INDENT}, {ref: WI_COMPONENT_BODY_OK}]}
+      set: wire_deep
+    - include: gen-wire-diagram#main

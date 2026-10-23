@@ -1,0 +1,16 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+schema_version: 1
+id: single-line-list-open-iconic
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemListOpenIconicFactory
+include: [embedded-list-open-iconic, single-line-base]
+overrides:
+  PSystemListOpenIconicFactory:
+    provenance: {class: net.sourceforge.plantuml.openiconic.PSystemListOpenIconicFactory, file: src/main/java/net/sourceforge/plantuml/openiconic/PSystemListOpenIconicFactory.java, line: 50, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "[lL][iI][sS][tT][oO][pP][eE][nN][iI][cC][oO][nN][iI][cC][\\s\\S]*"}
+    set: sl_done
+    gives: single_line

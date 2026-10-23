@@ -1,0 +1,226 @@
+# Activity (new syntax), T21a: closers outside their construct. Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# ActivityDiagram3 keeps ONE instruction stack (`current()`, activitydiagram3/
+# ActivityDiagram3.java:97-103), and every closer first checks that the innermost open
+# instruction is its own kind (`current() instanceof InstructionIf`, ...) and fails with
+# CommandExecutionResult.error otherwise (:225-411). So a closer is an execution error in
+# every context except its own construct's body. The contexts below hold one `reject`
+# entry per closer family; activity3-core-flow.yaml splices the families that do not
+# belong to a body at the HEAD of that body (before the spliced generated commands).
+#
+# Shapes. Each shape is the keyword prefix of a closer family, not a copy of the
+# generated regexes, and matches every line that starts that way. That is exact: no
+# command of the factory other than the family itself matches a line starting with these
+# keywords (the reject contexts are only used where the family is an error), so such a
+# line fails upstream either through the closer's error or because no command matches
+# it. It also covers the first line of the multiline variants (CommandDecoratorMultine
+# of Else3/ElseIf2, CommandRepeatWhile3Multilines, CommandBackwardLong3), which a
+# `single` reject cannot join. tests/families/test_activity3.py checks that no other
+# generated command matches the sample closers, and that every shape keeps the opener
+# lines (`fork`, `split`, `repeat`, `while (x)`) out.
+#
+# Head placement keeps upstream's first match: no command registered before a closer
+# (ActivityDiagramFactory3.java:105-127) matches a closer-shaped line.
+schema_version: 1
+id: activity3-core-reject
+layer: shared
+include: [shared]
+
+variables:
+  # CommandElseIf3.java:63, CommandElseIf2.java:66, CommandElse3.java:60,
+  # CommandElseLegacy1.java:58: optional `(incoming label)`, then `else` or
+  # `elseif`/`else if` (CommandElseIf2 `else[\s]*if`). The optional `#color:` prefix of
+  # ElseIf3/ElseIf2 is left out: CommandActivityLong3 (ActivityDiagramFactory3.java:159)
+  # takes any other `#color:` line, so a prefix shape would reject activities
+  # (gap/colored-elseif-in-while).
+  A3_ELSE_SHAPE:
+    regex: "(?:\\(.*?\\))?[\\s\_]*else(?:[\\s\_]*if)?(?!\\w).*"
+    ci: true
+    scope: keyword.control.conditional
+  # CommandEndif3.java:58.
+  A3_ENDIF_SHAPE: {regex: "end[\\s\_]*if(?!\\w).*", ci: true, scope: keyword.control.conditional}
+  # CommandCase.java:56.
+  A3_CASE_SHAPE: {regex: "case(?!\\w).*", ci: true, scope: keyword.control.switch}
+  # CommandEndSwitch.java:58 (only the one-word form).
+  A3_ENDSWITCH_SHAPE: {regex: "endswitch(?!\\w).*", ci: true, scope: keyword.control.switch}
+  # CommandRepeatWhile3.java:62, CommandRepeatWhile3Multilines.java:70.
+  A3_REPEAT_WHILE_SHAPE: {regex: "repeat[\\s\_]*while(?!\\w).*", ci: true, scope: keyword.control.loop}
+  # CommandBackward3.java:65, CommandBackwardLong3.java:68.
+  A3_BACKWARD_SHAPE: {regex: "(?:\\(.*?\\))?[\\s\_]*backward(?!\\w).*", ci: true, scope: keyword.control.loop}
+  # CommandWhileEnd3.java:58.
+  A3_ENDWHILE_SHAPE: {regex: "(?:end[\\s\_]*while|while[\\s\_]*end)(?!\\w).*", ci: true, scope: keyword.control.loop}
+  # CommandForkAgain3.java:55, CommandForkEnd3.java:57.
+  A3_FORK_CLOSER_SHAPE:
+    regex: "(?:fork[\\s\_]*again|end[\\s\_]*fork|fork[\\s\_]*end|end[\\s\_]*merge)(?!\\w).*"
+    ci: true
+    scope: keyword.control.fork
+  # CommandSplitAgain3.java:55, CommandSplitEnd3.java:56.
+  A3_SPLIT_CLOSER_SHAPE:
+    regex: "(?:split[\\s\_]*again|end[\\s\_]*split|split[\\s\_]*end)(?!\\w).*"
+    ci: true
+    scope: keyword.control.fork
+  # Activity lines (CommandActivity3.java:66 `<<stereo>>? :`, CommandActivityLong3.java:78
+  # first line `:`). Every line starting with `:` is an activity or matches nothing.
+  A3_ACTIVITY_SHAPE: {regex: "(?:<<.+?>>)?[\\s\_]*:.*", ci: true, scope: string.unquoted.activity}
+  # CommandActivityList.java:62 `[-*]`, minus the arrows CommandArrow3/CommandArrowLong3
+  # (registered earlier, ActivityDiagramFactory3.java:114-115) take: `->`, `-[style]->`.
+  A3_ACTIVITY_LIST_SHAPE: {regex: "[-*](?!>)(?!\\[[^\\]]*\\]->).*", ci: true, scope: string.unquoted.activity}
+  # CommandKill3.java:55 matches `^kill|detach;?$` with find() (activity3-core-actions.yaml):
+  # lines starting with `kill`, or ending with `detach`. No earlier command matches a line
+  # starting with `kill`; the `.*detach` arm is limited to the bare word here, because
+  # earlier commands (title, notes in arrows, ...) also take lines ending with it.
+  A3_KILL_SHAPE: {regex: "kill.*|detach;?", ci: true, scope: keyword.control.flow}
+
+contexts:
+  # `elseif` / `else` / `else when` outside an if, or after the else branch
+  # (InstructionIf.elseIf / switchToElse2 return false once elseBranch exists,
+  # activitydiagram3/InstructionIf.java:166-187).
+  a3_reject_else:
+    - command: Activity3ElseWithoutIf
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 337
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java:316-333
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/InstructionIf.java:166-187
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:122-126
+      kind: single
+      reject: true
+      parts: {ref: A3_ELSE_SHAPE}
+  a3_reject_endif:
+    - command: Activity3EndifWithoutIf
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 348
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:127]
+      kind: single
+      reject: true
+      parts: {ref: A3_ENDIF_SHAPE}
+  a3_reject_if:
+    - include: a3_reject_else
+    - include: a3_reject_endif
+  a3_reject_switch:
+    - command: Activity3CaseWithoutSwitch
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 294
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:130]
+      kind: single
+      reject: true
+      parts: {ref: A3_CASE_SHAPE}
+    - command: Activity3EndSwitchWithoutSwitch
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 304
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:131]
+      kind: single
+      reject: true
+      parts: {ref: A3_ENDSWITCH_SHAPE}
+  a3_reject_repeat_while:
+    - command: Activity3RepeatWhileWithoutRepeat
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 373
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:133-134]
+      kind: single
+      reject: true
+      parts: {ref: A3_REPEAT_WHILE_SHAPE}
+  # `backward` needs an open repeat or while (ActivityDiagram3.java:377-392).
+  a3_reject_backward:
+    - command: Activity3BackwardWithoutLoop
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 391
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:135-136]
+      kind: single
+      reject: true
+      parts: {ref: A3_BACKWARD_SHAPE}
+  a3_reject_while:
+    - command: Activity3EndWhileWithoutWhile
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 411
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:138]
+      kind: single
+      reject: true
+      parts: {ref: A3_ENDWHILE_SHAPE}
+  a3_reject_fork:
+    - command: Activity3ForkCloserWithoutFork
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 245
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java:233
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:141-142
+      kind: single
+      reject: true
+      parts: {ref: A3_FORK_CLOSER_SHAPE}
+  a3_reject_split:
+    - command: Activity3SplitCloserWithoutSplit
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.ActivityDiagram3
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java
+        line: 272
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java:262
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:145-146
+      kind: single
+      reject: true
+      parts: {ref: A3_SPLIT_CLOSER_SHAPE}
+  # Every closer family: the head of `main` (nothing is open) and of bodies that are not
+  # a flow construct (T21b's group body).
+  a3_reject_flow:
+    - include: a3_reject_if
+    - include: a3_reject_switch
+    - include: a3_reject_repeat_while
+    - include: a3_reject_backward
+    - include: a3_reject_while
+    - include: a3_reject_fork
+    - include: a3_reject_split
+  # Between `switch` and the first `case` the switch has no branch: addActivity fails
+  # (InstructionSwitch.add, InstructionSwitch.java:97-101, checked at
+  # ActivityDiagram3.java:118-120) and kill dereferences the null branch
+  # (InstructionSwitch.java:130-131), which ProtectedCommand turns into an error
+  # (command/ProtectedCommand.java:65-76). Other instructions ignore the add result.
+  a3_reject_before_case:
+    - command: Activity3ActivityBeforeCase
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.InstructionSwitch
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/InstructionSwitch.java
+        line: 99
+        also:
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagram3.java:118-120
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:117
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:159
+      kind: single
+      reject: true
+      parts: {ref: A3_ACTIVITY_SHAPE}
+    - command: Activity3ActivityListBeforeCase
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.InstructionSwitch
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/InstructionSwitch.java
+        line: 99
+        also: [src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:160]
+      kind: single
+      reject: true
+      parts: {ref: A3_ACTIVITY_LIST_SHAPE}
+    - command: Activity3KillBeforeCase
+      provenance:
+        class: net.sourceforge.plantuml.activitydiagram3.InstructionSwitch
+        file: src/main/java/net/sourceforge/plantuml/activitydiagram3/InstructionSwitch.java
+        line: 131
+        also:
+          - src/main/java/net/sourceforge/plantuml/command/ProtectedCommand.java:65-76
+          - src/main/java/net/sourceforge/plantuml/activitydiagram3/ActivityDiagramFactory3.java:154
+      kind: single
+      reject: true
+      parts: {ref: A3_KILL_SHAPE}

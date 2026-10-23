@@ -1,0 +1,9 @@
+' activity3: CommandPartition3, CommandCloseGroup3
+@startuml
+partition A {
+  partition B {
+    :a;
+  }
+  :b;
+ }
+@enduml

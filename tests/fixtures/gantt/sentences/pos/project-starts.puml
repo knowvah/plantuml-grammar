@@ -1,0 +1,7 @@
+' gantt: NaturalGanttGantt
+@startgantt
+Project starts 2018-12-05
+gantt starts on dec 5, 2018
+project starts the 29th of february 2020
+[A] lasts 5 days
+@endgantt

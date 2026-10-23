@@ -1,0 +1,38 @@
+' sequence: FactorySequenceNoteCommand_2, FactorySequenceNoteCommand_1, FactorySequenceNoteOverSeveralCommand_1, FactorySequenceNoteOverSeveralCommand_2, FactorySequenceNoteAcrossCommand_1, FactorySequenceNoteAcrossCommand_2, FactorySequenceNoteOnArrowCommand_1, FactorySequenceNoteOnArrowCommand_2
+@startuml
+participant Alice
+participant Bob
+note left of Alice : left
+note right of Bob #aqua : right
+note over Alice : over
+hnote over Bob : hexagonal
+rnote over Bob : rectangle
+/ note over Alice : merged
+note <<sticky>> left of Alice [[http://example.org]] : with stereotype and link
+note over Alice, Bob : several
+note across : across
+hnote across #pink : across hexagonal
+Alice -> Bob : hello
+note left : on arrow
+note right #yellow : on arrow right
+note top : on arrow top
+note bottom : on arrow bottom
+note left of Alice
+  multiline
+  note
+end note
+note over Alice, Bob
+  over several
+endnote
+note across
+  across
+end hnote
+Alice -> Bob : again
+note right
+  multiline on arrow
+end note
+rnote over Alice
+  rectangle
+endrnote
+& note right of Bob : parallel
+@enduml

@@ -1,0 +1,10 @@
+' board-files-git: CommandTitle, CommandMultilinesLegend, CommandSkinParam, CommandBoardPlus, BoardRelease
+@startboard
+title Board
+legend
+x
+endlegend
+skinparam backgroundColor white
+A
++b
+@endboard

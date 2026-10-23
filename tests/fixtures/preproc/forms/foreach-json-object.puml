@@ -1,0 +1,5 @@
+@startuml
+!foreach $k in {"a": 1}
+a -> b
+!endfor
+@enduml

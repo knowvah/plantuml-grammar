@@ -1,0 +1,24 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# PSystemBasicFactory.createSystem (command/PSystemBasicFactory.java:74-102): every body
+# line goes to executeLine, which never refuses here, so any non-empty body is accepted
+# (D4: opaque, not parsed). An empty body is rejected (:89-90).
+# Exception: an empty body is accepted when the start line begins with "@startdef"
+# (PSystemBasicFactory.java:89, core/UmlSource.java:288-290); the `empty` context accepts
+# it (known gap: an empty `\startdef` block is rejected upstream).
+
+schema_version: 1
+id: embedded-definition
+layer: diagram
+diagram: DEFINITION
+factory: PSystemDefinitionFactory
+contexts:
+  main:
+    - command: PSystemDefinitionFactory
+      provenance: {class: net.sourceforge.plantuml.definition.PSystemDefinitionFactory, file: src/main/java/net/sourceforge/plantuml/definition/PSystemDefinitionFactory.java, line: 58}
+      kind: opaque
+      parts: {regex: ".*"}
+  empty:
+    - command: PSystemDefinitionFactory
+      provenance: {class: net.sourceforge.plantuml.definition.PSystemDefinitionFactory, file: src/main/java/net/sourceforge/plantuml/definition/PSystemDefinitionFactory.java, line: 58}
+      kind: opaque
+      parts: {regex: ".*"}

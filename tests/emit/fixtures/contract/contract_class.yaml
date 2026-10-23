@@ -1,0 +1,30 @@
+schema_version: 1
+id: contract_class
+layer: diagram
+diagram: CLASS
+contexts:
+  main:
+    - command: CommandCiRegex
+      provenance: {class: toy.CommandCiRegex}
+      kind: single
+      parts: {regex: "abc", ci: true}
+    - command: CommandCsRegex
+      provenance: {class: toy.CommandCsRegex}
+      kind: single
+      parts: {regex: "xyz"}
+    - command: CommandJoin
+      provenance: {class: toy.CommandJoin}
+      kind: multiline
+      parts:
+        seq:
+          - {literal: wrap, ci: true}
+          - {regex: "\\s+\\w+"}
+          - {opt: {regex: "\ue100\\w+"}}
+      join: {max_lines: 2}
+    - command: CommandBracket
+      provenance: {class: toy.CommandBracket}
+      kind: multiline-bracket
+      parts:
+        seq:
+          - {literal: pkg, ci: true}
+          - {regex: "\\s+\\w+\\s*\\{"}

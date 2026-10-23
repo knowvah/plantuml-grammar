@@ -1,0 +1,8 @@
+' gantt: NaturalGanttTask
+@startgantt
+-- Phase one --
+group [G]
+[A] lasts 5 days
+end group
+-- Phase two --
+@endgantt

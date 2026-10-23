@@ -1,0 +1,178 @@
+# Line shapes of the wire commands (T30, layer: shared), used by misc-charts-wire.
+# Upstream pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# The indented commands (component, goto, move, `--`, print) are SingleLineCommand2 with
+# doTrim=false (wire/CommandComponent.java:54-56 and the four others), so the INDENT
+# capture sees the raw line. INDENT is `[\s\t]*` with Java's ASCII `\s`; it is written
+# here as `[ \t\x0B\f]` (a line holds no `\n`/`\r`), so a no-break space never counts.
+#
+# Depth. WireDiagram.computeIndentationLevel is `indent.replace("    ", "\t").length()`
+# (wire/WireDiagram.java:137-140): every run of n spaces counts n/4 + n%4, every other
+# blank one. That is the fewest units of "four spaces or one blank" that tile the indent,
+# so `level <= k` is the lookahead "the indent tiles into at most k such units".
+schema_version: 1
+id: misc-charts-wire-parts
+layer: shared
+include: [shared, common, misc-charts-colors]
+
+variables:
+  WI_INDENT: {regex: '([ \t\x0B\f]*)', ci: true, name: INDENT}
+  WI_BLANKS: {regex: "[\\s ]*", ci: true}
+  WI_BLANKS_SOME: {regex: "[\\s ]+", ci: true}
+  WI_POSITION: {regex: '(-?\d+(%|%[-+]\d+)?)', ci: true, scope: constant.numeric}
+  WI_NAME_PATH: {regex: '([\w][.\w]*)', ci: true, name: NAME, scope: entity.name.tag}
+  WI_COLOR_WIDE: {regex: '(#\w+)?', ci: true, name: COLOR, scope: constant.other.color}
+  WI_COLOR_OK: {opt: {ref: MC_HASH_COLOR_OK}}
+  WI_COLOR_SLOT_WIDE:
+    seq:
+      - opt:
+          seq: [{ref: WI_BLANKS}, {ref: WI_COLOR_WIDE}]
+      - {ref: WI_BLANKS}
+  WI_COLOR_SLOT_OK:
+    seq:
+      - opt:
+          seq: [{ref: WI_BLANKS}, {ref: WI_COLOR_OK}]
+      - {ref: WI_BLANKS}
+  # CommandComponent.java:58-77 after INDENT; WIDTH/HEIGHT go through Integer.parseInt
+  # (:96-99) and COLOR through HColorSet.getColor (:101-104).
+  WI_COMPONENT_HEAD:
+    seq:
+      - {literal: '*', ci: true, scope: keyword.operator.component}
+      - {ref: WI_BLANKS}
+      - {regex: '([\w]+)', ci: true, name: NAME, scope: entity.name.type}
+  WI_COMPONENT_BODY:
+    seq:
+      - {ref: WI_COMPONENT_HEAD}
+      - opt:
+          seq:
+            - {ref: WI_BLANKS_SOME}
+            - {literal: '[', ci: true}
+            - {regex: '([\d]+)', ci: true, name: WIDTH, scope: constant.numeric}
+            - {regex: '[x*]', ci: true}
+            - {regex: '([\d]+)', ci: true, name: HEIGHT, scope: constant.numeric}
+            - {literal: ']', ci: true}
+      - {ref: WI_COLOR_SLOT_WIDE}
+  WI_COMPONENT_BODY_OK:
+    seq:
+      - {ref: WI_COMPONENT_HEAD}
+      - opt:
+          seq:
+            - {ref: WI_BLANKS_SOME}
+            - {literal: '[', ci: true}
+            - {ref: JAVA_INT}
+            - {regex: '[x*]', ci: true}
+            - {ref: JAVA_INT}
+            - {literal: ']', ci: true}
+      - {ref: WI_COLOR_SLOT_OK}
+  # CommandGoto.java:54-70, CommandMove.java:54-70 (Double.parseDouble never fails on
+  # `-?\d+`), CommandNewColumn.java:54-60, CommandPrint.java:54-70, after INDENT.
+  WI_GOTO_BODY:
+    seq:
+      - {literal: goto, ci: true, scope: keyword.other}
+      - {ref: WI_BLANKS}
+      - {literal: (, ci: true}
+      - {ref: WI_BLANKS}
+      - {regex: (\d+), ci: true, name: X, scope: constant.numeric}
+      - {ref: WI_BLANKS}
+      - {literal: ',', ci: true}
+      - {ref: WI_BLANKS}
+      - {regex: (\d+), ci: true, name: Y, scope: constant.numeric}
+      - {ref: WI_BLANKS}
+      - {literal: ), ci: true}
+      - {ref: WI_BLANKS}
+  WI_MOVE_BODY:
+    seq:
+      - {literal: move, ci: true, scope: keyword.other}
+      - {ref: WI_BLANKS}
+      - {literal: (, ci: true}
+      - {ref: WI_BLANKS}
+      - {regex: '(-?\d+)', ci: true, name: X, scope: constant.numeric}
+      - {ref: WI_BLANKS}
+      - {literal: ',', ci: true}
+      - {ref: WI_BLANKS}
+      - {regex: '(-?\d+)', ci: true, name: Y, scope: constant.numeric}
+      - {ref: WI_BLANKS}
+      - {literal: ), ci: true}
+      - {ref: WI_BLANKS}
+  WI_NEW_COLUMN_BODY:
+    seq:
+      - {regex: -+, ci: true, scope: keyword.operator.separator}
+      - {ref: WI_BLANKS}
+  WI_PRINT_BODY:
+    seq:
+      - {literal: print, ci: true, scope: keyword.other}
+      - {ref: WI_BLANKS}
+      - {literal: (, ci: true}
+      - {ref: WI_BLANKS}
+      - {regex: "[\"“”]", ci: true, scope: punctuation.definition.string.begin}
+      - {ref: WI_BLANKS}
+      - {regex: (.*), ci: true, name: TEXT, scope: string.quoted.double}
+      - {ref: WI_BLANKS}
+      - {regex: "[\"“”]", ci: true, scope: punctuation.definition.string.end}
+      - {ref: WI_BLANKS}
+      - {literal: ), ci: true}
+      - {ref: WI_BLANKS}
+  # Any indented command, as upstream matches it (before any execute-time check).
+  WI_INDENTED_BODY:
+    alt:
+      - {ref: WI_COMPONENT_BODY}
+      - {ref: WI_GOTO_BODY}
+      - {ref: WI_MOVE_BODY}
+      - {ref: WI_NEW_COLUMN_BODY}
+      - {ref: WI_PRINT_BODY}
+  # CommandSpot.java:58-80; COLOR through HColorSet.getColor (:94-97).
+  WI_SPOT_HEAD:
+    seq:
+      - {literal: spot, ci: true, scope: keyword.other}
+      - {ref: WI_BLANKS_SOME}
+      - {ref: WI_NAME_PATH}
+      - opt:
+          seq:
+            - {literal: (, ci: true}
+            - {ref: WI_BLANKS}
+            - {ref: WI_POSITION}
+            - {ref: WI_BLANKS}
+            - {literal: ',', ci: true}
+            - {ref: WI_BLANKS}
+            - {ref: WI_POSITION}
+            - {ref: WI_BLANKS}
+            - {literal: ), ci: true}
+  # CommandWLink.java:59-84 up to NAME2; COLOR through HColorSet.getColor (:107-110).
+  WI_LINK_HEAD:
+    seq:
+      - {regex: '([\w][.\w]*)', ci: true, name: NAME1, scope: entity.name.tag}
+      - opt:
+          seq:
+            - {literal: (, ci: true}
+            - {ref: WI_BLANKS}
+            - {ref: WI_POSITION}
+            - {ref: WI_BLANKS}
+            - {literal: ',', ci: true}
+            - {ref: WI_BLANKS}
+            - {ref: WI_POSITION}
+            - {ref: WI_BLANKS}
+            - {literal: ), ci: true}
+      - {ref: WI_BLANKS}
+      - {regex: '(\<?[-=]{1,2}\>|\<?[-=]{1,2})', ci: true, name: STYLE, scope: keyword.operator.arrow}
+      - {ref: WI_BLANKS}
+      - {regex: '([\w][.\w]*)', ci: true, name: NAME2, scope: entity.name.tag}
+  WI_LINK_MESSAGE:
+    seq:
+      - {regex: "(?::[\\s ]*(.*))?", ci: true, name: MESSAGE, scope: string.unquoted}
+      - {ref: WI_BLANKS}
+  # Indentation level tests (see the header).
+  WI_LEVEL_UPTO_0: {regex: '(?=(?:[ ]{4}|[ \t\x0B\f]){0,0}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_OVER_0: {regex: '(?!(?:[ ]{4}|[ \t\x0B\f]){0,0}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_UPTO_1: {regex: '(?=(?:[ ]{4}|[ \t\x0B\f]){0,1}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_OVER_1: {regex: '(?!(?:[ ]{4}|[ \t\x0B\f]){0,1}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_UPTO_2: {regex: '(?=(?:[ ]{4}|[ \t\x0B\f]){0,2}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_OVER_2: {regex: '(?!(?:[ ]{4}|[ \t\x0B\f]){0,2}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_UPTO_3: {regex: '(?=(?:[ ]{4}|[ \t\x0B\f]){0,3}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_OVER_3: {regex: '(?!(?:[ ]{4}|[ \t\x0B\f]){0,3}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_UPTO_4: {regex: '(?=(?:[ ]{4}|[ \t\x0B\f]){0,4}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_OVER_4: {regex: '(?!(?:[ ]{4}|[ \t\x0B\f]){0,4}[^ \t\x0B\f])', ci: true}
+  WI_LEVEL_IS_0: {ref: WI_LEVEL_UPTO_0}
+  WI_LEVEL_IS_1: {seq: [{ref: WI_LEVEL_UPTO_1}, {ref: WI_LEVEL_OVER_0}]}
+  WI_LEVEL_IS_2: {seq: [{ref: WI_LEVEL_UPTO_2}, {ref: WI_LEVEL_OVER_1}]}
+  WI_LEVEL_IS_3: {seq: [{ref: WI_LEVEL_UPTO_3}, {ref: WI_LEVEL_OVER_2}]}
+  WI_LEVEL_IS_4: {seq: [{ref: WI_LEVEL_UPTO_4}, {ref: WI_LEVEL_OVER_3}]}

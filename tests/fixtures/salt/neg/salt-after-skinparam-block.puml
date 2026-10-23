@@ -1,0 +1,7 @@
+' salt: SaltNotNeeded
+@startsalt
+skinparam {
+ArrowColor red
+}
+salt
+@endsalt

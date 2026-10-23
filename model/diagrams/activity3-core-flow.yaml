@@ -1,0 +1,138 @@
+# Activity (new syntax), T21a: nesting of the flow constructs. Upstream pin 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Each opener pushes the body context of its construct and each closer leaves it; the
+# generated entries keep their upstream position and parts, and only get a transition
+# (overrides below). Patches act on every splice of an entry alike, so the
+# per-context difference lives at the HEAD of each body: the reject families of
+# activity3-core-reject.yaml for every closer that does not belong to the body
+# (ActivityDiagram3 fails a closer whose construct is not the innermost open
+# instruction, ActivityDiagram3.java:225-411).
+#
+# Constructs, ActivityDiagram3.java (openers / closers):
+# * if (:307-349): If4, If2, DecoratorMultine(If2), IfLegacy1 push a3_if_then; ElseIf3,
+#   ElseIf2, DecoratorMultine(ElseIf2) stay; Else3, DecoratorMultine(Else3),
+#   ElseLegacy1 set a3_if_else, where elseif/else fail (InstructionIf.java:166-187);
+#   Endif3 pops.
+# * switch (:275-305): Switch pushes a3_switch_head, where activities and kill fail
+#   (no branch yet, InstructionSwitch.java:97-101, :130-131); Case sets a3_switch_case;
+#   EndSwitch pops.
+# * repeat (:351-374): Repeat3 pushes a3_repeat_body; RepeatWhile3 and its multiline
+#   form pop. backward (:377-392) is allowed in repeat and while bodies only.
+# * while (:395-412): While3 pushes a3_while_body; WhileEnd3 pops.
+# * fork (:216-246): Fork3 pushes a3_fork_body; ForkAgain3 stays; ForkEnd3 pops.
+# * split (:248-273): Split3 pushes a3_split_body; SplitAgain3 stays; SplitEnd3 pops.
+#
+# No construct has to be closed: ActivityDiagram3 overrides neither checkFinalError nor
+# isIncomplete (defaults at core/AbstractDiagram.java:162-171, used by
+# command/PSystemCommandFactory.java:150-162), and the jar accepts a block that ends
+# inside an if/switch/while/repeat/fork/split body (tests/fixtures/activity3/pos/
+# unclosed-*). So no entry carries `require_pop`.
+schema_version: 1
+id: activity3-core-flow
+layer: shared
+include: [activity3-core-reject]
+
+overrides:
+  # ActivityDiagramFactory3.java:118-121.
+  CommandIf4: {push: a3_if_then}
+  CommandIf2: {push: a3_if_then}
+  CommandDecoratorMultine_55: {push: a3_if_then}
+  CommandIfLegacy1: {push: a3_if_then}
+  # :124-126 (ElseIf3/ElseIf2 at :122-123 and DecoratorMultine(ElseIf2) at :164 keep
+  # the current context).
+  CommandElse3: {set: a3_if_else}
+  CommandDecoratorMultine_60: {set: a3_if_else}
+  CommandElseLegacy1: {set: a3_if_else}
+  # :127.
+  CommandEndif3: {pop: true}
+  # :129-131.
+  CommandSwitch: {push: a3_switch_head}
+  CommandCase: {set: a3_switch_case}
+  CommandEndSwitch: {pop: true}
+  # :116, :133-134.
+  CommandRepeat3: {push: a3_repeat_body}
+  CommandRepeatWhile3: {pop: true}
+  CommandRepeatWhile3Multilines: {pop: true}
+  # :137-138.
+  CommandWhile3: {push: a3_while_body}
+  CommandWhileEnd3: {pop: true}
+  # :140-142.
+  CommandFork3: {push: a3_fork_body}
+  CommandForkEnd3: {pop: true}
+  # :144-146.
+  CommandSplit3: {push: a3_split_body}
+  CommandSplitEnd3: {pop: true}
+
+contexts:
+  # The factory's whole command list in upstream order (common block included).
+  a3_statements:
+    - include: gen-activity-diagram3#main
+  # Top level: nothing is open, every closer fails.
+  a3_main:
+    - include: a3_reject_flow
+    - include: a3_statements
+  a3_if_then:
+    - include: a3_reject_switch
+    - include: a3_reject_repeat_while
+    - include: a3_reject_backward
+    - include: a3_reject_while
+    - include: a3_reject_fork
+    - include: a3_reject_split
+    - include: a3_statements
+  a3_if_else:
+    - include: a3_reject_else
+    - include: a3_reject_switch
+    - include: a3_reject_repeat_while
+    - include: a3_reject_backward
+    - include: a3_reject_while
+    - include: a3_reject_fork
+    - include: a3_reject_split
+    - include: a3_statements
+  a3_switch_head:
+    - include: a3_reject_before_case
+    - include: a3_reject_if
+    - include: a3_reject_repeat_while
+    - include: a3_reject_backward
+    - include: a3_reject_while
+    - include: a3_reject_fork
+    - include: a3_reject_split
+    - include: a3_statements
+  a3_switch_case:
+    - include: a3_reject_if
+    - include: a3_reject_repeat_while
+    - include: a3_reject_backward
+    - include: a3_reject_while
+    - include: a3_reject_fork
+    - include: a3_reject_split
+    - include: a3_statements
+  a3_repeat_body:
+    - include: a3_reject_if
+    - include: a3_reject_switch
+    - include: a3_reject_while
+    - include: a3_reject_fork
+    - include: a3_reject_split
+    - include: a3_statements
+  a3_while_body:
+    - include: a3_reject_if
+    - include: a3_reject_switch
+    - include: a3_reject_repeat_while
+    - include: a3_reject_fork
+    - include: a3_reject_split
+    - include: a3_statements
+  a3_fork_body:
+    - include: a3_reject_if
+    - include: a3_reject_switch
+    - include: a3_reject_repeat_while
+    - include: a3_reject_backward
+    - include: a3_reject_while
+    - include: a3_reject_split
+    - include: a3_statements
+  a3_split_body:
+    - include: a3_reject_if
+    - include: a3_reject_switch
+    - include: a3_reject_repeat_while
+    - include: a3_reject_backward
+    - include: a3_reject_while
+    - include: a3_reject_fork
+    - include: a3_statements

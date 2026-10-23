@@ -1,0 +1,20 @@
+' creole: CREOLE_HTML_BOLD | <b>bold</b>
+' creole: CREOLE_HTML_ITALIC | <i>it</i>
+' creole: CREOLE_HTML_PLAIN | <plain>p</plain>
+' creole: CREOLE_HTML_UNDERLINE | <u:red>u</u>
+' creole: CREOLE_HTML_STRIKE | <s>s</s>
+' creole: CREOLE_HTML_WAVE | <w>w</w>
+' creole: CREOLE_BACK | <back:yellow>hl</back>
+' creole: CREOLE_SIZE | <size:18>big</size>
+' creole: CREOLE_COLOR | <color:red>red</color>
+' creole: CREOLE_FONT_ATTRIBUTES | <font color=blue size=14>f</font>
+' creole: CREOLE_SUP | <sup>2</sup>
+' creole: CREOLE_SUB | <sub>i</sub>
+' creole: CREOLE_FONT_FAMILY | <font:Courier>code</font>
+@startuml
+note as N
+  <b>bold</b> <i>it</i> <plain>p</plain> <u:red>u</u> <s>s</s> <w>w</w>
+  <back:yellow>hl</back> <size:18>big</size> <color:red>red</color>
+  <font color=blue size=14>f</font> x<sup>2</sup> a<sub>i</sub> <font:Courier>code</font>
+end note
+@enduml

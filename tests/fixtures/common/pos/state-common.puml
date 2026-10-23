@@ -1,0 +1,8 @@
+' common: CommandHideEmptyDescription, CommandScale
+' factory: StateDiagramFactory
+@startuml
+hide empty description
+scale 1.5
+state A
+[*] --> A
+@enduml

@@ -1,0 +1,6 @@
+' description: CommandFactoryNoteOnEntity_1
+' gap: a note without `of` needs a last entity (CommandFactoryNoteOnEntity.java:298-301): entity state
+@startuml
+note left : x
+[A]
+@enduml

@@ -1,0 +1,9 @@
+' activity-legacy: CommandFactoryNoteOnLink_2, CommandFactoryNoteActivity_1
+@startuml
+(*) --> A
+note on link: label
+note right
+  body
+end note
+A --> B
+@enduml

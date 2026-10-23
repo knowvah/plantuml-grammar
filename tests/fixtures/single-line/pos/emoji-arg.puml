@@ -1,0 +1,4 @@
+' single-line: single-line-list-emoji
+@startuml
+Emoji 1f6
+@enduml

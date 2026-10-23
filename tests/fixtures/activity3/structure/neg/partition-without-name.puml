@@ -1,0 +1,5 @@
+' activity3: CommandPartition3
+@startuml
+partition
+:a;
+@enduml

@@ -1,0 +1,6 @@
+' common: CommandSpriteFile
+' factory: SequenceDiagramFactory
+@startuml
+sprite $aComponent jar:archimate/application-component
+Alice -> Bob : hello
+@enduml

@@ -1,0 +1,237 @@
+# Gantt diagrams (T24: the non-sentence commands; T25 adds the sentence grammar). Upstream
+# pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# Upstream. GanttDiagramFactory (a PSystemCommandFactory) registers the common block, the
+# 9 NaturalGanttCommand sentences, then 18 gantt commands (gantt/GanttDiagramFactory.java:
+# 84-122), all single lines except CommandNoteBottom (`note bottom` ... `end note`).
+# Line-local execute errors are in `gantt-errors`; this file holds the diagram state.
+#
+# Task-like entries. Separators, groups and tasks all go into the task map
+# (gantt/GanttDiagram.java:310-325, :275-294). Before the first one, three commands fail:
+# `A -> B` and `[A] #color` look a task up by name (gantt/command/CommandGanttArrow.java:
+# 77-84, CommandColorTask.java:72-75) and `note bottom` attaches to the last entry
+# (GanttDiagram.java:484-493, "No task defined"). `main` is that state and rejects them in
+# head entries; the first separator, group or `[A] -> [B]` (CommandGanttArrow2 creates both
+# tasks, :82-83) moves to `gantt_tasks`. Later lookups of an undeclared name stay gaps.
+#
+# Group depth. `end group` fails without an open group (GanttDiagram.java:327-334, "No
+# group to be closed"); an unclosed group is accepted. A group opened from `main` must
+# also leave the task-like state, and a pop would return to `main`, so the first group
+# from `main` is the flat state `gantt_group_1` (`set`); deeper groups push `gantt_group`.
+# One generated entry cannot act per state, so CommandGroupStart and CommandGroupEnd are
+# removed and every body context has its own two group heads (they cite GanttDiagram so
+# the remove keys leave them alone; coverage exclusions in reports/classify/gantt.yaml).
+# Heads run before the whole spliced list; no earlier command (common block, sentences)
+# matches their lines (tests/families/test_gantt.py).
+#
+# Notes. CommandNoteBottom is a CommandMultilines2 whose execute fails on an empty body
+# (CommandNoteBottom.java:106-107, "No note defined"; comment lines are gone after
+# preprocessing). The body is a context: the first line may not be `end note`.
+# `require_pop`: an unterminated note backtracks to `note bottom`, which nothing else takes.
+#
+# Final check. A diagram whose only task-like entries are separators or groups
+# fails at the end: TimeBoundsData.initMinMax skips them and leaves maxDay null
+# (gantt/data/TimeBoundsData.java:131-142), durationInDays (:155) throws a
+# NullPointerException that checkFinalError does not catch (GanttDiagram.java:172-181),
+# and PSystemBuilder.java:275-280 reports the crash. Order does not matter, so it is a
+# diagram flag: separators and group starts `needs: real_task`; `[A] -> [B]` and task
+# sentences (gantt-sentences) `gives: real_task`.
+#
+# T25 hook. `gantt-sentences` (layer: shared) is added to `include` (one line). It places
+# the sentences with `insert_before: {CommandGanttArrow: [...]}` (their upstream position,
+# GanttDiagramFactory.java:89) and per-state heads with `insert_before` keyed by the head
+# ids below: GanttArrowWithoutTask (main), GanttGroupAtRoot (gantt_tasks),
+# GanttGroupInFirstGroup (gantt_group_1), GanttGroupInGroup (gantt_group).
+schema_version: 1
+id: gantt
+layer: diagram
+diagram: GANTT
+factory: GanttDiagramFactory
+include: [gen-gantt-diagram, common, gantt-errors, gantt-sentences]
+
+variables:
+  # Generated shapes of the commands that get head entries (copies, pinned by tests).
+  G_ARROW_SHAPE:
+    seq:
+      - {regex: '([\p{L}\p{N}_.]+)', ci: true, name: CODE1}
+      - {regex: "[\\s ]*", ci: true}
+      - {regex: (-+), ci: true}
+      - {ref: ARROW_STYLE}
+      - {regex: (-*), ci: true}
+      - {literal: '>', ci: true}
+      - {regex: "[\\s ]*", ci: true}
+      - {regex: '([\p{L}\p{N}_.]+)', ci: true, name: CODE2}
+      - {regex: "[\\s ]*", ci: true}
+  G_ARROW2_SHAPE:
+    seq:
+      - {literal: '[', ci: true}
+      - {regex: '([^\[\]]+?)', ci: true, name: TASK1}
+      - {literal: ']', ci: true}
+      - {regex: "[\\s ]*", ci: true}
+      - {regex: (-+), ci: true}
+      - {ref: ARROW_STYLE}
+      - {regex: (-*), ci: true}
+      - {literal: '>', ci: true}
+      - {regex: "[\\s ]*", ci: true}
+      - {literal: '[', ci: true}
+      - {regex: '([^\[\]]+?)', ci: true, name: TASK2}
+      - {literal: ']', ci: true}
+      - {regex: "[\\s ]*", ci: true}
+  G_COLOR_SHAPE:
+    seq:
+      - {regex: '\[([\p{L}\p{N}_.]+)\]', ci: true, name: CODE}
+      - {regex: "[\\s ]+", ci: true}
+      - {regex: '#(\w+)(?:/(#?\w+))?', ci: true, name: COLORS}
+      - {regex: "[\\s ]*", ci: true}
+  G_SEPARATOR_SHAPE:
+    seq:
+      - {literal: --, ci: true}
+      - {regex: "[\\s ]*", ci: true}
+      - {regex: "((.+?)[\\s ]*--)?", ci: true, name: COMMENT}
+  G_GROUP_START_SHAPE:
+    seq:
+      - {literal: group, ci: true}
+      - {regex: "[\\s ]+", ci: true}
+      - {literal: '[', ci: true}
+      - {regex: '([^\[\]]+)', ci: true, name: NAME}
+      - {literal: ']', ci: true}
+      - {regex: "[\\s ]*", ci: true}
+  G_GROUP_END_SHAPE:
+    seq:
+      - {regex: "[\\s ]*", ci: true}
+      - {literal: end, ci: true}
+      - {regex: "[\\s ]*", ci: true}
+      - {literal: group, ci: true}
+      - {regex: "[\\s ]*", ci: true}
+  G_NOTE_SHAPE:
+    seq:
+      - {regex: (note), ci: true, name: TYPE}
+      - {regex: "[\\s ]*", ci: true}
+      - {regex: (bottom), ci: true, name: POSITION}
+      - {regex: "[\\s ]*", ci: true}
+      - {ref: TAGS}
+      - seq:
+          - {regex: "[\\s ]*", ci: true}
+          - opt: {regex: '(\<\<.+?\>\>)', ci: true, name: STEREO}
+          - {regex: "[\\s ]*", ci: true}
+  # CommandNoteBottom END `^end[%s]*note$` (CommandNoteBottom.java:60), on trimmed lines.
+  G_NOTE_END: {regex: "end[\\s ]*note", ci: true, scope: keyword.other.note}
+  # Any other body line, blank included; one regex, so emitters keep the lookahead.
+  G_NOTE_LINE: {regex: "(?![\\s ]*end[\\s ]*note[\\s ]*(?!.)).*", ci: true, scope: string.unquoted.note}
+
+overrides:
+  CommandGroupStart: {remove: true}
+  CommandGroupEnd: {remove: true}
+  # CommandMultilines2 completion (command/CommandMultilines2.java:79-110) as a context.
+  CommandNoteBottom: {kind: single, end: null, push: gantt_note_first, require_pop: true}
+  # Final check (see header): separators and groups need a real task, which `[A] -> [B]`
+  # and task sentences give.
+  CommandSeparator: {needs: real_task}
+  CommandGanttArrow2: {gives: real_task}
+
+contexts:
+  main:
+    - command: GanttArrowWithoutTask
+      provenance:
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 261
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandGanttArrow.java:77-84]
+      kind: single
+      reject: true
+      parts: {ref: G_ARROW_SHAPE}
+    - command: GanttFirstTaskByArrow
+      provenance:
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 275
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandGanttArrow2.java:82-83]
+      kind: single
+      parts: {ref: G_ARROW2_SHAPE}
+      set: gantt_tasks
+      gives: real_task
+    - command: GanttColorWithoutTask
+      provenance:
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 261
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandColorTask.java:72-75]
+      kind: single
+      reject: true
+      parts: {ref: G_COLOR_SHAPE}
+    - command: GanttFirstTaskBySeparator
+      provenance:
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 310
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandSeparator.java:64-66]
+      kind: single
+      parts: {ref: G_SEPARATOR_SHAPE}
+      set: gantt_tasks
+      needs: real_task
+    - command: GanttFirstGroup
+      provenance: &group_start
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 316
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandGroupStart.java:55-71]
+      kind: single
+      parts: {ref: G_GROUP_START_SHAPE}
+      set: gantt_group_1
+      needs: real_task
+    - command: GanttGroupEndWithoutGroup
+      provenance: &group_end
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 327
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandGroupEnd.java:54-68]
+      kind: single
+      reject: true
+      parts: {ref: G_GROUP_END_SHAPE}
+    - command: GanttNoteWithoutTask
+      provenance:
+        class: net.sourceforge.plantuml.gantt.GanttDiagram
+        file: src/main/java/net/sourceforge/plantuml/gantt/GanttDiagram.java
+        line: 484
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandNoteBottom.java:100-115]
+      kind: single
+      reject: true
+      parts: {ref: G_NOTE_SHAPE}
+    - include: gen-gantt-diagram#main
+  gantt_tasks:
+    - {command: GanttGroupAtRoot, provenance: *group_start, kind: single, parts: {ref: G_GROUP_START_SHAPE}, push: gantt_group, needs: real_task}
+    - {command: GanttGroupEndAtRoot, provenance: *group_end, kind: single, reject: true, parts: {ref: G_GROUP_END_SHAPE}}
+    - include: gen-gantt-diagram#main
+  gantt_group_1:
+    - {command: GanttGroupInFirstGroup, provenance: *group_start, kind: single, parts: {ref: G_GROUP_START_SHAPE}, push: gantt_group, needs: real_task}
+    - {command: GanttFirstGroupEnd, provenance: *group_end, kind: single, parts: {ref: G_GROUP_END_SHAPE}, set: gantt_tasks}
+    - include: gen-gantt-diagram#main
+  gantt_group:
+    - {command: GanttGroupInGroup, provenance: *group_start, kind: single, parts: {ref: G_GROUP_START_SHAPE}, push: gantt_group, needs: real_task}
+    - {command: GanttGroupEnd, provenance: *group_end, kind: single, parts: {ref: G_GROUP_END_SHAPE}, pop: true}
+    - include: gen-gantt-diagram#main
+  gantt_note_first:
+    - command: GanttNoteEmpty
+      provenance: &note_body
+        class: net.sourceforge.plantuml.command.CommandMultilines2
+        file: src/main/java/net/sourceforge/plantuml/command/CommandMultilines2.java
+        line: 79
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/gantt/command/CommandNoteBottom.java:103-107]
+      kind: single
+      reject: true
+      parts: {ref: G_NOTE_END}
+    # Shadowed by the reject above in the interpreter; emitters, which drop rejects, close
+    # an empty note here instead of failing it.
+    - {command: GanttNoteEmptyClose, provenance: *note_body, kind: single, parts: {ref: G_NOTE_END}, pop: true}
+    - {command: GanttNoteFirstLine, provenance: *note_body, kind: single, parts: {ref: G_NOTE_LINE}, set: gantt_note_body}
+  gantt_note_body:
+    - {command: GanttNoteEnd, provenance: *note_body, kind: single, parts: {ref: G_NOTE_END}, pop: true}
+    - {command: GanttNoteLine, provenance: *note_body, kind: single, parts: {ref: G_NOTE_LINE}}

@@ -1,0 +1,57 @@
+# BPM diagrams (T30, `@startbpm`, BpmDiagramFactory). Upstream pin 97a5992; paths are
+# relative to src/main/java/net/sourceforge/plantuml/.
+#
+# bpm/BpmDiagramFactory.java:55-63 registers seven commands and no common block, so this
+# model includes the generated model only. BpmDiagram overrides no final check
+# (checkFinalError/isIncomplete keep the core/AbstractDiagram.java:161-171 defaults) and
+# every command except the branch pair always succeeds: `goto`/`resume` targets are
+# looked up only when the grid is drawn (bpm/BpmDiagram.java:96-145).
+#
+# Branches. `new branch` pushes onto a Deque (BpmDiagram.java:158-162); `else` reads
+# branches.getLast() (:164-173) and `end branch` calls removeLast() (:175-178). Both throw
+# NoSuchElementException on an empty deque, which ProtectedCommand turns into an
+# execution error (command/ProtectedCommand.java:65-76). So `else`/`end branch` reject
+# outside a branch, `else` may repeat inside one, and an unclosed branch is accepted.
+# Model: `new branch` pushes `bpm_branch`; in `main` the two closers are rejects; in
+# `bpm_branch` two head entries (no earlier command matches these lines) keep `else` and
+# pop on `end branch`.
+schema_version: 1
+id: misc-charts-bpm
+layer: diagram
+diagram: BPM
+factory: BpmDiagramFactory
+include: [gen-bpm-diagram]
+
+overrides:
+  CommandNewBranch: {push: bpm_branch}
+  CommandElseBranch: {reject: true}
+  CommandEndBranch: {reject: true}
+
+contexts:
+  bpm_branch:
+    - command: BpmBranchElse
+      provenance:
+        class: net.sourceforge.plantuml.bpm.BpmDiagram
+        file: src/main/java/net/sourceforge/plantuml/bpm/BpmDiagram.java
+        line: 164
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/bpm/CommandElseBranch.java:54-58
+      kind: single
+      parts: {literal: else, ci: true, scope: keyword.control.conditional}
+    - command: BpmBranchEnd
+      provenance:
+        class: net.sourceforge.plantuml.bpm.BpmDiagram
+        file: src/main/java/net/sourceforge/plantuml/bpm/BpmDiagram.java
+        line: 175
+        engine: IRegex
+        also:
+          - src/main/java/net/sourceforge/plantuml/bpm/CommandEndBranch.java:54-60
+      kind: single
+      parts:
+        seq:
+          - {literal: end, ci: true, scope: keyword.control}
+          - {regex: "[\\s ]+", ci: true}
+          - {literal: branch, ci: true, scope: keyword.control}
+      pop: true
+    - include: gen-bpm-diagram#main

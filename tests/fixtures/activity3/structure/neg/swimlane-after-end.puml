@@ -1,0 +1,6 @@
+' activity3: CommandSwimlane
+@startuml
+end
+|B|
+:b;
+@enduml

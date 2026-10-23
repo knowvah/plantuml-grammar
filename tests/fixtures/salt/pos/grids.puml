@@ -1,0 +1,21 @@
+' salt: CommandAnything
+@startsalt
+{
+Login | "MyName   "
+{+
+a | b
+}
+{#
+c | d
+}
+{!
+e | f
+}
+{-
+g | h
+}
+{^"Title"
+i | * | j
+}
+}
+@endsalt

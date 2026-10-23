@@ -1,0 +1,10 @@
+' timing: CommandDefineStateShort, CommandDefineStateLong, CommandChangeStateByPlayerCode
+@startuml
+robust "DNS Resolver" as DNS
+DNS has Idle,Processing,Waiting
+DNS has "Long state name" as LSN
+@0
+DNS is Idle
+@10
+DNS is LSN
+@enduml

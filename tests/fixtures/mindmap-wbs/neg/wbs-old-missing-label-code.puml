@@ -1,0 +1,5 @@
+' mindmap-wbs: WBSItemOldMissingLabel
+@startwbs
+* root
+**(c)>
+@endwbs

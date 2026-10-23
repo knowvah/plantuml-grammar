@@ -1,0 +1,5 @@
+' single-line: single-line-dot
+@startdot
+skinparam x y
+digraph G {
+@enddot

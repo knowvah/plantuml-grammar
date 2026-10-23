@@ -1,0 +1,4 @@
+' nwdiag-packet: PacketFirstField, CommandNumRange
+@startpacketdiag
+* A [len=0, len=1]
+@endpacketdiag

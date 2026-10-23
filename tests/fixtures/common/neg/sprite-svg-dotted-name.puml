@@ -1,0 +1,6 @@
+' common: CommandSpriteSvg
+' factory: SequenceDiagramFactory
+@startuml
+sprite foo.bar <svg></svg>
+Alice -> Bob : hello
+@enduml

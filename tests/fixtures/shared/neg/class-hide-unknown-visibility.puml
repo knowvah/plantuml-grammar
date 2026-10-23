@@ -1,0 +1,5 @@
+' refines: visibility-list | public secret
+@startuml
+class A
+hide public secret members
+@enduml

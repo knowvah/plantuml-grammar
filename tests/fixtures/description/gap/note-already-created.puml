@@ -1,0 +1,15 @@
+' description: CommandFactoryNote_2_52
+' gap: a second note with the same code fails (CommandFactoryNote.java:194-195): entity state
+@startuml
+package x {
+  note as _n
+    qwerty
+  end note
+}
+package y {
+  note as _n
+    asdfg
+  end note
+  :myActor:
+}
+@enduml

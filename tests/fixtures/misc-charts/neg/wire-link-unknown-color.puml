@@ -1,0 +1,6 @@
+' misc-charts: WireLinkFails
+@startwire
+* a
+* b
+a -> b #redd : x
+@endwire

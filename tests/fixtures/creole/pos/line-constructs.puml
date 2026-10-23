@@ -1,0 +1,42 @@
+' creole: CREOLE_HEADING | = Heading
+' creole: CREOLE_RULE | ----
+' creole: CREOLE_RULE | --title--
+' creole: CREOLE_RULE | ==sep==
+' creole: CREOLE_RULE | ====
+' creole: CREOLE_RULE | ..dots..
+' creole: CREOLE_LIST_BULLET | * bullet
+' creole: CREOLE_LIST_BULLET | ** sub bullet
+' creole: CREOLE_LIST_NUMBERED | # one
+' creole: CREOLE_TABLE_ROW | |= h1 |= h2 |
+' creole: CREOLE_TABLE_ROW | <#lightblue>| c | d |
+' creole: CREOLE_TREE | |_ root
+' creole: CREOLE_BLOCK_DELIMITER | <code>
+' creole: CREOLE_BLOCK_DELIMITER | </code>
+' creole: CREOLE_BLOCK_DELIMITER | <latex>
+' creole: CREOLE_BLOCK_DELIMITER | </latex>
+@startuml
+note as N
+  = Heading
+  == Sub
+  ----
+  --title--
+  ==sep==
+  ====
+  ..dots..
+  * bullet
+  ** sub bullet
+  # one
+  ## two
+  |= h1 |= h2 |
+  | a | b |
+  <#lightblue>| c | d |
+  |_ root
+    |_ child
+  <code>
+  x = 1
+  </code>
+  <latex>
+  x^2
+  </latex>
+end note
+@enduml

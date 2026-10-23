@@ -1,0 +1,14 @@
+{
+  "pin": {"sha": "97a5992201a7b1bc5d4063a81da609fe7387fede", "version": "1.2026.8beta1"},
+  "factory": "FilesDiagramFactory",
+  "factoryOrder": 44,
+  "diagramType": "FILES",
+  "commands": [],
+  "unreachable": [
+    {
+      "class": "net.sourceforge.plantuml.filesdiagram.FilesDiagramFactory",
+      "order": 0,
+      "reason": "opaque-no-regex-field"
+    }
+  ]
+}

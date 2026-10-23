@@ -1,0 +1,5 @@
+' gantt: NaturalGanttTaskNeedsStart
+@startgantt
+[A] lasts 2 days
+[A] ends 2020-01-03
+@endgantt

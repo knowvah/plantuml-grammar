@@ -1,0 +1,10 @@
+' mindmap-wbs: CommandMindMapOrgmodeMultiline, MindMapOrgmodeUnknownColor
+@startmindmap
+* root
+**:line one
+line two;
+**[#red]_:a
+b; <<st>>
+**:single;
+still;
+@endmindmap

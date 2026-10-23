@@ -1,0 +1,171 @@
+# Gantt sentence shapes (T25), from the generated `gantt-lang` variables. Upstream pin
+# 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# NaturalGanttCommand (gantt/command/NaturalGanttCommand.java) reads one line as
+#   SP? SUBJECT SP? PHRASE (AND PHRASE)* <rest>
+# * isValid (:125-144): the subject matches and one verb phrase `check`s (verb, spaces,
+#   optional ignored words, a non-empty complement prefix; gantt/ulang/VerbPhraseAction.
+#   java:126-156). Nothing anchors the end of the line.
+# * execute (:74-122): the first phrase (in getVerbPhrases order) whose check passes is
+#   parsed and executed; then ` and ` (AND, :61) either follows, and another phrase must
+#   check ("No matching verb phrase", :120), or the command ends OK and the rest of the
+#   line is ignored (:107-110).
+# A phrase is VERB SP? (IGNORED SP?)? COMPLEMENT: the verb, skipSpaces, the ignored words
+# (a possibly empty jump) and skipSpaces again (VerbPhraseAction.java:100-124).
+#
+# GS_<S>_SENTENCE writes `(AND PHRASE)*` as plus(PHRASE (AND | TAIL)), so each phrase set
+# appears once (the emitted TextMate regex stays within PCRE2's size limit). GS_TAIL is the
+# ignored rest; it may not begin with AND, nor with the rest of a word and then AND, which
+# keeps a regex engine from ending a complement early where UBrex's committed match
+# (com/plantuml/ubrex, non-backtracking) would have reached an AND. GS_<S>_CLAIM is the
+# isValid shape: subject and one phrase prefix.
+schema_version: 1
+id: gantt-sentences-phrases
+layer: shared
+include: [gantt-lang]
+
+variables:
+  GS_SP: {opt: {ref: SPACES}}
+  GS_REST: {regex: ".*", scope: comment.line.ignored}
+  GS_TAIL: {regex: "(?!\\w*[ ]+and[ ]).*", ci: true, scope: comment.line.ignored}
+  # No time point follows: the time-point phrase precedes the date-only phrase of the same
+  # verb and checks exactly `<absolute date>[ t]HH:MM` (ComplementTimePoint.java:73-93), so
+  # a regex must not fall back to the date when that phrase committed and failed later.
+  GS_NO_TIME: {regex: "(?![ t][0-9_]{1,2}(?![0-9_]):[0-9_]{1,2}(?![0-9_]))", ci: true}
+  GS_IGN_1: {opt: {seq: [{ref: IGNORED_1}, {ref: GS_SP}]}}
+  GS_IGN_2: {opt: {seq: [{ref: IGNORED_2}, {ref: GS_SP}]}}
+  GS_IGN_3: {opt: {seq: [{ref: IGNORED_3}, {ref: GS_SP}]}}
+  GS_IGN_4: {opt: {seq: [{ref: IGNORED_4}, {ref: GS_SP}]}}
+  GS_IGN_5: {opt: {seq: [{ref: IGNORED_5}, {ref: GS_SP}]}}
+  GS_IGN_6: {opt: {seq: [{ref: IGNORED_6}, {ref: GS_SP}]}}
+  GS_IGN_7: {opt: {seq: [{ref: IGNORED_7}, {ref: GS_SP}]}}
+  GS_IGN_8: {opt: {seq: [{ref: IGNORED_8}, {ref: GS_SP}]}}
+  GS_IGN_9: {opt: {seq: [{ref: IGNORED_9}, {ref: GS_SP}]}}
+
+  # --- verb phrases, in getVerbPhrases order -----------------------------------------
+  # gantt/lang/SubjectGantt.java:67-79
+  GS_GANTT_PHRASE:
+    seq: [{ref: VERB_STARTS}, {ref: GS_SP}, {ref: GS_IGN_1}, {ref: COMPLEMENT_DATE_ONLY_ABSOLUTE}]
+  # gantt/lang/SubjectToday.java:71-92
+  GS_TODAY_PHRASE:
+    alt:
+      - seq: [{ref: VERB_IS_COLORED}, {ref: GS_SP}, {ref: COMPLEMENT_IN_COLORS}]
+      - seq: [{ref: VERB_IS}, {ref: GS_SP}, {ref: COMPLEMENT_DATE_ANY}]
+  # gantt/lang/SubjectTask.java:89-413
+  GS_TASK_PHRASE:
+    alt:
+      - seq: [{ref: VERB_REQUIRES}, {ref: GS_SP}, {ref: GS_IGN_1}, {ref: COMPLEMENT_DURATION}]
+      - seq: [{ref: VERB_STARTS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: COMPLEMENT_TIME_POINT}]
+      - seq: [{ref: VERB_STARTS}, {ref: GS_SP}, {ref: PAIR_OF_SOMETHING}]
+      - seq: [{ref: VERB_STARTS}, {ref: GS_SP}, {ref: COMPLEMENT_BEFORE_OR_AFTER_OR_AT_TASK_START_OR_END}]
+      - seq: [{ref: VERB_STARTS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: COMPLEMENT_DATE_ONLY_RELATIVE}]
+      - seq: [{ref: VERB_STARTS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: COMPLEMENT_DATE_ANY}, {ref: GS_NO_TIME}]
+      - seq: [{ref: VERB_IS_COLORED}, {ref: GS_SP}, {ref: COMPLEMENT_IN_COLORS}]
+      - seq: [{ref: VERB_IS_COLORED}, {ref: GS_SP}, {ref: GS_IGN_3}, {ref: COMPLEMENT_IN_COLORS_FROM_TO}]
+      - seq: [{ref: VERB_HAPPENS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: COMPLEMENT_DATE_ANY}]
+      - seq: [{ref: VERB_HAPPENS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: COMPLEMENT_BEFORE_OR_AFTER_OR_AT_TASK_START_OR_END}]
+      - seq: [{ref: VERB_OCCURS}, {ref: GS_SP}, {ref: COMPLEMENT_FROM_TO}]
+      - seq: [{ref: VERB_ENDS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: COMPLEMENT_TIME_POINT}]
+      - seq: [{ref: VERB_ENDS}, {ref: GS_SP}, {ref: COMPLEMENT_BEFORE_OR_AFTER_OR_AT_TASK_START_OR_END}]
+      - seq: [{ref: VERB_ENDS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: COMPLEMENT_DATE_ONLY_RELATIVE}]
+      - seq: [{ref: VERB_ENDS}, {ref: GS_SP}, {ref: GS_IGN_2}, {ref: COMPLEMENT_DATE_ANY}, {ref: GS_NO_TIME}]
+      - seq: [{ref: VERB_DISPLAY_ON_SAME_ROW_AS}, {ref: GS_SP}, {ref: COMPLEMENT_NAMED}]
+      - seq: [{ref: VERB_IS}, {ref: GS_SP}, {ref: COMPLEMENT_DELETED}]
+      - seq: [{ref: VERB_IS}, {ref: GS_SP}, {ref: COMPLEMENT_COMPLETED}]
+      - seq: [{ref: VERB_PAUSES}, {ref: GS_SP}, {ref: GS_IGN_4}, {ref: COMPLEMENT_INTERVALS}]
+      - seq: [{ref: VERB_PAUSES}, {ref: GS_SP}, {ref: GS_IGN_4}, {ref: COMPLEMENT_INTERVALS_SMART}]
+      - seq: [{ref: VERB_PAUSES}, {ref: GS_SP}, {ref: GS_IGN_4}, {ref: COMPLEMENT_DATE_ANY}]
+      - seq: [{ref: VERB_PAUSES}, {ref: GS_SP}, {ref: GS_IGN_4}, {ref: COMPLEMENT_DAY_OF_WEEK}]
+      - seq: [{ref: VERB_LINKS_TO}, {ref: GS_SP}, {ref: COMPLEMENT_URL}]
+      - seq: [{ref: VERB_IS_DISPLAYED_AS}, {ref: GS_SP}, {ref: COMPLEMENT_ANYTHING}]
+  # gantt/lang/SubjectResource.java:81-181
+  GS_RESOURCE_PHRASE:
+    alt:
+      - seq: [{ref: VERB_WORKS_ON}, {ref: GS_SP}, {ref: COMPLEMENT_TASK}]
+      - seq: [{ref: VERB_IS_OFF}, {ref: GS_SP}, {ref: GS_IGN_5}, {ref: COMPLEMENT_DATE_ANY}]
+      - seq: [{ref: VERB_IS_OFF}, {ref: GS_SP}, {ref: GS_IGN_6}, {ref: COMPLEMENT_DATE_ANY}]
+      - seq: [{ref: VERB_IS_OFF}, {ref: GS_SP}, {ref: GS_IGN_7}, {ref: COMPLEMENT_INTERVALS}]
+      - seq: [{ref: VERB_IS_OFF}, {ref: GS_SP}, {ref: GS_IGN_7}, {ref: COMPLEMENT_DAY_OF_WEEK}]
+      - seq: [{ref: VERB_IS_OFF}, {ref: GS_SP}, {ref: GS_IGN_7}, {ref: COMPLEMENT_DATE_ANY}]
+      - seq: [{ref: VERB_IS_ON}, {ref: GS_SP}, {ref: GS_IGN_7}, {ref: COMPLEMENT_INTERVALS}]
+      - seq: [{ref: VERB_IS_ON}, {ref: GS_SP}, {ref: GS_IGN_7}, {ref: COMPLEMENT_DATE_ANY}]
+  # gantt/lang/SubjectDaysAsDates.java:144-198
+  GS_DAYS_PHRASE:
+    alt:
+      - seq: [{ref: VERB_IS_OR_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_CLOSE}]
+      - seq: [{ref: VERB_IS_OR_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_OPEN}]
+      - seq: [{ref: VERB_IS_OR_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_IN_COLORS2}]
+      - seq: [{ref: VERB_IS_OR_ARE_NAMED}, {ref: GS_SP}, {ref: COMPLEMENT_NAMED}]
+  # gantt/lang/SubjectDayOfWeek.java:67-99
+  GS_WEEKDAY_PHRASE:
+    alt:
+      - seq: [{ref: VERB_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_OPEN}]
+      - seq: [{ref: VERB_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_CLOSE}]
+      - seq: [{ref: VERB_IS_OR_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_IN_COLORS2}]
+  # gantt/lang/SubjectDayAsDate.java:64-92
+  GS_DAY_PHRASE:
+    alt:
+      - seq: [{ref: VERB_IS_OR_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_OPEN}]
+      - seq: [{ref: VERB_IS_OR_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_CLOSE}]
+      - seq: [{ref: VERB_IS_OR_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_IN_COLORS2}]
+  # gantt/lang/SubjectSeparator.java:72-110
+  GS_SEPARATOR_PHRASE:
+    alt:
+      - seq: [{ref: VERB_JUST}, {ref: GS_SP}, {ref: GS_IGN_8}, {ref: COMPLEMENT_DATE_ANY}]
+      - seq: [{ref: VERB_JUST}, {ref: GS_SP}, {ref: GS_IGN_9}, {ref: COMPLEMENT_DATE_ANY}]
+      - seq: [{ref: VERB_JUST}, {ref: GS_SP}, {ref: COMPLEMENT_BEFORE_OR_AFTER_OR_AT_TASK_START_OR_END}]
+  # gantt/lang/SubjectWorkingHours.java:81-93
+  GS_HOURS_PHRASE:
+    seq: [{ref: VERB_ARE}, {ref: GS_SP}, {ref: COMPLEMENT_WORKING_HOURS}]
+
+  # --- sentences (accepted lines) and isValid claims ----------------------------------
+  GS_GANTT_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_GANTT}, {ref: GS_SP}, {plus: {seq: [{ref: GS_GANTT_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_TODAY_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_TODAY}, {ref: GS_SP}, {plus: {seq: [{ref: GS_TODAY_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_TASK_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_TASK}, {ref: GS_SP}, {plus: {seq: [{ref: GS_TASK_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_RESOURCE_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_RESOURCE}, {ref: GS_SP}, {plus: {seq: [{ref: GS_RESOURCE_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_DAYS_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_DAYS_AS_DATES}, {ref: GS_SP}, {plus: {seq: [{ref: GS_DAYS_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_WEEKDAY_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_DAY_OF_WEEK}, {ref: GS_SP}, {plus: {seq: [{ref: GS_WEEKDAY_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_DAY_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_DAY_AS_DATE}, {ref: GS_SP}, {plus: {seq: [{ref: GS_DAY_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_SEPARATOR_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_SEPARATOR}, {ref: GS_SP}, {plus: {seq: [{ref: GS_SEPARATOR_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_HOURS_SENTENCE: {seq: [{ref: GS_SP}, {ref: SUBJECT_WORKING_HOURS}, {ref: GS_SP}, {plus: {seq: [{ref: GS_HOURS_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}]}
+  GS_GANTT_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_GANTT}, {ref: GS_SP}, {ref: GS_GANTT_PHRASE}, {ref: GS_REST}]}
+  GS_TODAY_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_TODAY}, {ref: GS_SP}, {ref: GS_TODAY_PHRASE}, {ref: GS_REST}]}
+  GS_TASK_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_TASK}, {ref: GS_SP}, {ref: GS_TASK_PHRASE}, {ref: GS_REST}]}
+  GS_RESOURCE_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_RESOURCE}, {ref: GS_SP}, {ref: GS_RESOURCE_PHRASE}, {ref: GS_REST}]}
+  GS_DAYS_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_DAYS_AS_DATES}, {ref: GS_SP}, {ref: GS_DAYS_PHRASE}, {ref: GS_REST}]}
+  GS_WEEKDAY_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_DAY_OF_WEEK}, {ref: GS_SP}, {ref: GS_WEEKDAY_PHRASE}, {ref: GS_REST}]}
+  GS_DAY_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_DAY_AS_DATE}, {ref: GS_SP}, {ref: GS_DAY_PHRASE}, {ref: GS_REST}]}
+  GS_SEPARATOR_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_SEPARATOR}, {ref: GS_SP}, {ref: GS_SEPARATOR_PHRASE}, {ref: GS_REST}]}
+  GS_HOURS_CLAIM: {seq: [{ref: GS_SP}, {ref: SUBJECT_WORKING_HOURS}, {ref: GS_SP}, {ref: GS_HOURS_PHRASE}, {ref: GS_REST}]}
+  # A task sentence whose committed phrase somewhere in the chain is an absolute `starts`
+  # or `ends` (SubjectTask.java phrases at :102-115, :168-180, :258-271, :299-311): they
+  # fail without a project start ("No starting date for the project", :106-107). The
+  # time-point phrase checks first, so it is committed whenever its shape matches. The
+  # date-only phrase comes after the before/after-task and relative phrases of the same
+  # verb, whose checks can pass on text that also fits a date (shape B takes any
+  # non-digits as separators: `20 days after [A]'s end and lasts 3` is 20/1/3), so it is
+  # committed only where neither of those checks passes (GS_NOT_BEFORE_OR_RELATIVE: the
+  # flat check shapes of COMPLEMENT_BEFORE_OR_AFTER_OR_AT_TASK_START_OR_END, which also
+  # prefixes PAIR_OF_SOMETHING, and of IGNORED_2 + COMPLEMENT_DATE_ONLY_RELATIVE; pinned
+  # against those variables by tests/families/test_gantt.py).
+  GS_NOT_BEFORE_OR_RELATIVE:
+    regex: "(?![ ]*(?:at|with|after|[0-9_]+[ ]+(?:working[ ]+)?(?:day|week)s?(?:[ ]+and[ ]+[0-9_]+[ ]+(?:working[ ]+)?(?:day|week)s?)?[ ]+(?:before|after))?[ ]*\\[[^\\[\\]]+\\][\\s\\S]s[ ]+(?:start|end))(?![ ]*(?:(?:the|on|at)[ ]+)*(?:[0-9_]+[ ]+days?[ ]+after[ ]+start|d\\+[0-9_]+))"
+    ci: true
+  GS_TASK_CHAIN: {plus: {seq: [{ref: GS_TASK_PHRASE}, {alt: [{ref: AND}, {ref: GS_TAIL}]}]}}
+  GS_TASK_ABS_PHRASE:
+    seq:
+      - alt: [{ref: VERB_STARTS}, {ref: VERB_ENDS}]
+      - {ref: GS_SP}
+      - alt:
+          - seq: [{ref: GS_IGN_2}, {ref: COMPLEMENT_TIME_POINT}]
+          - seq: [{ref: GS_NOT_BEFORE_OR_RELATIVE}, {ref: GS_IGN_2}, {ref: COMPLEMENT_DATE_ONLY_ABSOLUTE}, {ref: GS_NO_TIME}]
+  GS_TASK_NEEDS_START:
+    seq:
+      - {ref: GS_SP}
+      - {ref: SUBJECT_TASK}
+      - {ref: GS_SP}
+      - star: {seq: [{ref: GS_TASK_PHRASE}, {ref: AND}]}
+      - {ref: GS_TASK_ABS_PHRASE}
+      - alt: [{seq: [{ref: AND}, {ref: GS_TASK_CHAIN}]}, {ref: GS_TAIL}]
+  # `it` as the subject: the IT alternative of SUBJECT_TASK (SubjectTask.java:418).
+  GS_IT_CLAIM: {seq: [{ref: GS_SP}, {regex: it, ci: true}, {ref: GS_SP}, {ref: GS_TASK_PHRASE}, {ref: GS_REST}]}

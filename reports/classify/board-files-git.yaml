@@ -1,0 +1,8 @@
+# Classifications for the `board-files-git` family (T31). Upstream pin 97a5992; `cite`
+# paths are relative to the upstream repository root.
+#
+# Interpreter: FR 0 / FA 0 on every corpus (pdiff 16 blocks: 4 board, 8 files, 4 git;
+# vega and plantuml-ts have no `@startboard`, `@startfiles` or `@startgit` block).
+# Before T31 the slices were the same (0/0): the opaque files/git models and the plain
+# generated board model accepted every corpus block, which the jar also accepts.
+cases: {}

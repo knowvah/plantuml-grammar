@@ -1,0 +1,19 @@
+A -[#red,dashed,thickness=2]-> B
+[#red,wavy]
+[bold]
+[thickness=]
+B <-[#blue]- CBGF:200 OK
+tapp =[#green]=> obps : \rX. Make Payment
+bar1 : [thickness=1]
+-[#gray]-> going to end;
+replicaset_101 -[hidden]up- replicaset_100
+[<-[#red]-Node: Fail
+status -up[hidden]-> manager : monitors success\nof IAP control '###
+repeat while (was it proper?) -[#blue]-> no
+replica_100_04 -[hidden]right- replica_100_05
+class FooDotted ##[dotted]blue {
+S1 -up[#red,dashed]-> S4
+-up[hidden]-> Integrate
+rectangle r as "
+Realization <|-- Substitution
+9 --> 27

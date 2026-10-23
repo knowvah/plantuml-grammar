@@ -1,0 +1,34 @@
+' description: CommandCreateElementFull
+@startuml
+person P
+artifact Ar
+actor/ AB
+actor Ac
+folder Fo
+card Ca
+file Fi
+package Pa
+rectangle Re
+hexagon He
+label La
+node No
+frame Fr
+cloud Cl
+action Act
+process Pr
+database Db
+queue Qu
+stack St
+storage Sg
+agent Ag
+usecase/ UB
+usecase Uc
+component Co
+boundary Bo
+control Ct
+entity En
+interface If
+circle Ci
+collections Cs
+() Iface
+@enduml

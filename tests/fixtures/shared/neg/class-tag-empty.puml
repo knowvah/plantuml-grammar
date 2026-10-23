@@ -1,0 +1,4 @@
+' refines: tag-list | $
+@startuml
+class A $
+@enduml

@@ -1,0 +1,3 @@
+@startebnf
+a = "x";
+@endebnf

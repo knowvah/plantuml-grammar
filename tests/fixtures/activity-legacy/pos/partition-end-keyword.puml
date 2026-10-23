@@ -1,0 +1,8 @@
+' activity-legacy: UBrexCommandPartition, ActivityEndGroup
+@startuml
+(*) --> A
+partition P #LightBlue
+A --> B
+end partition
+--> (*)
+@enduml

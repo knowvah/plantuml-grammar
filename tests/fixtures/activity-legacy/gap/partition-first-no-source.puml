@@ -1,0 +1,8 @@
+' activity-legacy: ActivityPartitionFirst
+' gap: a partition does not set the last activity, but the model treats its body as started
+@startuml
+partition P {
+--> A
+A --> (*)
+}
+@enduml

@@ -1,0 +1,6 @@
+' common: CommandMinwidth
+' factory: SequenceDiagramFactory
+@startuml
+minwidth 99999999999
+Alice -> Bob : hello
+@enduml

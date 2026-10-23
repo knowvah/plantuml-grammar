@@ -1,0 +1,8 @@
+' board-files-git: FilesNoteStart, FilesStyleOpen, FilesStyleLine
+@startfiles
+<note>
+<style>
+*
+</style>
+</note>
+@endfiles

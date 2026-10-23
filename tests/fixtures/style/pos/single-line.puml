@@ -1,0 +1,29 @@
+' style: single line
+@startuml
+<style>root{FontColor red}</style>
+class Foo
+@enduml
+
+' style: single line with spaces
+@startuml
+<style>element {BackgroundColor palegreen;  FontColor blue}</style>
+class Foo
+@enduml
+
+' style: single line stereotype
+@startuml
+<style>.foo bar{LineColor red} root{}</style>
+class Foo
+@enduml
+
+' style: single line blank
+@startuml
+<style> </style>
+class Foo
+@enduml
+
+' style: single line variable
+@startuml
+<style>--x;</style>
+class Foo
+@enduml

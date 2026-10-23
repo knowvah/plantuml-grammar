@@ -1,0 +1,52 @@
+# Classifications for the `mindmap-wbs` family (T26). Upstream pin 97a5992; `cite` paths
+# are full paths under src/main/java/.
+# FR is 0 on every corpus (vega 5 blocks, plantuml-ts none, pdiff 348). The seven false
+# accepts (FA) are all pdiff tree-structure errors: the level of an item is computed
+# from the previous items (root, multiplier, last level) and from leading blanks of the
+# untrimmed line (getSmartLevel; the item commands use SingleLineCommand2 doTrim=false).
+# ` * x` is level 1 under `* root` (accepted, pdiff input/WBS-monoline-def-0.puml#1)
+# while `* x` is a second root, so a check needs the root's marker run and the last
+# level from earlier lines (one context per reachable level); the family models do not
+# carry that state. Pinned by tests/fixtures/mindmap-wbs/gap.
+# Messages were read with `java -jar <stock jar> -syntax`.
+# The pdiff slice also lists 7 informational raw-mode FRs (not gating). All come from
+# preprocessing that raw mode does not reproduce: a line ending in `\` joined with the
+# next (input/link-URL-tooltip.puml#0-2, ledama, xasinu, zeneno) and a `!$foo = {`
+# JSON assignment spanning several lines (kijaru). The L2 verdicts agree.
+cases:
+  # `    * 'Head'` is the root (first = "    *"); the `'...` lines are comments;
+  # `    *** 'Subbranch Five-One'` starts with first, so its level is 7 - 5 = 2 under the
+  # root: "Bad tree structure".
+  pdiff:dbhum/c_up/cupuri-11-piru303.puml#0:
+    class: semantic
+    note: "item level 2 under the root after indented markers (cross-line, leading blanks; gap/wbs-depth-jump, gap/wbs-indent-jump)"
+    cite: src/main/java/net/sourceforge/plantuml/wbs/WBSDiagram.java:213-230
+  # `  * child1` is level 2 (leading blanks count), so the multiplier is 2;
+  # `   * child2` is level 3: "Bad indentation".
+  pdiff:dbhum/f_og/fogari-75-febu345.puml#0:
+    class: semantic
+    note: "indented child level 3 is not a multiple of the first child's level 2 (cross-line, leading blanks; gap/mindmap-markdown-uneven-indent)"
+    cite: src/main/java/net/sourceforge/plantuml/mindmap/MindMap.java:129-135
+  # `    * Line 1` under `* R` is level 4: "Bad tree structure".
+  pdiff:dbhum/s_ip/sipuja-30-deto581.puml#0:
+    class: semantic
+    note: "four leading blanks make level 4 under the root (cross-line, leading blanks; gap/wbs-indent-jump)"
+    cite: src/main/java/net/sourceforge/plantuml/wbs/WBSDiagram.java:194-199
+  # Same block as sipuja (block 3 of the file).
+  pdiff:input/WBS-monoline-def-0.puml#3:
+    class: semantic
+    note: "four leading blanks make level 4 under the root (cross-line, leading blanks; gap/wbs-indent-jump)"
+    cite: src/main/java/net/sourceforge/plantuml/wbs/WBSDiagram.java:194-199
+  # `** A` is the root; `* B` has no blank, so its level is 0: a second root.
+  pdiff:dbhum/t_oj/tojixi-05-lusu056.puml#0:
+    class: semantic
+    note: "a later level-0 item is a second root; level 0 needs an unindented single marker (cross-line, leading blanks; gap/wbs-second-root)"
+    cite: src/main/java/net/sourceforge/plantuml/wbs/WBSDiagram.java:160-162
+  pdiff:dbhum/t_ub/tubeli-58-kadi729.puml#0:
+    class: semantic
+    note: "`* C` after `** B` is a second root (cross-line, leading blanks; gap/wbs-root-after-child)"
+    cite: src/main/java/net/sourceforge/plantuml/wbs/WBSDiagram.java:160-162
+  pdiff:dbhum/z_ec/zecavo-98-kini554.puml#0:
+    class: semantic
+    note: "`* B` after the root `* A` is a second root (cross-line, leading blanks; gap/wbs-second-root)"
+    cite: src/main/java/net/sourceforge/plantuml/wbs/WBSDiagram.java:160-162

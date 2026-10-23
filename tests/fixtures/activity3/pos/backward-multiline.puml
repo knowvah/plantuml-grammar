@@ -1,0 +1,8 @@
+' activity3: CommandRepeat3, CommandBackwardLong3, CommandRepeatWhile3
+@startuml
+repeat
+:x;
+backward :line1
+line2;
+repeat while (a)
+@enduml

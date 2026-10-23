@@ -1,0 +1,7 @@
+' board-files-git: FilesStyleUnterminated, FilesUnterminatedStatements
+' gap: a `//` on the last line of an unterminated block ends the stream inside a value; a chunk cannot know it is the last
+' jar: accept
+@startfiles
+<style>
+x:y , //c
+@endfiles

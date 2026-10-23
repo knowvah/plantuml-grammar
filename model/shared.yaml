@@ -1,0 +1,446 @@
+# Shared fragments (layer L3, decision D3): hand-written, scoped refinements of
+# fragments that the generated models repeat. Upstream pin 97a5992.
+#
+# Contract: every refinement keeps the generated regex as its acceptance definition.
+# Its parts accept exactly the language of the generated Part (checked by
+# tests/layers/test_shared.py on committed samples and on 50 corpus lines each), and
+# every leaf is `ci: true` because upstream compiles these regexes through Pattern2
+# with CASE_INSENSITIVE (regex/Pattern2.java:114). `[\s\_]` is the expanded `%s`
+# macro, i.e. [\s ] (regex/Pattern2.java:57); `["“”]` is `%g`
+# (regex/Pattern2.java:59).
+#
+# Refinement map (structured variable -> generated Part it refines):
+#   COLOR_SPEC        refines gen-shared COLOR (also identical to inline COLOR2 leaves)
+#   COLOR_GRADIENT    refines inline `#\w+[-\\|/]?\w+` (gen-activity-diagram BACKCOLOR)
+#   COLOR_REF         refines inline `#\w+` (gen-sequence-diagram COLOR, gen-wire-diagram)
+#   TAG_LIST          refines gen-shared TAGS (= TAGS1, TAGS2)
+#   URL_LINK          refines gen-shared URL
+#   VISIBILITY_LIST   refines gen-shared VISIBILITY
+#   VISIBILITY_CHAR   refines inline `[-#+~]` (gen-class-diagram VISIBILITY)
+#   ARROW_STYLE_SPEC  refines gen-shared ARROW_STYLE (= ARROW_STYLE1, ARROW_STYLE2)
+#   ARROW_STYLE_MULTI refines inline ARROW_STYLE1 with `;` groups (gen-description-diagram)
+#   STEREOTYPE_SPEC   refines inline `\<\<.+?\>\>` (STEREO/STEREOTYPE in 8 diagram models)
+#   STEREOTYPE_GROUP  refines inline STEREOGROUP (gen-activity-diagram3, gen-state-diagram)
+#   ARROW_HEAD_LEFT   refines inline ARROW_HEAD1 (gen-class-diagram)
+#   ARROW_HEAD_RIGHT  refines inline ARROW_HEAD2 (gen-class-diagram)
+#   ARROW_BODY_LINE   refines inline ARROW_BODY1 `[-=.]+` (gen-class-diagram)
+#
+# Equivalence technique: a generated `\w+` is replaced by COLOR_WORD, an ordered
+# alternation whose earlier branches (special, named, hex colors) only match a whole
+# word (`(?!\w)`) and whose last branch is `\w+` itself. Earlier branches can only
+# produce the end the greedy `\w+` tries first, so leftmost-first matching is
+# unchanged; they exist to give named and hex colors their own scopes.
+schema_version: 1
+id: shared
+layer: shared
+variables:
+  # --- whitespace -------------------------------------------------------------
+  SPACE_ANY: {regex: "[\\s\_]*", ci: true}
+  SPACE_SOME: {regex: "[\\s\_]+", ci: true}
+  SPACE_ONE: {regex: "[\\s\_]", ci: true}
+
+  # --- colors -----------------------------------------------------------------
+  # Parsing: klimt/color/HColorSet.java:78-120 (special names :82-86, gradient
+  # separators `-\|/` :109-117), hex digits :122-157 (1, 3, 6 or 8 digits), named
+  # colors klimt/color/ColorTrieNode.java:55-209 (case-insensitive lookup :212-223).
+  COLOR_HASH: {literal: '#', ci: true, scope: punctuation.definition.color}
+  COLOR_SPECIAL:
+    seq:
+    - alt:
+      - {literal: transparent, ci: true, scope: support.constant.color}
+      - {literal: background, ci: true, scope: support.constant.color}
+      - {literal: automatic, ci: true, scope: support.constant.color}
+    - {regex: '(?!\w)', ci: true}
+  # Upstream's named color table, in registration order (ColorTrieNode.java:55-209).
+  COLOR_NAME:
+    seq:
+    - alt:
+      - {literal: AliceBlue, ci: true, scope: support.constant.color}
+      - {literal: AntiqueWhite, ci: true, scope: support.constant.color}
+      - {literal: Aqua, ci: true, scope: support.constant.color}
+      - {literal: Aquamarine, ci: true, scope: support.constant.color}
+      - {literal: Azure, ci: true, scope: support.constant.color}
+      - {literal: Beige, ci: true, scope: support.constant.color}
+      - {literal: Bisque, ci: true, scope: support.constant.color}
+      - {literal: Black, ci: true, scope: support.constant.color}
+      - {literal: BlanchedAlmond, ci: true, scope: support.constant.color}
+      - {literal: Blue, ci: true, scope: support.constant.color}
+      - {literal: BlueViolet, ci: true, scope: support.constant.color}
+      - {literal: Brown, ci: true, scope: support.constant.color}
+      - {literal: BurlyWood, ci: true, scope: support.constant.color}
+      - {literal: CadetBlue, ci: true, scope: support.constant.color}
+      - {literal: Chartreuse, ci: true, scope: support.constant.color}
+      - {literal: Chocolate, ci: true, scope: support.constant.color}
+      - {literal: Coral, ci: true, scope: support.constant.color}
+      - {literal: CornflowerBlue, ci: true, scope: support.constant.color}
+      - {literal: Cornsilk, ci: true, scope: support.constant.color}
+      - {literal: Crimson, ci: true, scope: support.constant.color}
+      - {literal: Cyan, ci: true, scope: support.constant.color}
+      - {literal: DarkBlue, ci: true, scope: support.constant.color}
+      - {literal: DarkCyan, ci: true, scope: support.constant.color}
+      - {literal: DarkGoldenRod, ci: true, scope: support.constant.color}
+      - {literal: DarkGray, ci: true, scope: support.constant.color}
+      - {literal: DarkGrey, ci: true, scope: support.constant.color}
+      - {literal: DarkGreen, ci: true, scope: support.constant.color}
+      - {literal: DarkKhaki, ci: true, scope: support.constant.color}
+      - {literal: DarkMagenta, ci: true, scope: support.constant.color}
+      - {literal: DarkOliveGreen, ci: true, scope: support.constant.color}
+      - {literal: Darkorange, ci: true, scope: support.constant.color}
+      - {literal: DarkOrchid, ci: true, scope: support.constant.color}
+      - {literal: DarkRed, ci: true, scope: support.constant.color}
+      - {literal: DarkSalmon, ci: true, scope: support.constant.color}
+      - {literal: DarkSeaGreen, ci: true, scope: support.constant.color}
+      - {literal: DarkSlateBlue, ci: true, scope: support.constant.color}
+      - {literal: DarkSlateGray, ci: true, scope: support.constant.color}
+      - {literal: DarkSlateGrey, ci: true, scope: support.constant.color}
+      - {literal: DarkTurquoise, ci: true, scope: support.constant.color}
+      - {literal: DarkViolet, ci: true, scope: support.constant.color}
+      - {literal: DeepPink, ci: true, scope: support.constant.color}
+      - {literal: DeepSkyBlue, ci: true, scope: support.constant.color}
+      - {literal: DimGray, ci: true, scope: support.constant.color}
+      - {literal: DimGrey, ci: true, scope: support.constant.color}
+      - {literal: DodgerBlue, ci: true, scope: support.constant.color}
+      - {literal: FireBrick, ci: true, scope: support.constant.color}
+      - {literal: FloralWhite, ci: true, scope: support.constant.color}
+      - {literal: ForestGreen, ci: true, scope: support.constant.color}
+      - {literal: Fuchsia, ci: true, scope: support.constant.color}
+      - {literal: Gainsboro, ci: true, scope: support.constant.color}
+      - {literal: GhostWhite, ci: true, scope: support.constant.color}
+      - {literal: Gold, ci: true, scope: support.constant.color}
+      - {literal: GoldenRod, ci: true, scope: support.constant.color}
+      - {literal: Gray, ci: true, scope: support.constant.color}
+      - {literal: Grey, ci: true, scope: support.constant.color}
+      - {literal: Green, ci: true, scope: support.constant.color}
+      - {literal: GreenYellow, ci: true, scope: support.constant.color}
+      - {literal: HoneyDew, ci: true, scope: support.constant.color}
+      - {literal: HotPink, ci: true, scope: support.constant.color}
+      - {literal: IndianRed, ci: true, scope: support.constant.color}
+      - {literal: Indigo, ci: true, scope: support.constant.color}
+      - {literal: Ivory, ci: true, scope: support.constant.color}
+      - {literal: Khaki, ci: true, scope: support.constant.color}
+      - {literal: Lavender, ci: true, scope: support.constant.color}
+      - {literal: LavenderBlush, ci: true, scope: support.constant.color}
+      - {literal: LawnGreen, ci: true, scope: support.constant.color}
+      - {literal: LemonChiffon, ci: true, scope: support.constant.color}
+      - {literal: LightBlue, ci: true, scope: support.constant.color}
+      - {literal: LightCoral, ci: true, scope: support.constant.color}
+      - {literal: LightCyan, ci: true, scope: support.constant.color}
+      - {literal: LightGoldenRodYellow, ci: true, scope: support.constant.color}
+      - {literal: LightGray, ci: true, scope: support.constant.color}
+      - {literal: LightGrey, ci: true, scope: support.constant.color}
+      - {literal: LightGreen, ci: true, scope: support.constant.color}
+      - {literal: LightPink, ci: true, scope: support.constant.color}
+      - {literal: LightSalmon, ci: true, scope: support.constant.color}
+      - {literal: LightSeaGreen, ci: true, scope: support.constant.color}
+      - {literal: LightSkyBlue, ci: true, scope: support.constant.color}
+      - {literal: LightSlateGray, ci: true, scope: support.constant.color}
+      - {literal: LightSlateGrey, ci: true, scope: support.constant.color}
+      - {literal: LightSteelBlue, ci: true, scope: support.constant.color}
+      - {literal: LightYellow, ci: true, scope: support.constant.color}
+      - {literal: Lime, ci: true, scope: support.constant.color}
+      - {literal: LimeGreen, ci: true, scope: support.constant.color}
+      - {literal: Linen, ci: true, scope: support.constant.color}
+      - {literal: Magenta, ci: true, scope: support.constant.color}
+      - {literal: Maroon, ci: true, scope: support.constant.color}
+      - {literal: MediumAquaMarine, ci: true, scope: support.constant.color}
+      - {literal: MediumBlue, ci: true, scope: support.constant.color}
+      - {literal: MediumOrchid, ci: true, scope: support.constant.color}
+      - {literal: MediumPurple, ci: true, scope: support.constant.color}
+      - {literal: MediumSeaGreen, ci: true, scope: support.constant.color}
+      - {literal: MediumSlateBlue, ci: true, scope: support.constant.color}
+      - {literal: MediumSpringGreen, ci: true, scope: support.constant.color}
+      - {literal: MediumTurquoise, ci: true, scope: support.constant.color}
+      - {literal: MediumVioletRed, ci: true, scope: support.constant.color}
+      - {literal: MidnightBlue, ci: true, scope: support.constant.color}
+      - {literal: MintCream, ci: true, scope: support.constant.color}
+      - {literal: MistyRose, ci: true, scope: support.constant.color}
+      - {literal: Moccasin, ci: true, scope: support.constant.color}
+      - {literal: NavajoWhite, ci: true, scope: support.constant.color}
+      - {literal: Navy, ci: true, scope: support.constant.color}
+      - {literal: OldLace, ci: true, scope: support.constant.color}
+      - {literal: Olive, ci: true, scope: support.constant.color}
+      - {literal: OliveDrab, ci: true, scope: support.constant.color}
+      - {literal: Orange, ci: true, scope: support.constant.color}
+      - {literal: OrangeRed, ci: true, scope: support.constant.color}
+      - {literal: Orchid, ci: true, scope: support.constant.color}
+      - {literal: PaleGoldenRod, ci: true, scope: support.constant.color}
+      - {literal: PaleGreen, ci: true, scope: support.constant.color}
+      - {literal: PaleTurquoise, ci: true, scope: support.constant.color}
+      - {literal: PaleVioletRed, ci: true, scope: support.constant.color}
+      - {literal: PapayaWhip, ci: true, scope: support.constant.color}
+      - {literal: PeachPuff, ci: true, scope: support.constant.color}
+      - {literal: Peru, ci: true, scope: support.constant.color}
+      - {literal: Pink, ci: true, scope: support.constant.color}
+      - {literal: Plum, ci: true, scope: support.constant.color}
+      - {literal: PowderBlue, ci: true, scope: support.constant.color}
+      - {literal: Purple, ci: true, scope: support.constant.color}
+      - {literal: Red, ci: true, scope: support.constant.color}
+      - {literal: RosyBrown, ci: true, scope: support.constant.color}
+      - {literal: RoyalBlue, ci: true, scope: support.constant.color}
+      - {literal: SaddleBrown, ci: true, scope: support.constant.color}
+      - {literal: Salmon, ci: true, scope: support.constant.color}
+      - {literal: SandyBrown, ci: true, scope: support.constant.color}
+      - {literal: SeaGreen, ci: true, scope: support.constant.color}
+      - {literal: SeaShell, ci: true, scope: support.constant.color}
+      - {literal: Sienna, ci: true, scope: support.constant.color}
+      - {literal: Silver, ci: true, scope: support.constant.color}
+      - {literal: SkyBlue, ci: true, scope: support.constant.color}
+      - {literal: SlateBlue, ci: true, scope: support.constant.color}
+      - {literal: SlateGray, ci: true, scope: support.constant.color}
+      - {literal: SlateGrey, ci: true, scope: support.constant.color}
+      - {literal: Snow, ci: true, scope: support.constant.color}
+      - {literal: SpringGreen, ci: true, scope: support.constant.color}
+      - {literal: SteelBlue, ci: true, scope: support.constant.color}
+      - {literal: Tan, ci: true, scope: support.constant.color}
+      - {literal: Teal, ci: true, scope: support.constant.color}
+      - {literal: Thistle, ci: true, scope: support.constant.color}
+      - {literal: Tomato, ci: true, scope: support.constant.color}
+      - {literal: Turquoise, ci: true, scope: support.constant.color}
+      - {literal: Violet, ci: true, scope: support.constant.color}
+      - {literal: Wheat, ci: true, scope: support.constant.color}
+      - {literal: White, ci: true, scope: support.constant.color}
+      - {literal: WhiteSmoke, ci: true, scope: support.constant.color}
+      - {literal: Yellow, ci: true, scope: support.constant.color}
+      - {literal: YellowGreen, ci: true, scope: support.constant.color}
+      - {literal: BUSINESS, ci: true, scope: support.constant.color}
+      - {literal: APPLICATION, ci: true, scope: support.constant.color}
+      - {literal: MOTIVATION, ci: true, scope: support.constant.color}
+      - {literal: STRATEGY, ci: true, scope: support.constant.color}
+      - {literal: TECHNOLOGY, ci: true, scope: support.constant.color}
+      - {literal: PHYSICAL, ci: true, scope: support.constant.color}
+      - {literal: IMPLEMENTATION, ci: true, scope: support.constant.color}
+    - {regex: '(?!\w)', ci: true}
+  COLOR_HEX: {regex: '(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{3})(?!\w)', ci: true, scope: constant.other.color.rgb-value}
+  COLOR_HEX_GRAY: {regex: '[0-9a-f](?!\w)', ci: true, scope: constant.other.color.rgb-value}
+  # Same language and leftmost-first behaviour as `\w+`.
+  COLOR_WORD:
+    alt:
+    - {ref: COLOR_SPECIAL}
+    - {ref: COLOR_NAME}
+    - {ref: COLOR_HEX}
+    - {ref: COLOR_HEX_GRAY}
+    - {regex: '\w+', ci: true, scope: constant.other.color}
+  # Same as `\w\w+` (a color word of at least two characters).
+  COLOR_VALUE:
+    alt:
+    - {ref: COLOR_SPECIAL}
+    - {ref: COLOR_NAME}
+    - {ref: COLOR_HEX}
+    - {regex: '\w\w+', ci: true, scope: constant.other.color}
+  COLOR_GRADIENT_SEP: {regex: '[-\\|/]', ci: true, scope: punctuation.separator.gradient}
+  # `\w+[-\\|/]?\w+`: a gradient `a<sep>b` or a single color of two or more chars.
+  COLOR_BODY:
+    alt:
+    - seq: [{ref: COLOR_WORD}, {ref: COLOR_GRADIENT_SEP}, {ref: COLOR_WORD}]
+    - {ref: COLOR_VALUE}
+  COLOR_GRADIENT:
+    seq: [{ref: COLOR_HASH}, {ref: COLOR_BODY}]
+  COLOR_REF:
+    seq: [{ref: COLOR_HASH}, {ref: COLOR_WORD}]
+  COLOR_TERMINATOR: {literal: ;, ci: true, scope: punctuation.terminator.color}
+  # Colors.java style keys `#back:red;line:blue;line.bold;text:green`.
+  COLOR_PROPERTY:
+    alt:
+    - {literal: text, ci: true, scope: support.type.property-name}
+    - {literal: back, ci: true, scope: support.type.property-name}
+    - {literal: header, ci: true, scope: support.type.property-name}
+    - {literal: line, ci: true, scope: support.type.property-name}
+    - {literal: line.dashed, ci: true, scope: support.type.property-name}
+    - {literal: line.dotted, ci: true, scope: support.type.property-name}
+    - {literal: line.bold, ci: true, scope: support.type.property-name}
+    - {literal: shadowing, ci: true, scope: support.type.property-name}
+  COLOR_SPEC:
+    opt:
+      alt:
+      - seq:
+        - {ref: COLOR_HASH}
+        - opt:
+            seq: [{ref: COLOR_BODY}, {ref: COLOR_TERMINATOR}]
+        - plus:
+            seq:
+            - {ref: COLOR_PROPERTY}
+            - opt:
+                seq:
+                - {literal: ':', ci: true, scope: punctuation.separator.key-value}
+                - {ref: COLOR_BODY}
+            - alt:
+              - {ref: COLOR_TERMINATOR}
+              - {regex: '(?![\w;:.])', ci: true}
+      - {ref: COLOR_GRADIENT}
+
+  # --- tags `$tag` (stereo/Stereotag.java) -----------------------------------------
+  TAG_ITEM:
+    seq:
+    - {literal: $, ci: true, scope: punctuation.definition.tag}
+    - {regex: "[^\\s\_{}\"“”<>$]+", ci: true, scope: entity.name.tag}
+  TAG_LIST:
+    opt:
+      seq:
+      - {ref: TAG_ITEM}
+      - star:
+          seq: [{ref: SPACE_SOME}, {ref: TAG_ITEM}]
+
+  # --- URLs `[[target{tooltip} label]]` (url/UrlBuilder.java) -----------------------
+  URL_OPEN: {literal: '[[', ci: true, scope: punctuation.definition.link.begin}
+  URL_CLOSE: {literal: ']]', ci: true, scope: punctuation.definition.link.end}
+  URL_QUOTE_OPEN: {regex: "[\"“”]", ci: true, scope: punctuation.definition.string.begin}
+  URL_QUOTE_CLOSE: {regex: "[\"“”]", ci: true, scope: punctuation.definition.string.end}
+  URL_TIP_OPEN: {literal: '{', ci: true, scope: punctuation.definition.tooltip.begin}
+  URL_TIP_CLOSE: {literal: '}', ci: true, scope: punctuation.definition.tooltip.end}
+  URL_TOOLTIP:
+    seq:
+    - {ref: SPACE_ANY}
+    - {ref: URL_TIP_OPEN}
+    - {regex: '[^{}]*', ci: true, scope: string.quoted.other.tooltip}
+    - {ref: URL_TIP_CLOSE}
+  URL_LABEL:
+    seq:
+    - {ref: SPACE_ONE}
+    - {regex: "[^\\s\_\\{\\}\\[\\]][^\\[\\]]*", ci: true, scope: string.other.link.description}
+  URL_LINK:
+    alt:
+    - seq:  # [["quoted target"{tooltip} label]]
+      - {ref: URL_OPEN}
+      - {ref: SPACE_ANY}
+      - {ref: URL_QUOTE_OPEN}
+      - {regex: "[^\"“”]+", ci: true, scope: markup.underline.link}
+      - {ref: URL_QUOTE_CLOSE}
+      - opt: {ref: URL_TOOLTIP}
+      - opt: {ref: URL_LABEL}
+      - {ref: SPACE_ANY}
+      - {ref: URL_CLOSE}
+    - seq:  # [[{tooltip only}]]
+      - {ref: URL_OPEN}
+      - {ref: SPACE_ANY}
+      - {ref: URL_TIP_OPEN}
+      - {regex: '.*', ci: true, scope: string.quoted.other.tooltip}
+      - {ref: URL_TIP_CLOSE}
+      - {ref: SPACE_ANY}
+      - {ref: URL_CLOSE}
+    - seq:  # [[{tooltip} label]]
+      - {ref: URL_OPEN}
+      - {ref: SPACE_ANY}
+      - {ref: URL_TIP_OPEN}
+      - {regex: '[^{}]*', ci: true, scope: string.quoted.other.tooltip}
+      - {ref: URL_TIP_CLOSE}
+      - {ref: SPACE_ANY}
+      - {regex: "[^\\[\\s\_\\{\\}\\[\\]][^\\[\\]]*", ci: true, scope: string.other.link.description}
+      - {ref: SPACE_ANY}
+      - {ref: URL_CLOSE}
+    - seq:  # [[target {tooltip with braces}]]
+      - {ref: URL_OPEN}
+      - {ref: SPACE_ANY}
+      - {regex: "[^\\s\"“”{}\\[\\]]+?", ci: true, scope: markup.underline.link}
+      - {ref: SPACE_ANY}
+      - {ref: URL_TIP_OPEN}
+      - {regex: '.+', ci: true, scope: string.quoted.other.tooltip}
+      - {ref: URL_TIP_CLOSE}
+      - {ref: SPACE_ANY}
+      - {ref: URL_CLOSE}
+    - seq:  # [[target{tooltip} label]]
+      - {ref: URL_OPEN}
+      - {ref: SPACE_ANY}
+      - {regex: "[^\\s\_\"“”\\[\\]]+?", ci: true, scope: markup.underline.link}
+      - opt: {ref: URL_TOOLTIP}
+      - opt: {ref: URL_LABEL}
+      - {ref: SPACE_ANY}
+      - {ref: URL_CLOSE}
+
+  # --- visibility (skin/VisibilityModifier.java:211-235) ----------------------------
+  VISIBILITY_KEYWORD:
+    alt:
+    - {literal: public, ci: true, scope: storage.modifier.visibility}
+    - {literal: private, ci: true, scope: storage.modifier.visibility}
+    - {literal: protected, ci: true, scope: storage.modifier.visibility}
+    - {literal: package, ci: true, scope: storage.modifier.visibility}
+  VISIBILITY_LIST:
+    seq:
+    - opt: {ref: VISIBILITY_KEYWORD}
+    - star:
+        seq: [{regex: "[,\\s\_]+", ci: true}, {ref: VISIBILITY_KEYWORD}]
+  VISIBILITY_CHAR: {regex: '[-#+~]', ci: true, scope: storage.modifier.visibility}
+
+  # --- arrow styles `[#red,dashed,thickness=2]` ---------------------------------
+  ARROW_STYLE_OPEN: {literal: '[', ci: true, scope: punctuation.section.arrow-style.begin}
+  ARROW_STYLE_CLOSE: {literal: ']', ci: true, scope: punctuation.section.arrow-style.end}
+  ARROW_STYLE_ITEM:
+    alt:
+    - {ref: COLOR_REF}
+    - {literal: dotted, ci: true, scope: support.constant.arrow-style}
+    - {literal: dashed, ci: true, scope: support.constant.arrow-style}
+    - {literal: plain, ci: true, scope: support.constant.arrow-style}
+    - {literal: bold, ci: true, scope: support.constant.arrow-style}
+    - {literal: hidden, ci: true, scope: support.constant.arrow-style}
+    - {literal: norank, ci: true, scope: support.constant.arrow-style}
+    - {literal: single, ci: true, scope: support.constant.arrow-style}
+    - {literal: node, ci: true, scope: support.constant.arrow-style}
+    - seq:
+      - {literal: thickness, ci: true, scope: support.type.property-name}
+      - {literal: '=', ci: true, scope: keyword.operator.assignment}
+      - {regex: '\d+', ci: true, scope: constant.numeric.integer}
+  ARROW_STYLE_ITEMS:
+    seq:
+    - {ref: ARROW_STYLE_ITEM}
+    - star:
+        seq:
+        - {literal: ',', ci: true, scope: punctuation.separator.comma}
+        - {ref: ARROW_STYLE_ITEM}
+  ARROW_STYLE_SPEC:
+    opt:
+      seq: [{ref: ARROW_STYLE_OPEN}, {ref: ARROW_STYLE_ITEMS}, {ref: ARROW_STYLE_CLOSE}]
+  ARROW_STYLE_MULTI:
+    opt:
+      seq:
+      - {ref: ARROW_STYLE_OPEN}
+      - {ref: ARROW_STYLE_ITEMS}
+      - star:
+          seq:
+          - {literal: ;, ci: true, scope: punctuation.separator.style-group}
+          - {ref: ARROW_STYLE_ITEMS}
+      - {ref: ARROW_STYLE_CLOSE}
+
+  # --- arrow heads and bodies (class diagram link, CommandLinkClass) -----------------
+  ARROW_HEAD_LEFT: {regex: '(?:<\|:|<\|\||<\||\|\||<<|<_|\}o\b|\|o\b|0\)|\}\||@|#|\)|\*|\+|\bo\b|0|x|<|\}|\^)', ci: true, scope: keyword.operator.arrow.head}
+  ARROW_HEAD_RIGHT: {regex: '(?::\|>|\|\|>|\|\||>>|\\\\|//|\|>|\(0|\bo\{|\bo\||\|\{|_>|@|#|\(|\*|\+|\bo\b|0|x|\{|\^|>)', ci: true, scope: keyword.operator.arrow.head}
+  ARROW_BODY_LINE: {regex: '[-=.]+', ci: true, scope: keyword.operator.arrow.body}
+
+  # --- stereotypes `<<label>>`, spot `<< (S,#FF7700) label >>` ------------------------
+  # Spot syntax: stereo/StereotypeDecoration.java:59-74 (circleChar).
+  STEREOTYPE_OPEN: {literal: '<<', ci: true, scope: punctuation.definition.stereotype.begin}
+  STEREOTYPE_CLOSE: {literal: '>>', ci: true, scope: punctuation.definition.stereotype.end}
+  STEREOTYPE_SPOT:
+    seq:
+    - {ref: SPACE_ANY}
+    - {literal: (, ci: true, scope: punctuation.definition.spot.begin}
+    - {regex: '\S', ci: true, scope: constant.character.spot}
+    - opt:
+        seq:
+        - {ref: SPACE_ANY}
+        - {literal: ',', ci: true, scope: punctuation.separator.comma}
+        - {ref: SPACE_ANY}
+        - alt:
+          - seq: [{ref: COLOR_HASH}, {regex: '[0-9a-f]{6}', ci: true, scope: constant.other.color.rgb-value}]
+          - {ref: COLOR_WORD}
+        - {ref: SPACE_ANY}
+    - {literal: ), ci: true, scope: punctuation.definition.spot.end}
+  # A spot cannot contain `>>`, so trying the spot branch first never changes where
+  # the lazy `.+?` would stop.
+  STEREOTYPE_SPEC:
+    seq:
+    - {ref: STEREOTYPE_OPEN}
+    - alt:
+      - seq:
+        - {ref: STEREOTYPE_SPOT}
+        - {regex: '.*?', ci: true, scope: entity.other.attribute-name.stereotype}
+      - {regex: '.+?', ci: true, scope: entity.other.attribute-name.stereotype}
+    - {ref: STEREOTYPE_CLOSE}
+  STEREOTYPE_ITEM:
+    seq:
+    - {ref: STEREOTYPE_OPEN}
+    - {regex: '[^<>]+', ci: true, scope: entity.other.attribute-name.stereotype}
+    - {ref: STEREOTYPE_CLOSE}
+  STEREOTYPE_GROUP:
+    seq:
+    - {ref: STEREOTYPE_ITEM}
+    - star:
+        seq: [{ref: SPACE_ANY}, {ref: STEREOTYPE_ITEM}]

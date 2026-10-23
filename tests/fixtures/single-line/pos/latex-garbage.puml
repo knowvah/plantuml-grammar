@@ -1,0 +1,4 @@
+' single-line: single-line-latex
+@startlatex
+\begin{ x
+@endlatex

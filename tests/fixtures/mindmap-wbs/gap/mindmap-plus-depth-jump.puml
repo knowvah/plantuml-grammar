@@ -1,0 +1,8 @@
+' mindmap-wbs: CommandMindMapPlus
+' gap: error42L on the regular branch, whose last idea is at level 1 (mindmap/Branch.java:75-87)
+@startmindmap
+* a
+++ b
+-- c
+++++ d
+@endmindmap

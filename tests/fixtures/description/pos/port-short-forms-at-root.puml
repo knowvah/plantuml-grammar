@@ -1,0 +1,8 @@
+' description: CommandCreateElementFull
+@startuml
+port (t)
+port [t2]
+port :t3:
+port ()t4
+port x5 as (y5)
+@enduml

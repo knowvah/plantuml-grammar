@@ -1,0 +1,27 @@
+' activity3: CommandPartition3, CommandCloseGroup3, CommandIf4, CommandEndif3, CommandFork3, CommandForkAgain3, CommandForkEnd3, CommandRepeat3, CommandRepeatWhile3, CommandSwitch, CommandCase, CommandEndSwitch
+@startuml
+start
+if (x) then (yes)
+  partition P {
+    :a;
+  }
+endif
+fork
+  partition Q {
+    :b;
+  }
+fork again
+  :c;
+end fork
+repeat
+  partition R {
+    :d;
+  }
+repeat while (more?)
+switch (s)
+case (a)
+  partition S {
+    :e;
+  }
+endswitch
+@enduml

@@ -1,0 +1,443 @@
+# Files diagrams (T31, `@startfiles`). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/.
+#
+# FilesDiagramFactory is not a command factory: createSystem
+# (filesdiagram/FilesDiagramFactory.java:54-58) builds a StyleExtractor over all lines
+# and a FilesDiagram. Two independent scans read the lines:
+# * FilesDiagram.java:80-88: an untrimmed line starting with `/` is an entry, one
+#   starting with `<note>` opens a note that runs to a line starting with `</note>`
+#   (:92-101) or to the end. Every other line is ignored. Nothing here can fail.
+# * jsondiagram/StyleExtractor.java:63-103 (its iterator includes the `@start` line):
+#   a trimmed line equal to `<style>` (case-sensitive, :105-107) starts a style block
+#   that takes every line up to and including the first one that trims to `</style>`
+#   (:109-111); without one it runs to the last body line (the `@end` line is fetched
+#   but never added, :70-75). While no other non-blank line has been seen
+#   (`list.size() <= 1`, the `@start` line is element 0), lines starting with `!assume `,
+#   `!pragma `, `hide `, `scale `, `title `, `skin ` are ignored, and a `skinparam `
+#   line holding `{` skips every line up to one that trims to `}` (:88-97), hiding any
+#   `<style>` in between. Any other non-blank line ends that header state (:98-99).
+# FilesDiagram.java:66-70 then parses all style lines as ONE token stream
+# (style/parser/StyleParser.java:79-86; lines trimmed, "\n" appended,
+# utils/CharInspectorImpl.java:51-79) and swallows StyleParsingException.
+#
+# What the jar rejects (oracle-verified; tests/fixtures/board-files-git and a randomized
+# comparison with the reference implementation in tests/families/test_board_files_git.py):
+# only a style stream whose FIRST failure is not a StyleParsingException. parseNow
+# (StyleParser.java:88-176) throws IllegalStateException for a comma list not followed
+# by `{` (:104-113) and for a statement starting with `*`, `,` or a `:` that is not
+# `:name {` / `:name* {` (:153-172), and a NullPointerException when a token it needs is
+# missing (:104, :121, :129, :153-161, :209). The throw escapes the constructor and
+# PSystemBuilder.java:275-281 reports it as an error at the `@end` line. A
+# StyleParsingException (`{` as a statement, `key` followed by no STRING, `@` or `*` in a
+# value, :141, :170, :213, :215) ends the parse quietly: the rest of the stream, later
+# style blocks included, can no longer fail. Empty and arbitrary bodies are accepted.
+#
+# Model. The header/body split and the skinparam skip are contexts. A style block is
+# decided at its `<style>` line by `join` entries over the whole block (lines joined
+# with U+E100, which plays the "\n" token, as in style.yaml; the final "\n" after
+# `</style>` is implicit at the end of the text):
+# * FilesStyleBlock: the stream parses to its end; the next block starts afresh, which is
+#   exact because the parser is back at a statement start after the `</style>` line.
+# * FilesStyleBlockStopped: a StyleParsingException comes first; `files_free` accepts
+#   the rest of the block.
+# * FilesStyleBlockUnclosed: a quote, `/* */` comment or `@...` media prefix is still
+#   open at `</style>` (the tokenizer runs on, StyleParser.java:291-341) and the stream
+#   would be fine if it ended there (FILES_OPEN_END: an unclosed comment at a statement
+#   start or after a value, an unclosed quote as a value); `files_free` follows.
+# * FilesStyleBlockOpenOnward: open at `</style>` with an ending that would crash. A
+#   later style block continues the stream (approximated: `files_open_onward` pops at
+#   the next `<style>` line, the rest is plain lines); without one, `require_pop` sends
+#   the block end back to FilesStyleOpen.
+# * FilesStyleOpen (`require_pop`): everything else. `files_style_open` has no entry for
+#   `</style>`, so a terminated block that reaches it crashed and fails there. With no
+#   `</style>` line the block runs to the end of the body and the retry takes
+#   FilesStyleUnterminated, whose context consumes statement chunks that end at a line
+#   end (a NEWLINE follows); a stream that ends needing a token leaves a line no entry
+#   takes.
+# * The emitters get a flat view (FilesStyleStructure, Files*View): every interpreter
+#   entry with a transition is `emit: false` (a `set` on each line would nest every later
+#   line in TextMate).
+# Known gaps (gap fixtures): FontSize / HyperlinkUnderlineThickness values that overflow
+# when FilesDiagram.java:71-76 builds the filesDiagram font (style/Style.java:241-276),
+# which depends on selector matching (FA); a construct left open across style blocks
+# (FA, rarely FR); an unclosed comment in an unterminated block is judged at the end of
+# its chunk (FA); a value followed by `//` on the last line of an unterminated block (FR).
+schema_version: 1
+id: board-files-git-files
+layer: diagram
+diagram: FILES
+factory: FilesDiagramFactory
+include: [embedded-files, style, board-files-git-files-style]
+
+variables:
+  # ---- line classes (StyleExtractor.java:63-103) ----
+  FILES_STYLE_START: {literal: <style>, ci: false, scope: entity.name.tag}
+  FILES_STYLE_END: {literal: </style>, ci: false, scope: entity.name.tag}
+
+contexts:
+  # The header (StyleExtractor `list.size() <= 1`).
+  main:
+    - include: files_style
+    - command: FilesHeaderIgnored
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 76
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:76-87
+      kind: single
+      parts:
+        seq:
+          - {regex: "(?:!assume|!pragma|hide|scale|title|skin) ", ci: false, scope: keyword.other.header}
+          - {regex: ".*", ci: false}
+    - command: FilesHeaderSkinparamBlock
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 91
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:88-97
+      kind: single
+      parts:
+        seq:
+          - {regex: "skinparam ", ci: false, scope: keyword.other.skinparam}
+          - {regex: "[^{]*\\{.*", ci: false}
+      emit: false
+      push: files_skinparam_skip
+    - command: FilesHeaderSkinparam
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 88
+      kind: single
+      parts:
+        seq:
+          - {regex: "skinparam ", ci: false, scope: keyword.other.skinparam}
+          - {regex: ".*", ci: false}
+    - include: files_lines
+    # The emitter view: the same lines without transitions, disjoint, so that emitters
+    # see a flat list (a `set` per line would nest every later line). The interpreter never
+    # reaches them: FilesOtherLine takes every non-blank line first.
+    - command: FilesEntryView
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 84
+      kind: single
+      parts:
+        seq:
+          - {literal: /, ci: false, scope: punctuation.definition.path}
+          - {regex: ".*", ci: false, scope: string.unquoted.path}
+    - command: FilesNoteView
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 86
+        also:
+          - src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java:96
+      kind: single
+      parts:
+        seq:
+          - {regex: "</?note>", ci: false, scope: entity.name.tag}
+          - {regex: ".*", ci: false}
+    - command: FilesOtherLineView
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 82
+      kind: single
+      parts: {regex: "(?:[^/<]|<(?!/?note>)).*", ci: false}
+  # After the header: every non-style line is only listed (StyleExtractor.java:98-99).
+  files_body:
+    - include: files_style
+    - include: files_lines
+  # FilesDiagram's own scan (FilesDiagram.java:80-88); any line ends the header.
+  files_lines:
+    - command: FilesEntry
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 84
+        also:
+          - src/main/java/net/sourceforge/plantuml/filesdiagram/FEntry.java:82-94
+      kind: single
+      emit: false
+      trim: false
+      parts:
+        seq:
+          - {literal: /, ci: false, scope: punctuation.definition.path}
+          - {regex: ".*", ci: false, scope: string.unquoted.path}
+      set: files_body
+    - command: FilesNoteStart
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 86
+      kind: single
+      emit: false
+      trim: false
+      parts:
+        seq:
+          - {literal: <note>, ci: false, scope: entity.name.tag}
+          - {regex: ".*", ci: false}
+      set: files_body
+    - command: FilesNoteEnd
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 96
+      kind: single
+      emit: false
+      trim: false
+      parts:
+        seq:
+          - {literal: </note>, ci: false, scope: entity.name.tag}
+          - {regex: ".*", ci: false}
+      set: files_body
+    - command: FilesOtherLine
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 82
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:98-99
+      kind: single
+      emit: false
+      parts: {regex: ".+", ci: false}
+      set: files_body
+  # `skinparam x {` in the header: lines up to one that trims to `}` are skipped.
+  files_skinparam_skip:
+    - command: FilesSkinparamSkipEnd
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 93
+      kind: single
+      parts: {literal: "}", ci: false, scope: punctuation.section.block.end}
+      pop: true
+    - command: FilesSkinparamSkipLine
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 95
+      kind: single
+      parts: {regex: ".*", ci: false}
+  # A style block at its `<style>` line (see the header).
+  files_style:
+    - command: FilesStyleBlock
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 88
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:69-75
+          - src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java:66-70
+      kind: multiline
+      emit: false
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - {ref: FILES_END_IS_LAST}
+          - star: {ref: FILES_STATEMENT}
+          - {ref: FILES_GAP}
+    - command: FilesStyleBlockStopped
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 141
+        also:
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:169-170
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:212-215
+          - src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java:66-70
+      kind: multiline
+      emit: false
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - {ref: FILES_END_IS_LAST}
+          - star: {ref: FILES_STATEMENT}
+          - {ref: FILES_STOP}
+          - {ref: FILES_REST}
+      push: files_free
+    - command: FilesStyleBlockUnclosed
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 291
+        also:
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:312-341
+      kind: multiline
+      emit: false
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - {ref: FILES_END_IS_LAST}
+          - star: {ref: FILES_STATEMENT}
+          - {ref: FILES_OPEN_END}
+          - {ref: FILES_REST}
+      push: files_free
+    - command: FilesStyleBlockOpenOnward
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 291
+        also:
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:312-341
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:69-75
+      kind: multiline
+      emit: false
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - {ref: FILES_END_IS_LAST}
+          - {ref: FILES_TOKENS}
+          - {ref: FILES_UNCLOSED}
+          - {ref: FILES_REST}
+      push: files_open_onward
+      require_pop: true
+    - command: FilesStyleOpen
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 69
+        also:
+          - src/main/java/net/sourceforge/plantuml/PSystemBuilder.java:275-281
+      kind: single
+      emit: false
+      parts: {ref: FILES_STYLE_START}
+      push: files_style_open
+      require_pop: true
+    # The emitter view (all entries above are interpreter-only): `<style>` to `</style>`
+    # (StyleExtractor.java:69-75, :109-111), body highlighted with style.yaml's
+    # `style_body`. Emitters approximate an unterminated block by plain lines. The
+    # interpreter never gets here: FilesStyleUnterminated takes every `<style>` line.
+    - command: FilesStyleStructure
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 69
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:109-111
+      kind: multiline
+      parts: {ref: FILES_STYLE_START}
+      end: {ref: FILES_STYLE_END}
+      push: style_body
+    - command: FilesStyleUnterminated
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 70
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:70-75
+      kind: single
+      emit: false
+      parts: {ref: FILES_STYLE_START}
+      push: files_unterminated
+  # A construct still open at `</style>` whose stream would crash if it ended there: a
+  # later style block continues the stream (approximated as accepted, `pop`); without
+  # one the block end backtracks to FilesStyleOpen, which fails at `</style>`.
+  files_open_onward:
+    - command: FilesStyleContinued
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 69
+      kind: single
+      emit: false
+      parts: {ref: FILES_STYLE_START}
+      pop: true
+    - command: FilesStyleOnwardLine
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 82
+      kind: single
+      emit: false
+      parts: {regex: ".*", ci: false}
+  # A style block with no `</style>` line runs to the end of the body; reached when the
+  # end of the block backtracks to FilesStyleOpen. The lines are consumed in chunks
+  # that end at a line end in statement-start state (a NEWLINE follows each line), so
+  # a stream that ends with a statement still needing a token leaves a line no entry
+  # takes, as upstream throws (StyleParser.java:104, :121, :129).
+  files_unterminated:
+    - command: FilesUnterminatedStopped
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 141
+        also:
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:169-170
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:212-215
+      kind: multiline
+      emit: false
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - star: {ref: FILES_STATEMENT}
+          - {ref: FILES_STOP}
+          - {ref: FILES_REST}
+      push: files_free
+    - command: FilesUnterminatedStatements
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 91
+      kind: multiline
+      emit: false
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - star: {ref: FILES_STATEMENT}
+          - {ref: FILES_GAP}
+          - {regex: "(?://[^\uE100]*)?", ci: false}
+    - command: FilesUnterminatedOpenEnd
+      provenance:
+        class: net.sourceforge.plantuml.style.parser.StyleParser
+        file: src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java
+        line: 291
+        also:
+          - src/main/java/net/sourceforge/plantuml/style/parser/StyleParser.java:328-341
+      kind: multiline
+      emit: false
+      join: {max_lines: 100000}
+      parts:
+        seq:
+          - star: {ref: FILES_STATEMENT}
+          - {ref: FILES_OPEN_END}
+          - {ref: FILES_REST}
+      push: files_free
+  # A style block none of the joins took: a `</style>` line means the stream crashed
+  # (no entry, the line fails); without one the block runs to the end and is accepted.
+  files_style_open:
+    - command: FilesStyleLine
+      provenance:
+        class: net.sourceforge.plantuml.jsondiagram.StyleExtractor
+        file: src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java
+        line: 71
+        also:
+          - src/main/java/net/sourceforge/plantuml/jsondiagram/StyleExtractor.java:109-111
+      kind: single
+      emit: false
+      parts: {regex: "(?!</style>$).*", ci: false}
+  # After a StyleParsingException (or an approximated unclosed construct): nothing
+  # can fail any more.
+  files_free:
+    - command: FilesAfterStyleStop
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagram
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagram.java
+        line: 68
+      kind: single
+      emit: false
+      parts: {regex: ".*", ci: false}
+  # Body of blank lines only: FilesDiagramFactory.createSystem accepts it.
+  empty:
+    - command: FilesDiagramFactory
+      provenance:
+        class: net.sourceforge.plantuml.filesdiagram.FilesDiagramFactory
+        file: src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagramFactory.java
+        line: 54
+        also:
+          - src/main/java/net/sourceforge/plantuml/filesdiagram/FilesDiagramFactory.java:54-58
+      kind: single
+      parts: {regex: ".*", ci: false}

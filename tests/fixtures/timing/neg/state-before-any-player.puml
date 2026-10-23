@@ -1,0 +1,5 @@
+' timing: CommandChangeStateByTime, CommandBinary
+@startuml
+binary "B" as B
+0 is high
+@enduml

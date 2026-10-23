@@ -1,0 +1,5 @@
+@startuml
+!define X 1
+!define F(a, $b = 2) $b
+a -> b
+@enduml

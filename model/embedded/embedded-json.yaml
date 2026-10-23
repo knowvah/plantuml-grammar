@@ -1,0 +1,20 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# JsonDiagramFactory.createSystem is not a command factory: a ParseException is caught (:94-96) and a JsonDiagram is still returned (:97-110).
+# Any body, including an empty one, is accepted without parsing (D4).
+
+schema_version: 1
+id: embedded-json
+layer: diagram
+diagram: JSON
+factory: JsonDiagramFactory
+contexts:
+  main:
+    - command: JsonDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory, file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java, line: 94}
+      kind: opaque
+      parts: {regex: ".*"}
+  empty:
+    - command: JsonDiagramFactory
+      provenance: {class: net.sourceforge.plantuml.jsondiagram.JsonDiagramFactory, file: src/main/java/net/sourceforge/plantuml/jsondiagram/JsonDiagramFactory.java, line: 94}
+      kind: opaque
+      parts: {regex: ".*"}

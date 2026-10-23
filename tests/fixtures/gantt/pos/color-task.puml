@@ -1,0 +1,8 @@
+' gantt: CommandColorTask
+@startgantt
+[A] -> [B]
+[A] #Lavender/#00f
+[B] #a/automatic
+[A] #transparent
+[B] #ff0000/BLUE
+@endgantt

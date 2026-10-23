@@ -1,0 +1,8 @@
+' misc-charts: FlowLinkToBox
+' gap: TilesField.addPath refuses a path through occupied tiles; the model keeps no tile geometry
+@startflow
+10 "A"
+s 20 "B"
+e 30 "C"
+w 10
+@endflow

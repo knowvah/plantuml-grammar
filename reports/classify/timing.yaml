@@ -1,0 +1,38 @@
+# Classifications for the `timing` family (T23). Upstream pin 97a5992; `cite` paths are
+# relative to the upstream repository root. FR is 0 on every corpus. The remaining false
+# accepts (FA) are lookups in tables a line grammar does not keep: players, time labels
+# and clocks declared on earlier lines. The plantuml-ts blocks live in class/ and
+# sequence/ directories but are TIMING blocks (the jar's error names the timing type).
+cases:
+  # `TIMING -> A : A` with no player `A` ("No such element: A").
+  plantuml-ts:sequence/pebecu-20-deci596.puml#0:
+    class: semantic
+    note: "message to an undeclared player: CommandTimeMessage looks PART2 up in the player table (gap/message-unknown-player)"
+    cite: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandTimeMessage.java:119-121
+  pdiff:dbhum/p_eb/pebecu-20-deci596.puml#0:
+    class: semantic
+    note: "message to an undeclared player: CommandTimeMessage looks PART2 up in the player table (gap/message-unknown-player)"
+    cite: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandTimeMessage.java:119-121
+  # `WB@-20 <-> @-10` with no player `WB` ("No such participant WB").
+  plantuml-ts:class/sezuvo-55-nose464.puml#0:
+    class: semantic
+    note: "constraint on an undeclared player: CommandConstraint looks PART1 up in the player table (gap/constraint-unknown-player)"
+    cite: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandConstraint.java:117-120
+  pdiff:dbhum/s_ez/sezuvo-55-nose464.puml#0:
+    class: semantic
+    note: "constraint on an undeclared player: CommandConstraint looks PART1 up in the player table (gap/constraint-unknown-player)"
+    cite: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandConstraint.java:117-120
+  # `MainSwitch@:On <-> @:OffBad` where `:OffBad` was never defined ("Unknown time label").
+  plantuml-ts:class/tobafo-52-libo419.puml#0:
+    class: semantic
+    note: "constraint to an undefined time label: TimeTickBuilder resolves :code in the label table, null fails (gap/constraint-unknown-label)"
+    cite: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandConstraint.java:128-132
+  pdiff:dbhum/t_ob/tobafo-52-libo419.puml#0:
+    class: semantic
+    note: "constraint to an undefined time label: TimeTickBuilder resolves :code in the label table, null fails (gap/constraint-unknown-label)"
+    cite: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandConstraint.java:128-132
+  # `@clkfoo*1` with only clock `clk` declared ("What time?").
+  pdiff:dbhum/v_uf/vufija-57-xoda292.puml#0:
+    class: semantic
+    note: "time on an undeclared clock: getClockValue returns null and CommandAtTime fails (gap/at-unknown-clock)"
+    cite: src/main/java/net/sourceforge/plantuml/timingdiagram/command/CommandAtTime.java:90-92

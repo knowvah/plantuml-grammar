@@ -1,0 +1,8 @@
+' meta: RegexLineWellFormed
+@startregex
+A(?=abc)BC(?!not)DE
+A(?<tld>BCD)Z
+A(?<=abc)BC(?<!not)DE
+(?:a)
+(?:?!b)
+@endregex

@@ -1,0 +1,5 @@
+' meta: EbnfRuleMultilines
+@startebnf
+a = b ; .
+  c ;
+@endebnf

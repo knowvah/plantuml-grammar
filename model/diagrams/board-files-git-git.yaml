@@ -1,0 +1,77 @@
+# Git log diagrams (T31, `@startgit`). Upstream pin 97a5992; paths are relative to
+# src/main/java/net/sourceforge/plantuml/.
+#
+# GitDiagramFactory is not a command factory: createSystem
+# (gitlog/GitDiagramFactory.java:56-70) adds every body line, untrimmed, to a
+# GitTextArea (the last source line, `@end...`, is read but not added) and builds a
+# GitDiagram, whose constructor runs GNodeBuilder over all commits
+# (gitlog/GitDiagram.java:55-58). Any exception there escapes createSystem and
+# PSystemBuilder.java:275-281 reports it as an error.
+#
+# What the jar rejects (oracle-verified, tests/fixtures/board-files-git):
+# * a line whose FIRST `*` is not followed by a space or `-`: every line holding a `*`
+#   is a commit (GitTextArea.getAllCommits, gitlog/GitTextArea.java:53-66), and the
+#   Commit constructor throws IllegalArgumentException unless the text at that `*`
+#   starts with `* ` or `*-` (gitlog/Commit.java:48-55, CursorPosition.matches :63-72).
+#   `*` at the end of a line, `*x`, `abc*` and a tab after `*` all fail. Modeled:
+#   GitCommitLine accepts only the good shape; no entry takes the bad one.
+# * the ancestor walk (known gap, tests/fixtures/board-files-git/gap/git-*): for each
+#   commit, Commit.getAncestors (Commit.java:77-118) follows `|`, `/`, `\`, `_` and `.`
+#   marks down and sideways through the text area (CursorPosition.getDownFromInternal,
+#   CursorPosition.java:117-213) and throws UnsupportedOperationException when no rule
+#   applies (:210-211), e.g. a `|` under a commit on the last line. A walk that reaches
+#   a `* ` whose name differs from the name computed for that line's commit (a `*` not
+#   first on its line) makes GNode.link dereference null (GNodeBuilder.java:61-63,
+#   GNode.java:69-72). Both depend on characters in the same column of other lines,
+#   which a line grammar cannot see.
+# * Nothing else: lines without `*` are only read by the walk; an empty body is fine.
+schema_version: 1
+id: board-files-git-git
+layer: diagram
+diagram: GIT
+factory: GitDiagramFactory
+include: [embedded-git]
+
+variables:
+  # Graph text before the first `*` (anything but `*`).
+  GIT_GRAPH: {regex: "[^*]*", ci: false, scope: punctuation.definition.graph}
+
+contexts:
+  main:
+    - command: GitCommitLine
+      provenance:
+        class: net.sourceforge.plantuml.gitlog.Commit
+        file: src/main/java/net/sourceforge/plantuml/gitlog/Commit.java
+        line: 52
+        also:
+          - src/main/java/net/sourceforge/plantuml/gitlog/GitTextArea.java:53-66
+          - src/main/java/net/sourceforge/plantuml/gitlog/CursorPosition.java:63-72
+          - src/main/java/net/sourceforge/plantuml/gitlog/CursorPosition.java:91-103
+      kind: single
+      trim: false
+      parts:
+        seq:
+          - {ref: GIT_GRAPH}
+          - {literal: "*", ci: false, scope: keyword.operator.commit}
+          - {regex: "[ -].*", ci: false, scope: string.unquoted.commit-message}
+    - command: GitGraphLine
+      provenance:
+        class: net.sourceforge.plantuml.gitlog.GitTextArea
+        file: src/main/java/net/sourceforge/plantuml/gitlog/GitTextArea.java
+        line: 60
+        also:
+          - src/main/java/net/sourceforge/plantuml/gitlog/GitDiagramFactory.java:60-68
+      kind: single
+      trim: false
+      parts: {regex: "[^*]+", ci: false, scope: punctuation.definition.graph}
+  # Body of blank lines only: no commit, nothing to walk.
+  empty:
+    - command: GitDiagramFactory
+      provenance:
+        class: net.sourceforge.plantuml.gitlog.GitDiagramFactory
+        file: src/main/java/net/sourceforge/plantuml/gitlog/GitDiagramFactory.java
+        line: 56
+        also:
+          - src/main/java/net/sourceforge/plantuml/gitlog/GitDiagramFactory.java:56-70
+      kind: single
+      parts: {regex: ".*", ci: false}

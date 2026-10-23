@@ -1,0 +1,196 @@
+# Class and object diagrams (T18): ClassDiagramFactory, which also registers the
+# object-diagram commands (classdiagram/ClassDiagramFactory.java:101-171 at 97a5992;
+# paths are relative to src/main/java/net/sourceforge/plantuml/ unless they start
+# with net/atmp/). model/document.yaml has no separate object factory.
+#
+# The generated model is refined in place by the included shared models:
+# * class-decl: class heads, the class body context, a `{` on the next line.
+# * class-objects: object/map bodies, JSON blocks and single-line JSON data.
+# * class-groups: the group stack (package, namespace, together, `}`) and allowmixing.
+# Every context below runs the full generated command list (`gen-class-diagram#main`,
+# with all refinements) after a few head entries that carry what differs per state:
+# * main                root, no allowmixing yet;
+# * main_mixing         root after `allowmixing` (CommandAllowMixing sets it);
+# * class_group         inside a package, namespace or together block;
+# * class_group_mixing  the same after `allowmixing` (openers in a mixing context
+#                       push it);
+# * class_orphan        after a `}` that closed the root (CommandEndPackage sets it).
+# Head entries run before the generated list, so each one is either a rule no
+# earlier upstream command can take, or excludes those lines (see class-groups).
+schema_version: 1
+id: class
+layer: diagram
+diagram: CLASS
+factory: ClassDiagramFactory
+include: [gen-class-diagram, common, class-decl, class-objects, class-groups]
+
+contexts:
+  main:
+    - include: class_mixing_gate
+    - include: gen-class-diagram#main
+  main_mixing:
+    - include: class_mixing_openers
+    - include: gen-class-diagram#main
+  class_group:
+    - include: class_group_end
+    - command: GroupAllowMixing
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandAllowMixing.java
+        line: 55
+        engine: IRegex
+      kind: single
+      parts: {ref: CG_ALLOW_MIXING}
+      set: class_group_mixing
+    - include: class_mixing_gate
+    - include: gen-class-diagram#main
+  class_group_mixing:
+    - include: class_group_end
+    - command: GroupMixingAllowMixing
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandAllowMixing.java
+        line: 55
+        engine: IRegex
+      kind: single
+      parts: {ref: CG_ALLOW_MIXING}
+    - include: class_mixing_openers
+    - include: gen-class-diagram#main
+  class_orphan:
+    - command: GroupStackEmpty
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/command/CommandEndPackage.java:67-71]
+      kind: single
+      reject: true
+      parts: {ref: CG_ORPHAN_UNSAFE}
+    - command: OrphanAllowMixing
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandAllowMixing.java
+        line: 55
+        engine: IRegex
+      kind: single
+      parts: {ref: CG_ALLOW_MIXING}
+    - include: gen-class-diagram#main
+
+  # `}` closing a group (net/atmp/CucaDiagram.java:367-374).
+  class_group_end:
+    - command: GroupEnd
+      provenance:
+        class: net.atmp.CucaDiagram
+        file: src/main/java/net/atmp/CucaDiagram.java
+        line: 367
+        also: [src/main/java/net/sourceforge/plantuml/command/CommandEndPackage.java:67-71]
+      kind: single
+      parts: {ref: CD_BODY_END}
+      pop: true
+  # Without allowmixing an element line fails
+  # (classdiagram/command/CommandCreateElementFull2.java:197-198).
+  class_mixing_gate:
+    - command: ElementNeedsAllowMixing
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateElementFull2.java
+        line: 197
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/classdiagram/ClassDiagramFactory.java:133]
+      kind: single
+      reject: true
+      parts:
+        seq: [{ref: CG_NOT_EARLIER_RULE}, {ref: CG_ELEMENT_FULL2}]
+    # A `package X` line is CommandPackage's when the next line is exactly `{` (no
+    # upstream rule before CommandPackage takes such a line); otherwise the element.
+    - command: GatePackageBracketNextLine
+      provenance:
+        class: net.sourceforge.plantuml.command.SingleLineCommand2
+        file: src/main/java/net/sourceforge/plantuml/command/SingleLineCommand2.java
+        line: 109
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommandPackage.java:97-100]
+      kind: multiline
+      join: {max_lines: 1}
+      parts:
+        seq: [{ref: CD_PACKAGE_HEAD}, {ref: CD_JOINER}, {ref: CD_BLOCK_OPEN}]
+      push: class_group
+    - command: PackageElementNeedsAllowMixing
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/classdiagram/command/CommandCreateElementFull2.java
+        line: 197
+        engine: IRegex
+      kind: single
+      reject: true
+      parts: {ref: CG_PACKAGE_ELEMENT}
+  # The group openers in upstream order, pushing the mixing group context. No rule
+  # before CommandPackage (ClassDiagramFactory.java:127) takes an opener line.
+  class_mixing_openers:
+    - command: MixingPackageEmptyName
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/CommandPackage.java
+        line: 155
+        engine: IRegex
+      kind: single
+      reject: true
+      parts: {ref: CG_PACKAGE_EMPTY_NAME}
+    - command: MixingPackage
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/CommandPackage.java
+        line: 72
+        engine: IRegex
+      kind: single
+      parts:
+        seq: [{ref: CD_PACKAGE_HEAD}, {ref: CD_BLOCK_OPEN}]
+      push: class_group_mixing
+    - command: MixingPackageBracketNextLine
+      provenance:
+        class: net.sourceforge.plantuml.command.SingleLineCommand2
+        file: src/main/java/net/sourceforge/plantuml/command/SingleLineCommand2.java
+        line: 109
+        engine: IRegex
+        also: [src/main/java/net/sourceforge/plantuml/command/CommandPackage.java:97-100]
+      kind: multiline
+      join: {max_lines: 1}
+      parts:
+        seq: [{ref: CD_PACKAGE_HEAD}, {ref: CD_JOINER}, {ref: CD_BLOCK_OPEN}]
+      push: class_group_mixing
+    - command: MixingPackageWithUSymbol
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/descdiagram/command/CommandPackageWithUSymbol.java
+        line: 75
+        engine: IRegex
+      kind: single
+      parts: {ref: CG_PACKAGE_USYMBOL}
+      push: class_group_mixing
+    - command: MixingTogether
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/descdiagram/command/CommandTogether.java
+        line: 56
+        engine: IRegex
+      kind: single
+      parts: {ref: CG_TOGETHER}
+      push: class_group_mixing
+    - command: MixingNamespace
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/CommandNamespace.java
+        line: 68
+        engine: IRegex
+      kind: single
+      parts: {ref: CG_NAMESPACE}
+      push: class_group_mixing
+    - command: MixingNamespace2
+      provenance:
+        class: net.sourceforge.plantuml.classdiagram.ClassDiagram
+        file: src/main/java/net/sourceforge/plantuml/command/CommandNamespace2.java
+        line: 64
+        engine: IRegex
+      kind: single
+      parts: {ref: CG_NAMESPACE2}
+      push: class_group_mixing

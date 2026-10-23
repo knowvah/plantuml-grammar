@@ -1,0 +1,5 @@
+' gantt: GanttProjectStartsAfterTask
+@startgantt
+-- x --
+Project starts 2020-01-01
+@endgantt

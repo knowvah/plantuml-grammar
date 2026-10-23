@@ -1,0 +1,12 @@
+' activity3: CommandActivity3, CommandArrow3
+@startuml
+:a;
+-> label;
+:b;
+-[#red,dashed]-> styled;
+:c;
+-[hidden]->
+:d;
+->
+:e;
+@enduml

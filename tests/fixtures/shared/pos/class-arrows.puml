@@ -1,0 +1,14 @@
+' refines: arrow-style | [#red,dashed,thickness=2]
+' refines: arrow-head-left | <|
+' refines: arrow-body | --
+' refines: arrow-head-right | *
+' refines: arrow-head-left | }o
+' refines: arrow-body | ..
+' refines: arrow-head-right | o{
+@startuml
+class A
+class B
+A <|-[#red,dashed,thickness=2]- B
+A --* B
+A }o..o{ B
+@enduml

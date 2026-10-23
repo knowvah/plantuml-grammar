@@ -1,0 +1,301 @@
+{
+  "source": "src/main/java/net/sourceforge/plantuml/tim/TContext.java:199-288 (addStandardFunctions) at 97a5992; names from each class TFunctionSignature literal in tim/builtin/",
+  "functions": [
+    {
+      "name": "%false",
+      "class": "AlwaysFalse"
+    },
+    {
+      "name": "%true",
+      "class": "AlwaysTrue"
+    },
+    {
+      "name": "%backslash",
+      "class": "Backslash"
+    },
+    {
+      "name": "%boolval",
+      "class": "BoolVal"
+    },
+    {
+      "name": "%breakline",
+      "class": "Breakline"
+    },
+    {
+      "name": "%call_user_func",
+      "class": "CallUserFunction"
+    },
+    {
+      "name": "%chr",
+      "class": "Chr"
+    },
+    {
+      "name": "%darken",
+      "class": "Darken"
+    },
+    {
+      "name": "%date",
+      "class": "DateFunction"
+    },
+    {
+      "name": "%dec2hex",
+      "class": "Dec2hex"
+    },
+    {
+      "name": "%dirpath",
+      "class": "Dirpath"
+    },
+    {
+      "name": "%dollar",
+      "class": "Dollar"
+    },
+    {
+      "name": "%eval",
+      "class": "Eval"
+    },
+    {
+      "name": "%feature",
+      "class": "Feature"
+    },
+    {
+      "name": "%filedate",
+      "class": "Filedate"
+    },
+    {
+      "name": "%file_exists",
+      "class": "FileExists"
+    },
+    {
+      "name": "%filename",
+      "class": "Filename"
+    },
+    {
+      "name": "%filename_no_extension",
+      "class": "FilenameNoExtension"
+    },
+    {
+      "name": "%function_exists",
+      "class": "FunctionExists"
+    },
+    {
+      "name": "%get_all_stdlib",
+      "class": "GetAllStdlib"
+    },
+    {
+      "name": "%get_all_theme",
+      "class": "GetAllTheme"
+    },
+    {
+      "name": "%get_current_theme",
+      "class": "GetCurrentTheme"
+    },
+    {
+      "name": "%get_json_keys",
+      "class": "GetJsonKey"
+    },
+    {
+      "name": "%get_json_type",
+      "class": "GetJsonType"
+    },
+    {
+      "name": "%get_stdlib",
+      "class": "GetStdlib"
+    },
+    {
+      "name": "%get_variable_value",
+      "class": "GetVariableValue"
+    },
+    {
+      "name": "%version",
+      "class": "GetVersion"
+    },
+    {
+      "name": "%getenv",
+      "class": "Getenv"
+    },
+    {
+      "name": "%hex2dec",
+      "class": "Hex2dec"
+    },
+    {
+      "name": "%hsl_color",
+      "class": "HslColor"
+    },
+    {
+      "name": "%intval",
+      "class": "IntVal"
+    },
+    {
+      "name": "%invoke_procedure",
+      "class": "InvokeProcedure"
+    },
+    {
+      "name": "%is_dark",
+      "class": "IsDark"
+    },
+    {
+      "name": "%is_light",
+      "class": "IsLight"
+    },
+    {
+      "name": "%json_add",
+      "class": "JsonAdd"
+    },
+    {
+      "name": "%json_key_exists",
+      "class": "JsonKeyExists"
+    },
+    {
+      "name": "%json_merge",
+      "class": "JsonMerge"
+    },
+    {
+      "name": "%json_remove",
+      "class": "JsonRemove"
+    },
+    {
+      "name": "%json_set",
+      "class": "JsonSet"
+    },
+    {
+      "name": "%left_align",
+      "class": "LeftAlign"
+    },
+    {
+      "name": "%lighten",
+      "class": "Lighten"
+    },
+    {
+      "name": "%load_json",
+      "class": "LoadJson"
+    },
+    {
+      "name": "%and",
+      "class": "LogicalAnd"
+    },
+    {
+      "name": "%nand",
+      "class": "LogicalNand"
+    },
+    {
+      "name": "%nor",
+      "class": "LogicalNor"
+    },
+    {
+      "name": "%not",
+      "class": "LogicalNot"
+    },
+    {
+      "name": "%nxor",
+      "class": "LogicalNxor"
+    },
+    {
+      "name": "%or",
+      "class": "LogicalOr"
+    },
+    {
+      "name": "%xor",
+      "class": "LogicalXor"
+    },
+    {
+      "name": "%lower",
+      "class": "Lower"
+    },
+    {
+      "name": "%mod",
+      "class": "Modulo"
+    },
+    {
+      "name": "%newline",
+      "class": "Newline"
+    },
+    {
+      "name": "%n",
+      "class": "NewlineShort"
+    },
+    {
+      "name": "%now",
+      "class": "Now"
+    },
+    {
+      "name": "%ord",
+      "class": "Ord"
+    },
+    {
+      "name": "%percent",
+      "class": "Percent"
+    },
+    {
+      "name": "%random",
+      "class": "RandomFunction"
+    },
+    {
+      "name": "%retrieve_procedure",
+      "class": "RetrieveProcedure"
+    },
+    {
+      "name": "%reverse_color",
+      "class": "ReverseColor"
+    },
+    {
+      "name": "%reverse_hsluv_color",
+      "class": "ReverseHsluvColor"
+    },
+    {
+      "name": "%right_align",
+      "class": "RightAlign"
+    },
+    {
+      "name": "%set_variable_value",
+      "class": "SetVariableValue"
+    },
+    {
+      "name": "%size",
+      "class": "Size"
+    },
+    {
+      "name": "%splitstr",
+      "class": "SplitStr"
+    },
+    {
+      "name": "%splitstr_regex",
+      "class": "SplitStrRegex"
+    },
+    {
+      "name": "%str2json",
+      "class": "Str2Json"
+    },
+    {
+      "name": "%string",
+      "class": "StringFunction"
+    },
+    {
+      "name": "%strlen",
+      "class": "Strlen"
+    },
+    {
+      "name": "%strpos",
+      "class": "Strpos"
+    },
+    {
+      "name": "%substr",
+      "class": "Substr"
+    },
+    {
+      "name": "%tab",
+      "class": "Tabulation"
+    },
+    {
+      "name": "%upper",
+      "class": "Upper"
+    },
+    {
+      "name": "%variable_exists",
+      "class": "VariableExists"
+    },
+    {
+      "name": "%xargs",
+      "class": "Xargs"
+    }
+  ]
+}

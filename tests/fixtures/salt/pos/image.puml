@@ -1,0 +1,10 @@
+' salt: CommandAnything
+@startsalt
+{
+<<folder
+............
+.XXXXX......
+>>
+<<folder>> Folder
+}
+@endsalt

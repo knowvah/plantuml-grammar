@@ -1,0 +1,18 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+# String.equalsIgnoreCase (:52-53) also equates U+0131/U+0130 with i, U+017F
+# with s and U+212A with k.
+schema_version: 1
+id: single-line-apple-two
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemAppleTwoFactory
+include: [embedded-apple-two, single-line-base]
+overrides:
+  PSystemAppleTwoFactory:
+    provenance: {class: net.sourceforge.plantuml.eggs.PSystemAppleTwoFactory, file: src/main/java/net/sourceforge/plantuml/eggs/PSystemAppleTwoFactory.java, line: 52, also: [src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "(?:[aA][pP][pP][lL][eE] //[eE]|[aA][pP][pP][lL][eE] \\]\\[|[aA][pP][pP][lL][eE] [iI\u0131\u0130][iI\u0131\u0130]|[sS\u017F][tT][eE][vV][eE] [jJ][oO][bB][sS\u017F]|[sS\u017F][tT][eE][vV][eE] [wW][oO][zZ][nN][iI\u0131\u0130][aA][kK\u212A])"}
+    set: sl_done
+    gives: single_line

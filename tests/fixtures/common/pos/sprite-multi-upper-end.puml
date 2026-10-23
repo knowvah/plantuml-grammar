@@ -1,0 +1,8 @@
+' common: CommandFactorySprite_1
+' factory: SequenceDiagramFactory
+@startuml
+sprite $foo {
+FF
+END SPRITE
+Alice -> Bob : hello
+@enduml

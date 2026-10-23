@@ -1,0 +1,6 @@
+' timing: CommandHighlight
+@startuml
+robust "R" as R
+@0 as :a
+highlight :a+. to 10
+@enduml

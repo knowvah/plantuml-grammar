@@ -1,0 +1,32 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# HelpFactory (help/HelpFactory.java:48-68) is a PSystemCommandFactory reached only through
+# @startuml (core/DiagramType.java:53-63). Its five commands are `help` + spaceOneOrMore
+# (Pattern2 %s = ASCII \s + NBSP, regex/Pattern2.java:57) + a word, compiled
+# CASE_INSENSITIVE without UNICODE_CASE (Pattern2.java:114): ASCII folding only, so the
+# generated ci regexes (Python folds U+017F to s and U+212A to k) are narrowed to explicit
+# classes. initCommandsList (:61-67) registers no CommonCommands, hence no CommandNope: a
+# blank line is a syntax error (PSystemCommandFactory.java:169-175), modeled as a reject.
+schema_version: 1
+id: single-line-help
+layer: diagram
+diagram: HELP
+factory: HelpFactory
+include: [gen-help]
+overrides:
+  CommandHelpColor:
+    parts: {regex: "[hH][eE][lL][pP][ \\t\\x0B\\f\u00A0]+[cC][oO][lL][oO][rR][sS]?"}
+  CommandHelpFont:
+    parts: {regex: "[hH][eE][lL][pP][ \\t\\x0B\\f\u00A0]+[fF][oO][nN][tT][sS]?"}
+  CommandHelpKeyword:
+    parts: {regex: "[hH][eE][lL][pP][ \\t\\x0B\\f\u00A0]+[kK][eE][yY][wW][oO][rR][dD][sS]?"}
+  CommandHelpType:
+    parts: {regex: "[hH][eE][lL][pP][ \\t\\x0B\\f\u00A0]+[tT][yY][pP][eE][sS]?"}
+  CommandHelpTheme:
+    parts: {regex: "[hH][eE][lL][pP][ \\t\\x0B\\f\u00A0]+[tT][hH][eE][mM][eE][sS]?"}
+insert_after:
+  CommandHelpTheme:
+    - command: HelpBlankLine
+      provenance: {class: net.sourceforge.plantuml.help.HelpFactory, file: src/main/java/net/sourceforge/plantuml/help/HelpFactory.java, line: 61, also: [src/main/java/net/sourceforge/plantuml/command/PSystemCommandFactory.java:169-175]}
+      kind: single
+      reject: true
+      parts: {regex: ""}

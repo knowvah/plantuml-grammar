@@ -1,0 +1,6 @@
+' refines: arrow-style-multi | [#red,bold;#blue,dotted]
+@startuml
+component A
+component B
+A -[#red,bold;#blue,dotted]-> B
+@enduml

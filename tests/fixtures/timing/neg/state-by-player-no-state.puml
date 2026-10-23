@@ -1,0 +1,5 @@
+' timing: CommandChangeStateByPlayerCode
+@startuml
+robust "R" as R
+R is
+@enduml

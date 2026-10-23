@@ -1,0 +1,6 @@
+' timing: CommandConstraint
+' gap: no player table: `No such participant` (CommandConstraint.java:118-120)
+@startuml
+robust "R" as R
+WB@0 <-> @10
+@enduml

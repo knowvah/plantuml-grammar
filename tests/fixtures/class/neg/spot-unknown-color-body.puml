@@ -1,0 +1,6 @@
+' class: CommandCreateClassMultilinesBadSpotColor
+@startuml
+class A <<x>> <<(F, nocolor) label>> {
+  + a
+}
+@enduml

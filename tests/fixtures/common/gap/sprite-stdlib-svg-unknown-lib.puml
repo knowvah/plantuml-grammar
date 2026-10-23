@@ -1,0 +1,7 @@
+' common: CommandSpriteStdlibSvg
+' factory: SequenceDiagramFactory
+' gap: semantic: stdlib resource lookup (CommandSpriteStdlibSvg.java:72-77)
+@startuml
+sprite foo :tupadr3/font-awesome/server:
+Alice -> Bob : hello
+@enduml

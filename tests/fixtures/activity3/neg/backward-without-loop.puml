@@ -1,0 +1,5 @@
+' activity3: CommandBackward3
+@startuml
+:x;
+backward :y;
+@enduml

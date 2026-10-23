@@ -1,0 +1,5 @@
+' activity3: CommandNote3
+@startuml
+:a;
+note top: x
+@enduml

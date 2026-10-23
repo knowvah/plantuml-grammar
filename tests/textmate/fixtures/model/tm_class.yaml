@@ -1,0 +1,86 @@
+schema_version: 1
+id: tm_class
+layer: diagram
+diagram: CLASS
+include: [tm_shared]
+contexts:
+  main:
+    - command: CommandTitle
+      provenance: {class: toy.CommandTitle}
+      kind: single
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: title, ci: true, scope: keyword.other}
+          - {regex: "\\s+"}
+          - {ref: TITLE_TEXT}
+    - command: CommandCreateClass
+      provenance: {class: toy.CommandCreateClass}
+      kind: single
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: class, ci: true, scope: keyword.other}
+          - {regex: "\\s+"}
+          - {ref: NAME}
+          - opt:
+              seq:
+                - {regex: "\\s*"}
+                - {ref: STEREOTYPE}
+          - opt:
+              seq:
+                - {regex: "\\s+"}
+                - {ref: COLOR}
+    - command: CommandLink
+      provenance: {class: toy.CommandLink}
+      kind: single
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {ref: NAME}
+          - {regex: "\\s*"}
+          - {ref: ARROW}
+          - {regex: "\\s*"}
+          - {ref: NAME}
+    - command: CommandNote
+      provenance: {class: toy.CommandNote}
+      kind: multiline
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: note, ci: true, scope: keyword.other}
+          - {regex: "\\s+"}
+          - alt: [{literal: left, ci: true}, {literal: right, ci: true}]
+      end:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: end note, ci: true, scope: keyword.other}
+    - command: CommandPackage
+      provenance: {class: toy.CommandPackage}
+      kind: single
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: package, ci: true, scope: keyword.other}
+          - {regex: "\\s+"}
+          - {ref: NAME}
+          - {regex: "\\s*\\{\\s*$"}
+      push: pkg
+  pkg:
+    - command: CommandInnerClass
+      provenance: {class: toy.CommandInnerClass}
+      kind: single
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: item, ci: true, scope: keyword.other}
+          - {regex: "\\s+"}
+          - {ref: NAME}
+    - command: CommandClosePackage
+      provenance: {class: toy.CommandClosePackage}
+      kind: single
+      parts:
+        seq:
+          - {regex: "^\\s*"}
+          - {literal: "}", ci: false, scope: punctuation.definition.block.end}
+      pop: true

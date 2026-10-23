@@ -1,0 +1,5 @@
+' activity3: CommandCircleSpot3
+@startuml
+:a;
+(AB) x
+@enduml

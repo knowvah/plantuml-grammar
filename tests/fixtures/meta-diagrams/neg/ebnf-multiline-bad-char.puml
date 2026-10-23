@@ -1,0 +1,6 @@
+' meta: EbnfRuleMultilinesUnparsable
+@startebnf
+a =
+  b . c
+  ;
+@endebnf

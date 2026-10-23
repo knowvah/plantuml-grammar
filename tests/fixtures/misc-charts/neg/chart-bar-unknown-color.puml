@@ -1,0 +1,4 @@
+' misc-charts: ChartBarFails
+@startchart
+bar [1,2] #zzzz
+@endchart

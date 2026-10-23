@@ -1,0 +1,9 @@
+' common: CommandTitle, CommandPragma
+' factory: ActivityDiagramFactory3
+@startuml
+!pragma useVerticalIf on
+title Flow
+start
+:step;
+stop
+@enduml

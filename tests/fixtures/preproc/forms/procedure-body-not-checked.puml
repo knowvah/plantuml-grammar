@@ -1,0 +1,7 @@
+@startuml
+!procedure $p()
+]]] anything
+!if
+!endprocedure
+a -> b
+@enduml

@@ -1,0 +1,6 @@
+' activity-legacy: ActivityEndifWithoutIf
+@startuml
+(*) --> iff x then
+--> A
+endif
+@enduml

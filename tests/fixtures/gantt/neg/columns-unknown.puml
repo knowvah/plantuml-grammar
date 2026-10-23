@@ -1,0 +1,5 @@
+' gantt: CommandHideShowColumns
+@startgantt
+[A] -> [B]
+hide column foo
+@endgantt

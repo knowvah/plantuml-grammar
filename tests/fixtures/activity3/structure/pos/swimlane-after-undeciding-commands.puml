@@ -1,0 +1,13 @@
+' activity3: CommandSwimlane, CommandFootboxIgnored, CommandNote3, CommandLabel, CommandGoto, CommandArrow3, CommandLink3
+@startuml
+title Lanes
+hide footbox
+skinparam ActivityBackgroundColor white
+floating note left: before any activity
+label here
+goto here
+-> x;
+link #red
+|A|
+:a;
+@enduml

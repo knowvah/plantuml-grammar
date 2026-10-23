@@ -1,0 +1,6 @@
+' meta: RegexLineWellFormed, RegexLineBalanced
+@startregex
+^a[0-9]*bc$
+abc?|def*|hg+i
+(a(b\bc)*|d*|(ef\wg)+h)+|i*|jk
+@endregex

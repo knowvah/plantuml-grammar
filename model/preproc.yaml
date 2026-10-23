@@ -1,0 +1,375 @@
+# Preprocessor (layer L1, decision D3): surface syntax of the TIM directives. Upstream
+# pin 97a5992; paths are relative to src/main/java/net/sourceforge/plantuml/.
+#
+# How upstream reads a block (tim/TContext.java:325-341, buildCodeIterator): lines pass
+# through iterators (comments, sub, function, procedure, if, legacy define, while,
+# foreach, affectation), then executeOneLineNotSafe (:387-451) runs the rest. A line is
+# first classified by text/TLineType.java:151-260 (IRegex via Pattern2, so
+# CASE-INSENSITIVE, regex/Pattern2.java:114, prefix `find()`, regex/RegexComposed.java:
+# 112-118); lines with no directive type are PLAIN and go to the diagram unchanged except
+# for macro / %function expansion (:455-466). The directive is then re-read by an Eater
+# whose checkAndEatChar is CASE-SENSITIVE (tim/Eater.java:252-279): `!IF 1` is
+# classified IF and then fails, which is an error. So every Eater-read keyword has
+# `ci: false`, and an upper-case directive falls through to the diagram, which rejects
+# it too. Closers that no Eater re-reads (`!else`, `!endif`, `!endwhile`, `!endfor`,
+# `!endsub`, `!end…function|definelong|procedure`) are decided by TLineType alone and
+# carry `ci: true` (oracle-verified: `!ELSE`, `!ENDIF`, `!End Procedure` work).
+#
+# Raw mode (docs/grammar-guide.md "Raw mode"): matched lines are consumed; the rest
+# reach the diagram models.
+# * Block directives (!if/!ifdef/!ifndef, !while, !foreach, !startsub) push a context
+#   and their bodies fall through: upstream hands those lines to the diagram (sub bodies
+#   are replayed in place, tim/iterator/CodeIteratorSub.java:76-99). Conditions are not
+#   evaluated, so both branches and loop bodies reach the diagram.
+# * !procedure / !function / !definelong bodies are SWALLOWED (`kind: multiline`, end =
+#   TLineType END_FUNCTION). Upstream stores them and never hands them to the diagram
+#   (tim/iterator/CodeIteratorProcedure.java:71-82, CodeIteratorReturnFunction.java:
+#   71-84); they are expanded only at a call site, with arguments substituted, so their
+#   raw text (`$a -> $b`, nested directives) is not diagram input. `multiline` also
+#   mirrors the error for a missing end line (oracle: `!procedure $p()` without
+#   `!endprocedure` is rejected at the declaration line).
+#
+# Semantic gaps (raw mode only; parity's L2 run uses the oracle's preprocessed text):
+# * Call sites of procedures, functions, !define/!definelong macros (`$p(1)`, `X(1)`,
+#   a !define'd word) are not expanded; the unexpanded line reaches the diagram. So are
+#   variables (`$x`) and %functions inside diagram lines. Call lines are deliberately
+#   NOT consumed: upstream expands `name(` only when that name was declared
+#   (FunctionsSet.java:77-79, TContext.java:539-552; an unknown `$q()` stays plain text
+#   and the jar rejects it), which a line model cannot know, and a generic `name(...)`
+#   rule would also claim diagram lines such as class members `foo()`.
+# * Conditions, !assert values, loop counts, include/import/theme targets, function
+#   arity and `!local` scope are runtime facts: a false !assert, a missing file or theme,
+#   `!if 0` hiding a bad line, or a function body without !return are rejected upstream
+#   but not here.
+# * Upstream keeps independent if / while / foreach / sub stacks (TMemory,
+#   CodeIteratorSub): `!if`…`!while`…`!endif`…`!endwhile` is valid there; here contexts
+#   nest strictly, so the crossed closer reaches the diagram. A missing !endsub
+#   (CodeIteratorSub.java:83-99) and an `!exit` inside a procedure body are not detected.
+# * Expressions are lexed permissively upstream (tim/expression/TokenType.java:82-124:
+#   anything is PLAIN_TEXT); EXPR only requires closed quotes and balanced parentheses up
+#   to depth 6. JSON values are not validated beyond their first and last line.
+# * `@append` lines after `!exit` (utils/StartUtils.java:154-162) are not modelled.
+schema_version: 1
+id: preproc
+layer: preproc
+variables:
+  # TLineType identifier, text/TLineType.java:50-51: letter, '_' or a surrogate (astral
+  # code point here), then also digits.
+  IDENT: {regex: "[\\p{L}_\\U00010000-\\U0010FFFF][\\p{L}_0-9\\U00010000-\\U0010FFFF]*"}
+  # Eater.eatAndGetVarname, tim/Eater.java:191-198 and :281-290: '$' only first, greedy.
+  VARNAME: {regex: "[\\p{L}_$\\U00010000-\\U0010FFFF][\\p{L}_0-9\\U00010000-\\U0010FFFF]*(?![\\p{L}_0-9\\U00010000-\\U0010FFFF])"}
+  # Eater.eatAndGetQuotedString, tim/Eater.java:122-132: no escapes inside.
+  QUOTED: {regex: "\"[^\"]*\"|'[^']*'"}
+  PAREN_1: {seq: [{regex: "\\("}, {star: {alt: [{ref: QUOTED}, {regex: "[^()\"']"}]}}, {regex: "\\)"}]}
+  PAREN_2: {seq: [{regex: "\\("}, {star: {alt: [{ref: QUOTED}, {ref: PAREN_1}, {regex: "[^()\"']"}]}}, {regex: "\\)"}]}
+  PAREN_3: {seq: [{regex: "\\("}, {star: {alt: [{ref: QUOTED}, {ref: PAREN_2}, {regex: "[^()\"']"}]}}, {regex: "\\)"}]}
+  PAREN_4: {seq: [{regex: "\\("}, {star: {alt: [{ref: QUOTED}, {ref: PAREN_3}, {regex: "[^()\"']"}]}}, {regex: "\\)"}]}
+  PAREN_5: {seq: [{regex: "\\("}, {star: {alt: [{ref: QUOTED}, {ref: PAREN_4}, {regex: "[^()\"']"}]}}, {regex: "\\)"}]}
+  PAREN_6: {seq: [{regex: "\\("}, {star: {alt: [{ref: QUOTED}, {ref: PAREN_5}, {regex: "[^()\"']"}]}}, {regex: "\\)"}]}
+  # Builtin %functions registered by TContext.addStandardFunctions (tim/TContext.java:
+  # 199-288), names from each class's TFunctionSignature literal (tim/builtin/*.java),
+  # in registration order. %get_all_stdlib/%get_stdlib are skipped only under TeaVM (:219-228).
+  # A name is a call only when followed by '(' (FunctionsSet.java:85-91 indexes
+  # "name("); lookup is case-sensitive (`%UPPER(x)` stays text, oracle-verified).
+  BUILTIN_FUNCTION:
+    alt:
+      - {literal: "%false", ci: false}
+      - {literal: "%true", ci: false}
+      - {literal: "%backslash", ci: false}
+      - {literal: "%boolval", ci: false}
+      - {literal: "%breakline", ci: false}
+      - {literal: "%call_user_func", ci: false}
+      - {literal: "%chr", ci: false}
+      - {literal: "%darken", ci: false}
+      - {literal: "%date", ci: false}
+      - {literal: "%dec2hex", ci: false}
+      - {literal: "%dirpath", ci: false}
+      - {literal: "%dollar", ci: false}
+      - {literal: "%eval", ci: false}
+      - {literal: "%feature", ci: false}
+      - {literal: "%filedate", ci: false}
+      - {literal: "%file_exists", ci: false}
+      - {literal: "%filename", ci: false}
+      - {literal: "%filename_no_extension", ci: false}
+      - {literal: "%function_exists", ci: false}
+      - {literal: "%get_all_stdlib", ci: false}
+      - {literal: "%get_all_theme", ci: false}
+      - {literal: "%get_current_theme", ci: false}
+      - {literal: "%get_json_keys", ci: false}
+      - {literal: "%get_json_type", ci: false}
+      - {literal: "%get_stdlib", ci: false}
+      - {literal: "%get_variable_value", ci: false}
+      - {literal: "%version", ci: false}
+      - {literal: "%getenv", ci: false}
+      - {literal: "%hex2dec", ci: false}
+      - {literal: "%hsl_color", ci: false}
+      - {literal: "%intval", ci: false}
+      - {literal: "%invoke_procedure", ci: false}
+      - {literal: "%is_dark", ci: false}
+      - {literal: "%is_light", ci: false}
+      - {literal: "%json_add", ci: false}
+      - {literal: "%json_key_exists", ci: false}
+      - {literal: "%json_merge", ci: false}
+      - {literal: "%json_remove", ci: false}
+      - {literal: "%json_set", ci: false}
+      - {literal: "%left_align", ci: false}
+      - {literal: "%lighten", ci: false}
+      - {literal: "%load_json", ci: false}
+      - {literal: "%and", ci: false}
+      - {literal: "%nand", ci: false}
+      - {literal: "%nor", ci: false}
+      - {literal: "%not", ci: false}
+      - {literal: "%nxor", ci: false}
+      - {literal: "%or", ci: false}
+      - {literal: "%xor", ci: false}
+      - {literal: "%lower", ci: false}
+      - {literal: "%mod", ci: false}
+      - {literal: "%newline", ci: false}
+      - {literal: "%n", ci: false}
+      - {literal: "%now", ci: false}
+      - {literal: "%ord", ci: false}
+      - {literal: "%percent", ci: false}
+      - {literal: "%random", ci: false}
+      - {literal: "%retrieve_procedure", ci: false}
+      - {literal: "%reverse_color", ci: false}
+      - {literal: "%reverse_hsluv_color", ci: false}
+      - {literal: "%right_align", ci: false}
+      - {literal: "%set_variable_value", ci: false}
+      - {literal: "%size", ci: false}
+      - {literal: "%splitstr", ci: false}
+      - {literal: "%splitstr_regex", ci: false}
+      - {literal: "%str2json", ci: false}
+      - {literal: "%string", ci: false}
+      - {literal: "%strlen", ci: false}
+      - {literal: "%strpos", ci: false}
+      - {literal: "%substr", ci: false}
+      - {literal: "%tab", ci: false}
+      - {literal: "%upper", ci: false}
+      - {literal: "%variable_exists", ci: false}
+      - {literal: "%xargs", ci: false}
+  # Expression tokens (tim/expression/TokenType.java:82-124): quoted strings must close
+  # (Eater.java:122-132), parentheses must balance (ShuntingYard; oracle: `!if (1` and
+  # `!if 1)` are rejected, `!if ((((1))))` accepted); everything else is plain text,
+  # operators or numbers. A leading `{` / `[` is JSON (Eater.java:81-92).
+  EXPR_ATOM:
+    alt:
+      - {ref: QUOTED}
+      - {ref: PAREN_6}
+      - {seq: [{ref: BUILTIN_FUNCTION}, {regex: "(?=\\()"}]}
+      - {regex: "[^()\"']"}
+  EXPR: {plus: {ref: EXPR_ATOM}}
+  # Eater.eatExpression (tim/Eater.java:81-92): a value starting with '{' or '[' is the
+  # rest of the line handed to Json.parse, so JSON escapes (`"\""`) are fine there.
+  VALUE: {alt: [{regex: "[{\\[].*"}, {ref: EXPR}]}
+  # Function parameters, Eater.eatDeclareFunction (tim/Eater.java:303-342): names,
+  # commas and spaces in any order up to ')'; a default runs to ',' or ')' at depth 0
+  # (TokenStack.eatUntilCloseParenthesisOrComma).
+  DEFAULT:
+    seq:
+      - {star: {alt: [{ref: QUOTED}, {ref: PAREN_6}, {regex: "[^,()\"']"}]}}
+      - {regex: "(?=[,)])"}
+  ARG:
+    alt:
+      - {seq: [{ref: VARNAME}, {opt: {seq: [{regex: "\\s*="}, {ref: DEFAULT}]}}]}
+      - {regex: ","}
+      - {regex: "\\s+(?=\\S)"}
+  ARGS: {seq: [{regex: "\\("}, {star: {ref: ARG}}, {regex: "\\)"}]}
+  # TLineType PATTERN_AFFECTATION, text/TLineType.java:70-73, read by EaterAffectation
+  # (tim/EaterAffectation.java:47-76). `local` is not allowed outside a function body:
+  # TMemoryGlobal rejects it (oracle: top-level `!local $x = 1` is an error).
+  AFFECT_HEAD: {seq: [{regex: "!\\s*(?:global\\s*)?\\$?"}, {ref: IDENT}, {regex: "\\s*\\??=\\s*"}]}
+  # TLineType PATTERN_END_FUNCTION, text/TLineType.java:119-122. Ends any pending
+  # function, procedure or definelong (CodeIteratorProcedure.java:75,
+  # CodeIteratorReturnFunction.java:74).
+  END_FUNCTION: {regex: "!end\\s*(?:function|definelong|procedure)\\b.*", ci: true}
+  FUNCTION_HEAD:
+    seq:
+      - {regex: "!(?:(?:unquoted|final)\\s)*function\\s+\\$?"}
+      - {ref: IDENT}
+      - {regex: "\\s*"}
+      - {ref: ARGS}
+  PROCEDURE_HEAD:
+    seq:
+      - {regex: "!(?:(?:unquoted|final)\\s)*procedure\\s+\\$?"}
+      - {ref: IDENT}
+      - {regex: "\\s*"}
+      - {ref: ARGS}
+contexts:
+  main:
+    - include: blocks
+  # Everything valid at top level and inside !if / !while / !foreach bodies.
+  blocks:
+    - command: EaterStartsub
+      provenance: {class: net.sourceforge.plantuml.tim.EaterStartsub, file: src/main/java/net/sourceforge/plantuml/tim/EaterStartsub.java, line: 50}
+      kind: single
+      parts: {regex: "!startsub\\b\\s*[A-Za-z0-9_]+"}
+      push: sub_body
+    - include: directives
+  # Every directive except !startsub (nesting is an error, CodeIteratorSub.java:84-85)
+  # and the closers, in TLineType.getFromLineInternal order (text/TLineType.java:151-259).
+  directives:
+    - command: StartUtilsExit
+      provenance: {class: net.sourceforge.plantuml.utils.StartUtils, file: src/main/java/net/sourceforge/plantuml/utils/StartUtils.java, line: 131}
+      kind: opaque
+      parts: {literal: "!exit", ci: false}
+    - command: EaterLegacyDefine
+      provenance: {class: net.sourceforge.plantuml.tim.EaterLegacyDefine, file: src/main/java/net/sourceforge/plantuml/tim/EaterLegacyDefine.java, line: 50}
+      kind: single
+      parts: {seq: [{regex: "!define\\s+"}, {ref: IDENT}, {ref: ARGS}, {regex: ".*"}]}
+    - command: EaterLegacyDefineLong
+      provenance: {class: net.sourceforge.plantuml.tim.EaterLegacyDefineLong, file: src/main/java/net/sourceforge/plantuml/tim/EaterLegacyDefineLong.java, line: 50}
+      kind: multiline
+      parts:
+        seq:
+          - {regex: "!definelong\\s+"}
+          - {ref: IDENT}
+          - {regex: "\\b"}
+          - {alt: [{seq: [{regex: "\\s*"}, {ref: ARGS}, {regex: ".*"}]}, {regex: "(?!\\s*\\().*"}]}
+      end: {ref: END_FUNCTION}
+    - command: EaterAffectationDefine
+      provenance: {class: net.sourceforge.plantuml.tim.EaterAffectationDefine, file: src/main/java/net/sourceforge/plantuml/tim/EaterAffectationDefine.java, line: 49}
+      kind: single
+      parts: {seq: [{regex: "!define\\s+"}, {ref: IDENT}, {regex: "\\b(?!\\().*"}]}
+    # A value that does not parse as JSON pulls in the next line until it does
+    # (tim/iterator/CodeIteratorAffectation.java:77-92).
+    - command: CodeIteratorAffectationJsonObject
+      provenance: {class: net.sourceforge.plantuml.tim.iterator.CodeIteratorAffectation, file: src/main/java/net/sourceforge/plantuml/tim/iterator/CodeIteratorAffectation.java, line: 77}
+      kind: multiline-bracket
+      parts: {seq: [{ref: AFFECT_HEAD}, {regex: "\\{"}]}
+    - command: CodeIteratorAffectationJsonArray
+      provenance: {class: net.sourceforge.plantuml.tim.iterator.CodeIteratorAffectation, file: src/main/java/net/sourceforge/plantuml/tim/iterator/CodeIteratorAffectation.java, line: 77}
+      kind: multiline
+      parts: {seq: [{ref: AFFECT_HEAD}, {regex: "\\["}]}
+      end: {regex: "\\]"}
+    - command: EaterAffectation
+      provenance: {class: net.sourceforge.plantuml.tim.EaterAffectation, file: src/main/java/net/sourceforge/plantuml/tim/EaterAffectation.java, line: 49}
+      kind: single
+      parts: {seq: [{ref: AFFECT_HEAD}, {ref: VALUE}]}
+    - command: EaterIfdef
+      provenance: {class: net.sourceforge.plantuml.tim.EaterIfdef, file: src/main/java/net/sourceforge/plantuml/tim/EaterIfdef.java, line: 53}
+      kind: single
+      parts: {regex: "!ifdef\\b\\s*\\S.*"}
+      push: if_body
+    - command: EaterUndef
+      provenance: {class: net.sourceforge.plantuml.tim.EaterUndef, file: src/main/java/net/sourceforge/plantuml/tim/EaterUndef.java, line: 48}
+      kind: single
+      parts: {seq: [{regex: "!undef\\b\\s*"}, {ref: VARNAME}, {regex: ".*"}]}
+    - command: EaterIfndef
+      provenance: {class: net.sourceforge.plantuml.tim.EaterIfndef, file: src/main/java/net/sourceforge/plantuml/tim/EaterIfndef.java, line: 51}
+      kind: single
+      parts: {seq: [{regex: "!ifndef\\b\\s*"}, {ref: VARNAME}, {regex: ".*"}]}
+      push: if_body
+    - command: EaterAssert
+      provenance: {class: net.sourceforge.plantuml.tim.EaterAssert, file: src/main/java/net/sourceforge/plantuml/tim/EaterAssert.java, line: 49}
+      kind: single
+      parts: {seq: [{regex: "!assert\\b\\s*(?=[^:\\s])"}, {ref: EXPR}]}
+    - command: EaterIf
+      provenance: {class: net.sourceforge.plantuml.tim.EaterIf, file: src/main/java/net/sourceforge/plantuml/tim/EaterIf.java, line: 51}
+      kind: single
+      parts: {seq: [{regex: "!if\\b\\s*"}, {ref: VALUE}]}
+      push: if_body
+    # One-line form `!function $f() return x` / `... !return x` has no body and no end
+    # line (Eater.eatDeclareReturnFunctionWithOptionalReturn, FunctionsSet.java:160-163).
+    - command: EaterDeclareReturnFunctionInline
+      provenance: {class: net.sourceforge.plantuml.tim.Eater, file: src/main/java/net/sourceforge/plantuml/tim/Eater.java, line: 348}
+      kind: single
+      parts: {seq: [{ref: FUNCTION_HEAD}, {regex: "\\s*!?return.*"}]}
+    # Anything else after ')' is ignored, except that 'r'/'!' must start (!)return.
+    - command: EaterDeclareReturnFunction
+      provenance: {class: net.sourceforge.plantuml.tim.EaterDeclareReturnFunction, file: src/main/java/net/sourceforge/plantuml/tim/EaterDeclareReturnFunction.java, line: 66}
+      kind: multiline
+      parts: {seq: [{ref: FUNCTION_HEAD}, {regex: "(?:\\s*[^\\sr!].*)?"}]}
+      end: {ref: END_FUNCTION}
+    - command: EaterDeclareProcedure
+      provenance: {class: net.sourceforge.plantuml.tim.EaterDeclareProcedure, file: src/main/java/net/sourceforge/plantuml/tim/EaterDeclareProcedure.java, line: 66}
+      kind: multiline
+      parts: {seq: [{ref: PROCEDURE_HEAD}, {regex: ".*"}]}
+      end: {ref: END_FUNCTION}
+    - command: EaterWhile
+      provenance: {class: net.sourceforge.plantuml.tim.EaterWhile, file: src/main/java/net/sourceforge/plantuml/tim/EaterWhile.java, line: 51}
+      kind: single
+      parts: {seq: [{regex: "!while\\b\\s*"}, {ref: EXPR}]}
+      push: while_body
+    - command: EaterForeach
+      provenance: {class: net.sourceforge.plantuml.tim.EaterForeach, file: src/main/java/net/sourceforge/plantuml/tim/EaterForeach.java, line: 55}
+      kind: single
+      parts: {seq: [{regex: "!foreach\\b\\s*"}, {ref: VARNAME}, {regex: "\\s*in\\s*"}, {ref: VALUE}]}
+      push: foreach_body
+    # Outside a function the end line is silently dropped: CommandExecutionResult.error
+    # builds a result nobody reads (tim/TContext.java:440-442; oracle accepts it).
+    - command: TContextEndFunction
+      provenance: {class: net.sourceforge.plantuml.tim.TContext, file: src/main/java/net/sourceforge/plantuml/tim/TContext.java, line: 440}
+      kind: single
+      parts: {ref: END_FUNCTION}
+    - command: EaterTheme
+      provenance: {class: net.sourceforge.plantuml.tim.EaterTheme, file: src/main/java/net/sourceforge/plantuml/tim/EaterTheme.java, line: 63}
+      kind: single
+      parts: {regex: "!theme\\b\\s*\\S.*"}
+    - command: EaterInclude
+      provenance: {class: net.sourceforge.plantuml.tim.EaterInclude, file: src/main/java/net/sourceforge/plantuml/tim/EaterInclude.java, line: 52}
+      kind: single
+      parts: {regex: "!include(?:url|_many|_once)?\\b\\s*\\S.*"}
+    # A missing file is accepted (oracle), so the argument is optional.
+    - command: EaterIncludeDef
+      provenance: {class: net.sourceforge.plantuml.tim.EaterIncludeDef, file: src/main/java/net/sourceforge/plantuml/tim/EaterIncludeDef.java, line: 50}
+      kind: single
+      parts: {regex: "!includedef\\b.*"}
+    - command: EaterImport
+      provenance: {class: net.sourceforge.plantuml.tim.EaterImport, file: src/main/java/net/sourceforge/plantuml/tim/EaterImport.java, line: 50}
+      kind: single
+      parts: {regex: "!import\\b\\s*\\S.*"}
+    - command: EaterIncludesub
+      provenance: {class: net.sourceforge.plantuml.tim.EaterIncludesub, file: src/main/java/net/sourceforge/plantuml/tim/EaterIncludesub.java, line: 50}
+      kind: single
+      parts: {regex: "!includesub\\b\\s*\\S.*"}
+    - command: EaterLog
+      provenance: {class: net.sourceforge.plantuml.tim.EaterLog, file: src/main/java/net/sourceforge/plantuml/tim/EaterLog.java, line: 49}
+      kind: single
+      parts: {regex: "!log\\b.*"}
+    - command: EaterDumpMemory
+      provenance: {class: net.sourceforge.plantuml.tim.EaterDumpMemory, file: src/main/java/net/sourceforge/plantuml/tim/EaterDumpMemory.java, line: 48}
+      kind: single
+      parts: {regex: "!dump_memory\\b.*"}
+    # Unknown option names only warn (tim/EaterOption.java:63-65).
+    - command: EaterOption
+      provenance: {class: net.sourceforge.plantuml.tim.EaterOption, file: src/main/java/net/sourceforge/plantuml/tim/EaterOption.java, line: 51}
+      kind: single
+      parts: {seq: [{regex: "!option\\b\\s*"}, {ref: VARNAME}, {regex: ".*"}]}
+  # tim/iterator/CodeIteratorIf.java:88-182. !elseif is re-read by EaterElseIf only when
+  # no earlier branch was taken (:152-162); it is modelled as always read.
+  if_body:
+    - command: CodeIteratorIfElse
+      provenance: {class: net.sourceforge.plantuml.tim.iterator.CodeIteratorIf, file: src/main/java/net/sourceforge/plantuml/tim/iterator/CodeIteratorIf.java, line: 164}
+      kind: single
+      parts: {regex: "!else\\b.*", ci: true}
+    - command: EaterElseIf
+      provenance: {class: net.sourceforge.plantuml.tim.EaterElseIf, file: src/main/java/net/sourceforge/plantuml/tim/EaterElseIf.java, line: 51}
+      kind: single
+      parts: {seq: [{regex: "!elseif\\b\\s*"}, {ref: VALUE}]}
+    - command: CodeIteratorIfEndif
+      provenance: {class: net.sourceforge.plantuml.tim.iterator.CodeIteratorIf, file: src/main/java/net/sourceforge/plantuml/tim/iterator/CodeIteratorIf.java, line: 169}
+      kind: single
+      parts: {regex: "!endif\\b.*", ci: true}
+      pop: true
+    - include: blocks
+  while_body:
+    - command: CodeIteratorWhileEnd
+      provenance: {class: net.sourceforge.plantuml.tim.iterator.CodeIteratorWhile, file: src/main/java/net/sourceforge/plantuml/tim/iterator/CodeIteratorWhile.java, line: 89}
+      kind: single
+      parts: {regex: "!endwhile\\b.*", ci: true}
+      pop: true
+    - include: blocks
+  foreach_body:
+    - command: CodeIteratorForeachEnd
+      provenance: {class: net.sourceforge.plantuml.tim.iterator.CodeIteratorForeach, file: src/main/java/net/sourceforge/plantuml/tim/iterator/CodeIteratorForeach.java, line: 90}
+      kind: single
+      parts: {regex: "!endfor\\b.*", ci: true}
+      pop: true
+    - include: blocks
+  sub_body:
+    - command: CodeIteratorSubEnd
+      provenance: {class: net.sourceforge.plantuml.tim.iterator.CodeIteratorSub, file: src/main/java/net/sourceforge/plantuml/tim/iterator/CodeIteratorSub.java, line: 86}
+      kind: single
+      parts: {regex: "!endsub\\b.*", ci: true}
+      pop: true
+    - include: directives

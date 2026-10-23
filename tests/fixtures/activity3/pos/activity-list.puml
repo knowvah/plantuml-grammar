@@ -1,0 +1,7 @@
+' activity3: CommandStart3, CommandActivityList
+@startuml
+start
+- foo
+* bar
+-baz
+@enduml

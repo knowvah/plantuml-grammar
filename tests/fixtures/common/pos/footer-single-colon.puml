@@ -1,0 +1,6 @@
+' common: CommandFooter
+' factory: SequenceDiagramFactory
+@startuml
+footer: page 1
+Alice -> Bob : hello
+@enduml

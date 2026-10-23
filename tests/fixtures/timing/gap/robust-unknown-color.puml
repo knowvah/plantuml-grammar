@@ -1,0 +1,5 @@
+' timing: CommandRobustConcise
+' gap: unknown color name (klimt/color/HColorSet.java:69-73)
+@startuml
+robust "R" as R #notacolor
+@enduml

@@ -1,0 +1,5 @@
+' gantt: NaturalGanttWorkingHours
+@startgantt
+[A] lasts 5 days
+from 9:00 to 17:00 are working hours
+@endgantt

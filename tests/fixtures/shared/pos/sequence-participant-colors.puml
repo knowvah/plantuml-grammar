@@ -1,0 +1,7 @@
+' refines: color-ref | #AliceBlue
+' refines: color-ref | #FF000080
+@startuml
+participant A #AliceBlue
+participant B #FF000080
+A -> B
+@enduml

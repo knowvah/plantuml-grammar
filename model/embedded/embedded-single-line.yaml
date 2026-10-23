@@ -1,0 +1,15 @@
+# Hand-written (T13). Citations at upstream 97a5992.
+# Shared pieces of the PSystemSingleLineFactory models (embedded-license, ...).
+# noise: UmlSource.isNoise (core/UmlSource.java:95-106); empty lines are skipped by the
+# interpreter anyway. done: after the single accepted line nothing else may follow
+# (PSystemSingleLineFactory.java:75-76 requires exactly three lines).
+schema_version: 1
+id: embedded-single-line
+layer: shared
+contexts:
+  noise:
+    - command: UmlSourceNoise
+      provenance: {class: net.sourceforge.plantuml.core.UmlSource, file: src/main/java/net/sourceforge/plantuml/core/UmlSource.java, line: 100}
+      kind: single
+      parts: {regex: "(?:skinparam|skinparamlocked|!pragma) .*"}
+  done: []

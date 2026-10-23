@@ -1,0 +1,50 @@
+# Classifications for the `single-line` family (T34). Upstream pin 97a5992; `cite` paths are
+# relative to the upstream repository root.
+#
+# Slices (interpreter): FR 0 / FA 0 on vega, pdiff and plantuml-ts. The two crash blocks both
+# sides reject count here via KEYWORD_FAMILY (consolidation pass). The truncated-@startuml
+# block pevoma-08-vido726 is now rejected like the jar (`empty_needs_end` on
+# embedded-welcome, consolidation pass), so its former FA case is removed.
+#
+# Models kept as they are (exact, or nothing better is expressible):
+# * embedded-welcome (PSystemWelcomeFactory): accepts only an empty @startuml block, the
+#   two-line source of eggs/PSystemWelcomeFactory.java:52; jar-verified pos/welcome and
+#   neg/welcome-blank. With `empty_needs_end` it is exact.
+# * embedded-egg (PSystemEggFactory): accepts nothing; see the exclusion.
+# * PSystemPathFactory has no model: PSystemBuilder registers it only under the INSECURE
+#   security profile (PSystemBuilder.java:178-179), the default is LEGACY
+#   (security/SecurityProfile.java:114-134), so the extractor never saw it and the jar
+#   rejects `path abc` (neg/path).
+#
+# Known differences outside the corpora, each pinned by a fixture or noted:
+# * gap/egg-constructed*: the egg factory accepts lines whose letters decode a ciphertext
+#   (not a regular language).
+# * The three DedicationEncrypted sentences (argon2 hashes, dedication/Dedications.java:66-71)
+#   are unknown and not expressible.
+cases:
+  pdiff:dbhum/f_ol/folutu-01-xuzo995.puml#0:
+    class: semantic
+    note: >-
+      diagram mismatch only (both accept): `listsprites` is ListSpriteDiagramFactory
+      (SPRITES) but ListSpriteDiagram is built as DiagramType.HELP, which the oracle reports
+    cite: src/main/java/net/sourceforge/plantuml/klimt/sprite/ListSpriteDiagram.java:60
+  pdiff:dbhum/n_uj/nujapi-78-mota753.puml#0:
+    class: semantic
+    note: diagram mismatch only, as dbhum/f_ol/folutu-01-xuzo995
+    cite: src/main/java/net/sourceforge/plantuml/klimt/sprite/ListSpriteDiagram.java:60
+  plantuml-ts:class/folutu-01-xuzo995.puml#0:
+    class: semantic
+    note: diagram mismatch only, copy of pdiff dbhum/f_ol/folutu-01-xuzo995
+    cite: src/main/java/net/sourceforge/plantuml/klimt/sprite/ListSpriteDiagram.java:60
+  plantuml-ts:class/nujapi-78-mota753.puml#0:
+    class: semantic
+    note: diagram mismatch only, copy of pdiff dbhum/n_uj/nujapi-78-mota753
+    cite: src/main/java/net/sourceforge/plantuml/klimt/sprite/ListSpriteDiagram.java:60
+exclusions:
+  PSystemEggFactory: >-
+    no rule: executeLine accepts a line whose letters, read as a base-26 number, XOR-decode
+    one of two ciphertexts into printable text (eggs/PSystemEggFactory.java:54-68,
+    eggs/SentenceDecoder.java:47-66, eggs/EggUtils.java:65-97). An exhaustive check finds no
+    passing key of up to 4 bytes (about 6 letters); the jar-verified gap/egg-constructed is a
+    35-letter line built from a chosen plaintext. The set is not regular, so embedded-egg
+    accepts nothing.

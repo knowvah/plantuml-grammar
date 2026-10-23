@@ -1,0 +1,9 @@
+' class: CommandEndPackage, GroupStackEmpty
+@startuml
+class A
+}
+title After the root
+skinparam classBackgroundColor red
+hide private members
+hide empty description
+@enduml

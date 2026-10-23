@@ -1,0 +1,17 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# The line is matched untrimmed (PSystemSingleLineFactory.java:91-95).
+# The (?i) alternatives of executeLine (:52-77); TeaVM is false in the jar.
+schema_version: 1
+id: single-line-version
+layer: diagram
+diagram: SEQUENCE
+factory: PSystemVersionFactory
+include: [embedded-version, single-line-base]
+overrides:
+  PSystemVersionFactory:
+    provenance: {class: net.sourceforge.plantuml.version.PSystemVersionFactory, file: src/main/java/net/sourceforge/plantuml/version/PSystemVersionFactory.java, line: 52, also: [src/main/java/net/sourceforge/plantuml/version/PSystemVersionFactory.java:55-77, src/main/java/net/sourceforge/plantuml/command/PSystemSingleLineFactory.java:91-95]}
+    kind: single
+    trim: false
+    parts: {regex: "(?:[aA][uU][tT][hH][oO][rR][sS]?|[aA][bB][oO][uU][tT]|[vV][eE][rR][sS][iI][oO][nN]|[sS][tT][dD][lL][iI][bB]|[tT][eE][sS][tT][dD][oO][tT]|[kK][eE][yY][dD][iI][sS][tT][rR][iI][bB][uU][tT][oO][rR]|[kK][eE][yY][gG][eE][nN]|[kK][eE][yY][iI][mM][pP][oO][rR][tT](?:[ \\t\\x0B\\f]+[0-9A-Za-z]+)?|[kK][eE][yY][cC][hH][eE][cC][kK][ \\t\\x0B\\f]+[0-9A-Za-z]+[ \\t\\x0B\\f]+[0-9A-Za-z]+)[ \\t\\x0B\\f]*"}
+    set: sl_done
+    gives: single_line

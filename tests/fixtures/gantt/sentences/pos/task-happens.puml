@@ -1,0 +1,8 @@
+' gantt: NaturalGanttTask
+@startgantt
+Project starts 2020-01-01
+[A] lasts 5 days
+[M] happens 2020-01-20
+[N] happens at [A]'s end
+[O] occurs from [A] to [M]
+@endgantt

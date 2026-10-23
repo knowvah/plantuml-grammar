@@ -1,0 +1,6 @@
+' misc-charts: ChartHAxisRange, ChartFirstCoordinateScatter
+@startchart
+v-axis 0 --> 10
+x-axis 0 --> 10 spacing 5
+scatter "s" [(1,2)] #red
+@endchart

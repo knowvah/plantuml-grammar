@@ -1,0 +1,6 @@
+' timing: CommandAtPlayer
+' gap: no player table: `No such participant` (CommandAtPlayer.java:76-77)
+@startuml
+robust "R" as R
+@S
+@enduml

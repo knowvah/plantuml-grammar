@@ -1,0 +1,48 @@
+# Hand-written (T34). Citations at upstream 97a5992.
+# D4 opaque body (dot). PSystemDotFactory is a PSystemBasicFactory whose initDiagram
+# returns null (directdot/PSystemDotFactory.java:62-66): after noise removal
+# (core/UmlSource.java:79-106) and skipped blank lines (command/PSystemBasicFactory.java:
+# 84-85) the first line must be a GRAPHVIZ_DOT_HEADER_PATTERN line (:48-56, plain Pattern:
+# case sensitive, ASCII \s, matches() on the untrimmed line, :84-87); every later line is
+# appended unparsed (:76-81). A non-empty blank line stops noise removal (dot_open: no
+# noise after it). A body with noise only, or blank lines only, never gets a header
+# (an empty-description error, or a null diagram that crashes PSystemErrorUtils.merge):
+# `needs: dot_header`.
+schema_version: 1
+id: single-line-dot
+layer: diagram
+diagram: DOT
+factory: PSystemDotFactory
+include: [gen-psystem-dot]
+overrides:
+  PSystemDotFactory:
+    provenance: {class: net.sourceforge.plantuml.directdot.PSystemDotFactory, file: src/main/java/net/sourceforge/plantuml/directdot/PSystemDotFactory.java, line: 71, also: [src/main/java/net/sourceforge/plantuml/directdot/PSystemDotFactory.java:48-56, src/main/java/net/sourceforge/plantuml/directdot/PSystemDotFactory.java:84-87]}
+    kind: single
+    trim: false
+    parts: {regex: "[ \\t\\x0B\\f]*(?:strict[ \\t\\x0B\\f]+)?(?:di)?graph[ \\t\\x0B\\f]+(?:[_\\p{L}][_\\p{L}\\p{N}]*|-?(?:\\.[0-9]+|[0-9]+(?:\\.[0-9]*)?)|\"(?:[^\"\\\\]|\\\\\")*\")?[ \\t\\x0B\\f]*\\{[ \\t\\x0B\\f]*"}
+    set: dot_body
+    gives: dot_header
+contexts:
+  main:
+    - command: DotNoise
+      provenance: {class: net.sourceforge.plantuml.core.UmlSource, file: src/main/java/net/sourceforge/plantuml/core/UmlSource.java, line: 95, also: [src/main/java/net/sourceforge/plantuml/core/UmlSource.java:79-93, src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java:77]}
+      kind: single
+      trim: false
+      needs: dot_header
+      parts: {regex: "(?:skinparam |skinparamlocked |!pragma )[\\s\\S]*"}
+    - command: DotBlankLine
+      provenance: {class: net.sourceforge.plantuml.command.PSystemBasicFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java, line: 84, also: [src/main/java/net/sourceforge/plantuml/directdot/PSystemDotFactory.java:62-66]}
+      kind: single
+      trim: false
+      set: dot_open
+      needs: dot_header
+      parts: {regex: "[\\x00-\\x09\\x0B\\x0C\\x0E-\\x20]+"}
+    - include: gen-psystem-dot#main
+  dot_open:
+    - include: gen-psystem-dot#main
+  dot_body:
+    - command: DotBodyLine
+      provenance: {class: net.sourceforge.plantuml.command.PSystemBasicFactory, file: src/main/java/net/sourceforge/plantuml/command/PSystemBasicFactory.java, line: 94, also: [src/main/java/net/sourceforge/plantuml/directdot/PSystemDotFactory.java:76-81]}
+      kind: single
+      trim: false
+      parts: {regex: "[\\s\\S]*"}
