@@ -1,0 +1,133 @@
+{
+  "context_table": [
+    [
+      {
+        "action": "",
+        "command": "Style",
+        "gives": "",
+        "join": {
+          "max_lines": 10,
+          "prefix": 1
+        },
+        "kind": "multiline",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Tail",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [],
+    [
+      {
+        "action": "",
+        "command": "EndLine",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 3,
+        "target": "",
+        "untrimmed": false
+      }
+    ]
+  ],
+  "engine_format": 1,
+  "model_order": [
+    "style-cmd",
+    "style-plain",
+    "welcome",
+    "welcome-strict"
+  ],
+  "models": {
+    "style-cmd": {
+      "contexts": {
+        "main": 0
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": "ClassDiagramFactory",
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "style-plain": {
+      "contexts": {
+        "main": 0
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": "JsonDiagramFactory",
+      "glue_units": false,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "welcome": {
+      "contexts": {
+        "empty": 2,
+        "main": 1
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": "PSystemWelcomeFactory",
+      "glue_units": false,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "welcome-strict": {
+      "contexts": {
+        "empty": 2,
+        "main": 1
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": true,
+      "factory": "PSystemCharlieFactory",
+      "glue_units": false,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    }
+  },
+  "patterns": [
+    {
+      "flags": "u",
+      "source": "^(?:(?:<style>(?:\\ue100[^\\ue100]*)*\\ue100<\\/style>))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:[^]*)$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:tail))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[@\\\\]end[^\\n\\r\\x85\\u2028\\u2029]*))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    }
+  ],
+  "pin": "toy",
+  "tops": {
+    "ClassDiagramFactory": "style-cmd",
+    "JsonDiagramFactory": "style-plain",
+    "PSystemCharlieFactory": "welcome-strict",
+    "PSystemWelcomeFactory": "welcome"
+  }
+}

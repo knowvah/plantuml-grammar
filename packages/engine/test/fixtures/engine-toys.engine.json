@@ -1,0 +1,536 @@
+{
+  "context_table": [
+    [
+      {
+        "action": "",
+        "command": "CommandBeta",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "CommandNoteMulti",
+        "end": 2,
+        "gives": "",
+        "kind": "multiline",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 1,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "CommandNoteSingle",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 3,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "CommandOpen",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "body",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "CommandPackage",
+        "gives": "",
+        "kind": "multiline-bracket",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 5,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "CommandFirst",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 6,
+        "target": "ctx_one",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "CommandSecond",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 6,
+        "target": "ctx_two",
+        "untrimmed": false
+      },
+      {
+        "action": "set",
+        "command": "CommandSwap",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 7,
+        "target": "ctx_two",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "CommandWrap",
+        "gives": "",
+        "join": {
+          "max_lines": 2,
+          "prefix": 9
+        },
+        "kind": "multiline",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 8,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "CommandWrapFar",
+        "gives": "",
+        "join": {
+          "max_lines": 2,
+          "prefix": 9
+        },
+        "kind": "multiline",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 10,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "CommandWrapOpt",
+        "gives": "",
+        "join": {
+          "max_lines": 1,
+          "prefix": 9
+        },
+        "kind": "multiline",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 11,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "CommandTitle",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 12,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "CommandMember",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 13,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "pop",
+        "command": "CommandClose",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 14,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "CommandOne",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 15,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "CommandTwo",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 16,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "CommandTitle",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 12,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "CommandDigraph",
+        "gives": "",
+        "kind": "opaque",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 17,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "ToyDefine",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 18,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "ToyProcedure",
+        "end": 20,
+        "gives": "",
+        "kind": "multiline",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 19,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "ToyIf",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 21,
+        "target": "if_body",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "set",
+        "command": "ToyElse",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 22,
+        "target": "else_body",
+        "untrimmed": false
+      },
+      {
+        "action": "pop",
+        "command": "ToyEndif",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 23,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "ToyEndifAfterElse",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 23,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "CommandAlpha",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 24,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "CommandTitle",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 12,
+        "target": "",
+        "untrimmed": false
+      }
+    ]
+  ],
+  "engine_format": 1,
+  "model_order": [
+    "classtoy",
+    "dottoy",
+    "preproctoy",
+    "seqtoy",
+    "shared"
+  ],
+  "models": {
+    "classtoy": {
+      "contexts": {
+        "body": 1,
+        "common": 4,
+        "ctx_one": 2,
+        "ctx_two": 3,
+        "main": 0
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [
+        "shared"
+      ],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "dottoy": {
+      "contexts": {
+        "main": 5
+      },
+      "diagram": "DOT",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "preproctoy": {
+      "contexts": {
+        "else_body": 8,
+        "if_body": 7,
+        "main": 6
+      },
+      "diagram": null,
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "preproc",
+      "start_map": {}
+    },
+    "seqtoy": {
+      "contexts": {
+        "common": 4,
+        "main": 9
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [
+        "shared"
+      ],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "shared": {
+      "contexts": {
+        "common": 4,
+        "main": 4
+      },
+      "diagram": null,
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "shared",
+      "start_map": {}
+    }
+  },
+  "patterns": [
+    {
+      "flags": "u",
+      "source": "^(?:(?:(?:[bB][eE][tT][aA])(?:[\\x09-\\x0d\\x20]+)(?:[_\\p{L}\\p{N}]+)))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[nN][oO][tT][eE]))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[eE][nN][dD]\\x20[nN][oO][tT][eE]))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:(?:[nN][oO][tT][eE])(?:(?:[\\x09-\\x0d\\x20]+[0-9A-Z_a-z]+))?))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:(?:[oO][pP][eE][nN])(?:[\\x09-\\x0d\\x20]*\\{)))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:(?:[pP][aA][cC][kK][aA][gG][eE])(?:[\\x09-\\x0d\\x20]+[0-9A-Z_a-z]+[\\x09-\\x0d\\x20]*\\{)))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[dD][uU][pP]))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[sS][wW][aA][pP]))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:(?:[wW][rR][aA][pP])(?:[\\x09-\\x0d\\x20]+[0-9A-Z_a-z]+\\ue100[0-9A-Z_a-z]+)(?:(?:\\ue100[0-9A-Z_a-z]+))?))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:[^]*)$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:far\\ue100[0-9A-Z_a-z]+\\ue100[0-9A-Z_a-z]+\\ue100[0-9A-Z_a-z]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:opt(?:\\ue100[0-9A-Z_a-z]+)?))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:(?:[tT][iI][tT][lL][eE])(?:[\\x09-\\x0d\\x20]+[^\\n\\r\\x85\\u2028\\u2029]+)))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:(?:[mM][eE][mM][bB][eE][rR])(?:[\\x09-\\x0d\\x20]+)(?:[_\\p{L}\\p{N}]+)))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:\\}))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[oO][nN][eE]))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[tT][wW][oO]))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:digraph[\\x09-\\x0d\\x20]*[0-9A-Z_a-z]*[\\x09-\\x0d\\x20]*\\{))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:!define[\\x09-\\x0d\\x20]+[0-9A-Z_a-z]+[^\\n\\r\\x85\\u2028\\u2029]*))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:!procedure[\\x09-\\x0d\\x20]+[0-9A-Z_a-z]+\\(\\)))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:!endprocedure))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:!if[\\x09-\\x0d\\x20]+[^\\n\\r\\x85\\u2028\\u2029]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:!else))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:!endif))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:(?:[aA][lL][pP][hH][aA])(?:[\\x09-\\x0d\\x20]+)(?:[_\\p{L}\\p{N}]+)))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    }
+  ],
+  "pin": "toy",
+  "tops": {}
+}

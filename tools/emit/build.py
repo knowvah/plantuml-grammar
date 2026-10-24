@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
 
+from tools.emit.engine import EngineBuildError
 from tools.model import ModelLoadError, ResolvedModels
 from tools.model.load import load_dir
 from tools.model.resolve import resolve
@@ -33,6 +34,13 @@ class EmitterSpec:
 
     target: str
     filename: str
+    check: str | None = None
+
+    def verify(self, path: Path) -> None:
+        """Run the post-write check (``module:function`` taking the path), if any."""
+        if self.check is not None:
+            module, _, function = self.check.partition(":")
+            getattr(import_module(module), function)(path)
 
     def render(self, resolved: ResolvedModels) -> str:
         module, _, function = self.target.partition(":")
@@ -42,6 +50,11 @@ class EmitterSpec:
 
 EMITTERS: dict[str, EmitterSpec] = {
     "textmate": EmitterSpec("tools.emit.textmate:emit_textmate_json", "plantuml.tmLanguage.json"),
+    "engine": EmitterSpec(
+        "tools.emit.engine:emit_engine_json",
+        "plantuml.engine.json",
+        "tools.emit.engine:report_engine",
+    ),
 }
 
 
@@ -65,6 +78,7 @@ def build(names: Sequence[str], model_dir: Path, out_dir: Path) -> list[Path]:
         spec = EMITTERS[name]
         path = out_dir / spec.filename
         path.write_text(spec.render(resolved), encoding=ENCODING, newline="\n")
+        spec.verify(path)
         written.append(path)
     return written
 
@@ -83,7 +97,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return EXIT_USAGE
     try:
         written = build(names, args.model_dir, args.out_dir)
-    except ModelLoadError as exc:
+    except (ModelLoadError, EngineBuildError) as exc:
         print(exc, file=sys.stderr)
         return EXIT_ERROR
     for path in written:
