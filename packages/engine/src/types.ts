@@ -28,10 +28,24 @@ export interface Verdict {
   firstFailure: FirstFailure | null;
 }
 
-/** A compiled-regex pattern, or a marker for one the JS translator cannot express. */
+/** A C1a `split`: sticky head, native JSON leaf, sticky tail, bounded-depth fast regex. */
+export interface SplitJson {
+  head: number;
+  native: string;
+  tail: number;
+  fast: number | null;
+  fast_final: "accept" | "reject";
+}
+
+/**
+ * A compiled-regex pattern (`flags` "u", or "uy" for a split head/tail), a marker for one
+ * the JS translator cannot express, a C1a `split`, or an `any` union of pattern ids.
+ */
 export type PatternJson =
   | { source: string; flags: string }
-  | { unsupported: string };
+  | { unsupported: string }
+  | { split: SplitJson }
+  | { any: number[] };
 
 export interface EntryJson {
   command: string;

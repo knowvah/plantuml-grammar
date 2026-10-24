@@ -1,11 +1,15 @@
 // Loads and validates the engine JSON (contract C1, plans/ts-engine/contracts.md#c1).
 // Mirrors the lazy compile-once memoization in tools/interp/rules.py:92-104 and
 // tools/interp/compile.py:56-67.
+import { AnyMatcher, FAST_ACCEPT, FAST_REJECT, NATIVE_KINDS, RegexMatcher, SplitMatcher } from "./matcher.js";
+import type { Matcher, SplitParts } from "./matcher.js";
 import { ENGINE_FORMAT } from "./types.js";
-import type { EngineJson, EngineModelJson, EntryJson } from "./types.js";
+import type { EngineJson, EngineModelJson, EntryJson, PatternJson, SplitJson } from "./types.js";
 
-/** The only regex flag set the engine JSON may carry. */
+/** Whole-line regex flags. */
 const PATTERN_FLAGS = "u";
+/** Sticky flags of a split head/tail sub-pattern. */
+const STICKY_FLAGS = "uy";
 
 /** The engine JSON is structurally invalid; `pointer` is an RFC 6901 JSON pointer. */
 export class EngineFormatError extends Error {
@@ -51,6 +55,7 @@ export class EngineModel {
   readonly #json: EngineJson;
   readonly #compile: CompileHook;
   readonly #cache = new Map<number, RegExp>();
+  readonly #matchers = new Map<number, Matcher>();
 
   constructor(json: EngineJson, compile: CompileHook) {
     this.#json = json;
@@ -67,7 +72,18 @@ export class EngineModel {
     return this.#cache.size;
   }
 
-  /** The compiled regex for `id`, compiled on first use. */
+  /** The matcher for `id` (regex, split or any), built on first use. */
+  matcher(id: number): Matcher {
+    const cached = this.#matchers.get(id);
+    if (cached !== undefined) {
+      return cached;
+    }
+    const built = this.#buildMatcher(id);
+    this.#matchers.set(id, built);
+    return built;
+  }
+
+  /** The compiled regex for plain pattern `id`, compiled on first use. */
   pattern(id: number): RegExp {
     const cached = this.#cache.get(id);
     if (cached !== undefined) {
@@ -88,16 +104,49 @@ export class EngineModel {
     return entries;
   }
 
-  #compilePattern(id: number): RegExp {
+  #patternAt(id: number): PatternJson {
     const p = this.#json.patterns[id];
     if (p === undefined) {
       throw new RangeError(`pattern ${id} out of range (0..${this.patternCount - 1})`);
     }
+    return p;
+  }
+
+  #buildMatcher(id: number): Matcher {
+    const p = this.#patternAt(id);
+    if ("split" in p) {
+      return new SplitMatcher(this.#splitParts(p.split));
+    }
+    if ("any" in p) {
+      return new AnyMatcher(p.any.map((member) => this.matcher(member)));
+    }
+    return new RegexMatcher(this.pattern(id));
+  }
+
+  #splitParts(split: SplitJson): SplitParts {
+    const ends = NATIVE_KINDS[split.native];
+    if (ends === undefined) {
+      throw new ModelError(`unknown native kind ${split.native}`);
+    }
+    return {
+      head: this.pattern(split.head),
+      ends,
+      tail: this.pattern(split.tail),
+      fast: split.fast === null ? null : this.matcher(split.fast),
+      fastFinal: split.fast_final,
+    };
+  }
+
+  #compilePattern(id: number): RegExp {
+    const p = this.#patternAt(id);
     if ("unsupported" in p) {
       throw new ModelError(p.unsupported);
     }
+    if (!("source" in p)) {
+      throw new ModelError(`pattern ${id} is not a plain regex`);
+    }
     try {
-      return this.#compile(p.source, PATTERN_FLAGS);
+      return this.#compile(p.source, p.flags);
     } catch (cause) {
       throw new ModelError(`pattern ${id} failed to compile`, { cause });
     }
@@ -119,9 +168,12 @@ export function loadEngine(json: unknown, options: LoadOptions = {}): EngineMode
     fail("/engine_format", `expected ${ENGINE_FORMAT}, got ${String(root["engine_format"])}`);
   }
   const patterns = requireArray(root["patterns"], "/patterns");
-  patterns.forEach((p, i) => validatePattern(p, `/patterns/${i}`));
+  patterns.forEach((p, i) => validatePattern(p, `/patterns/${i}`, patterns.length));
+  const sticky = validateReferences(patterns);
   const table = requireArray(root["context_table"], "/context_table");
-  table.forEach((list, i) => validateEntryList(list, `/context_table/${i}`, patterns.length));
+  table.forEach((list, i) =>
+    validateEntryList(list, `/context_table/${i}`, patterns.length, sticky),
+  );
   const models = requireRecord(root["models"], "/models");
   for (const [id, model] of Object.entries(models)) {
     validateModel(model, `/models/${escapeToken(id)}`, table.length);
@@ -157,35 +209,132 @@ function requireIndex(v: unknown, pointer: string, length: number): void {
   }
 }
 
-function validatePattern(p: unknown, pointer: string): void {
+function validatePattern(p: unknown, pointer: string, count: number): void {
   const rec = requireRecord(p, pointer);
   if ("unsupported" in rec) {
     if (typeof rec["unsupported"] !== "string") {
       fail(`${pointer}/unsupported`, "expected a string");
     }
-    return;
+  } else if ("split" in rec) {
+    validateSplit(rec["split"], `${pointer}/split`, count);
+  } else if ("any" in rec) {
+    requireArray(rec["any"], `${pointer}/any`).forEach((id, i) =>
+      requireIndex(id, `${pointer}/any/${i}`, count),
+    );
+  } else {
+    validateSource(rec, pointer);
   }
+}
+
+function validateSource(rec: Record<string, unknown>, pointer: string): void {
   if (typeof rec["source"] !== "string" || typeof rec["flags"] !== "string") {
-    fail(pointer, "expected {source, flags} or {unsupported}");
+    fail(pointer, "expected {source, flags}, {unsupported}, {split} or {any}");
   }
-  if (rec["flags"] !== PATTERN_FLAGS) {
-    fail(`${pointer}/flags`, `expected "${PATTERN_FLAGS}"`);
+  if (rec["flags"] !== PATTERN_FLAGS && rec["flags"] !== STICKY_FLAGS) {
+    fail(`${pointer}/flags`, `expected "${PATTERN_FLAGS}" or "${STICKY_FLAGS}"`);
   }
 }
 
-function validateEntryList(list: unknown, pointer: string, patternCount: number): void {
-  requireArray(list, pointer).forEach((e, i) => validateEntry(e, `${pointer}/${i}`, patternCount));
+function validateSplit(split: unknown, pointer: string, count: number): void {
+  const rec = requireRecord(split, pointer);
+  requireIndex(rec["head"], `${pointer}/head`, count);
+  requireIndex(rec["tail"], `${pointer}/tail`, count);
+  if (rec["fast"] !== null) {
+    requireIndex(rec["fast"], `${pointer}/fast`, count);
+  }
+  if (rec["fast_final"] !== FAST_ACCEPT && rec["fast_final"] !== FAST_REJECT) {
+    fail(`${pointer}/fast_final`, `expected "${FAST_ACCEPT}" or "${FAST_REJECT}"`);
+  }
+  if (typeof rec["native"] !== "string" || !Object.hasOwn(NATIVE_KINDS, rec["native"])) {
+    fail(`${pointer}/native`, `unknown native kind ${String(rec["native"])}`);
+  }
 }
 
-function validateEntry(entry: unknown, pointer: string, patternCount: number): void {
+function isStickySource(p: unknown): boolean {
+  return isRecord(p) && p["flags"] === STICKY_FLAGS;
+}
+
+/** Checks which patterns may reference which; returns the ids of the sticky ones. */
+function validateReferences(patterns: unknown[]): ReadonlySet<number> {
+  const sticky = new Set<number>();
+  patterns.forEach((p, i) => isStickySource(p) && sticky.add(i));
+  const used = new Set<number>();
+  patterns.forEach((p, i) => {
+    const rec = p as Record<string, unknown>; // validated as records by validatePattern
+    if (isRecord(rec["split"])) {
+      validateSplitUse(rec["split"], `/patterns/${i}/split`, sticky, used);
+    } else if (Array.isArray(rec["any"])) {
+      rec["any"].forEach((id: number, k: number) => {
+        if (sticky.has(id) || Array.isArray((patterns[id] as Record<string, unknown>)["any"])) {
+          fail(`/patterns/${i}/any/${k}`, "expected a whole-line or split pattern");
+        }
+      });
+    }
+  });
+  for (const id of sticky) {
+    if (!used.has(id)) {
+      fail(`/patterns/${id}/flags`, `"${STICKY_FLAGS}" only as a split head or tail`);
+    }
+  }
+  return sticky;
+}
+
+function validateSplitUse(
+  split: Record<string, unknown>,
+  pointer: string,
+  sticky: ReadonlySet<number>,
+  used: Set<number>,
+): void {
+  for (const part of ["head", "tail"]) {
+    const id = split[part] as number;
+    if (!sticky.has(id)) {
+      fail(`${pointer}/${part}`, `expected a "${STICKY_FLAGS}" source pattern`);
+    }
+    used.add(id);
+  }
+  if (typeof split["fast"] === "number" && sticky.has(split["fast"])) {
+    fail(`${pointer}/fast`, "expected a whole-line pattern");
+  }
+}
+
+function validateEntryList(
+  list: unknown,
+  pointer: string,
+  patternCount: number,
+  sticky: ReadonlySet<number>,
+): void {
+  requireArray(list, pointer).forEach((e, i) =>
+    validateEntry(e, `${pointer}/${i}`, patternCount, sticky),
+  );
+}
+
+/** Entry pattern references are whole-line: in range and never a sticky sub-pattern. */
+function requireEntryPattern(
+  v: unknown,
+  pointer: string,
+  count: number,
+  sticky: ReadonlySet<number>,
+): void {
+  requireIndex(v, pointer, count);
+  if (sticky.has(v as number)) {
+    fail(pointer, `pattern is a "${STICKY_FLAGS}" sub-pattern`);
+  }
+}
+
+function validateEntry(
+  entry: unknown,
+  pointer: string,
+  count: number,
+  sticky: ReadonlySet<number>,
+): void {
   const rec = requireRecord(entry, pointer);
-  requireIndex(rec["start"], `${pointer}/start`, patternCount);
+  requireEntryPattern(rec["start"], `${pointer}/start`, count, sticky);
   if (rec["end"] !== undefined) {
-    requireIndex(rec["end"], `${pointer}/end`, patternCount);
+    requireEntryPattern(rec["end"], `${pointer}/end`, count, sticky);
   }
   if (rec["join"] !== undefined) {
     const join = requireRecord(rec["join"], `${pointer}/join`);
-    requireIndex(join["prefix"], `${pointer}/join/prefix`, patternCount);
+    requireEntryPattern(join["prefix"], `${pointer}/join/prefix`, count, sticky);
   }
 }
 

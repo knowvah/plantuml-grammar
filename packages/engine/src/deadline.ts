@@ -29,11 +29,16 @@ export class Deadline {
     return Math.max(0, this.#limit - this.#clock());
   }
 
-  /** Runs `re.test(text)`; throws `BlockTimeout` first when the budget is spent. */
-  test(re: RegExp, text: string): boolean {
+  /** Throws `BlockTimeout` when the budget is spent. */
+  check(): void {
     if (this.remainingMs() <= 0) {
       throw new BlockTimeout();
     }
+  }
+
+  /** Runs `re.test(text)`; throws `BlockTimeout` first when the budget is spent. */
+  test(re: RegExp, text: string): boolean {
+    this.check();
     return re.test(text);
   }
 }
