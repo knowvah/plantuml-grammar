@@ -1,0 +1,62 @@
+# Gates that need no jar or corpora; the corpus tests, extract and parity stay local.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  PYTHON_VERSION: "3.13"
+  PYRIGHT_VERSION: "1.1.410"
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          activate-environment: true
+      # Node runs the JS regex and engine tests inside pytest; without it they skip.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: package.json
+          cache: npm
+      - run: uv sync --frozen
+      - run: npm ci
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: npx --yes pyright@${{ env.PYRIGHT_VERSION }} tools/emit tools/report tools/validate
+      - run: uv run python -m tools.model.load --check model/
+      - name: dist matches the model
+        run: |
+          uv run python -m tools.emit.build
+          git diff --exit-code -- dist/
+      - run: uv run pytest -m "not corpus"
+
+  node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # The TextMate proof in npm test runs the Python emitter through `uv run`.
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: package.json
+          cache: npm
+      - run: uv sync --frozen
+      - run: npm ci
+      - run: npm test
