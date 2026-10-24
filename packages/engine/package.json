@@ -1,0 +1,24 @@
+{
+  "name": "@knowvah/plantuml-engine",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
+    "test": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && vitest run --coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "@vitest/coverage-v8": "^5.0.5",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

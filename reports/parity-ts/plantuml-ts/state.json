@@ -1,0 +1,107 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "STATE",
+      "path": "class/duzazu-41-telu529.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "fa",
+      "note": "link endpoint ChildMode1.A resolves under the current group, whose parent state does not exist (cross-line, gap/link-unknown-parent)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "class/fugedo-34-fice721.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "fa",
+      "note": "link endpoint pUndetected belongs to a concurrent region and is used outside it (cross-line, gap/state-reused-in-other-region)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "class/xacona-99-peze211.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "fa",
+      "note": "link endpoint XA13 is declared later inside a concurrent region; links run in pass TWO and cannot use it at the root (cross-line)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "class/zecivu-62-pagu681.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "fa",
+      "note": "link endpoint c belongs to another concurrent region (cross-line, gap/state-reused-in-other-region)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "sequence/cagego-53-vemo516.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "STATE",
+      "path": "sequence/fibudu-53-bode309.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "STATE",
+      "path": "state/vixobo-14-jole910.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "plantuml-ts",
+  "family": "state",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 300,
+    "diagram_mismatch": 0,
+    "fa": 4,
+    "fr": 0,
+    "oracle_accepted": 296,
+    "raw_fr": 3,
+    "timeout": 0
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "context_table": [
+    [
+      {
+        "action": "",
+        "command": "Cmd",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Cmd",
+        "end": 3,
+        "gives": "",
+        "join": {
+          "max_lines": 50,
+          "prefix": 4
+        },
+        "kind": "multiline",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 1,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Cmd",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ]
+  ],
+  "engine_format": 2,
+  "model_order": [
+    "alpha",
+    "beta"
+  ],
+  "models": {
+    "alpha": {
+      "contexts": {
+        "extra": 1,
+        "main": 0
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": "F",
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "beta": {
+      "contexts": {
+        "main": 2
+      },
+      "diagram": null,
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "document",
+      "start_map": {
+        "uml": [
+          "F"
+        ]
+      }
+    }
+  },
+  "patterns": [
+    {
+      "flags": "u",
+      "source": "^a$"
+    },
+    {
+      "flags": "u",
+      "source": "^b$"
+    },
+    {
+      "unsupported": "recursion depth exceeds 256 KB"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:c)$"
+    },
+    {
+      "flags": "u",
+      "source": "^x"
+    }
+  ],
+  "pin": "0000000000000000000000000000000000000000",
+  "tops": {
+    "F": "alpha"
+  }
+}

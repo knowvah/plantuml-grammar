@@ -1,0 +1,94 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "GANTT",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "GANTT",
+      "path": "dbhum/f_ec/fecaru-84-gofi396.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "GANTT",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "GANTT",
+      "path": "dbhum/j_ad/jadobo-26-rezu573.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "GANTT",
+      "kind": "fa",
+      "note": "task lookup by name: [T2] is declared on a later line; sentences/gap/task-lookup",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/l_it/lituri-55-caju105.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "GANTT",
+      "kind": "fa",
+      "note": "20-year limit: date arithmetic over the whole diagram (without `project starts` the span starts at 1970-01-01); sentences/gap/twenty-years",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/n_ak/nakude-77-suji787.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "GANTT",
+      "kind": "fa",
+      "note": "task lookup by name in `occurs from [A] to [B]`: [P_start2] was never declared",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/r_ec/recufa-28-desi167.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "GANTT",
+      "kind": "fa",
+      "note": "task lookup by name: [Production 0.2] is declared on a later line; sentences/gap/task-lookup",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/s_ar/saricu-01-funu594.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "pdiff",
+  "family": "gantt",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 274,
+    "diagram_mismatch": 0,
+    "fa": 4,
+    "fr": 0,
+    "oracle_accepted": 263,
+    "raw_fr": 2,
+    "timeout": 0
+  }
+}

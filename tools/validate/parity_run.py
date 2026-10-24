@@ -7,10 +7,11 @@ reports are deterministic. Every engine is injectable for tests.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from tools.interp import STATUS_ERROR, Verdict, accepts
 from tools.interp.source import split_blocks
@@ -23,6 +24,9 @@ PREPROC_LAYER = "preproc"
 POOL_CHUNK = 32
 Outcome = tuple[Verdict, Verdict | None]
 InterpFn = Callable[["Job"], Outcome]
+VERDICT_FIELDS = ("accepted", "diagram", "first_failure", "model", "status")
+LAYER_L2 = "l2"
+LAYER_RAW = "raw"
 
 
 @dataclass(frozen=True)
@@ -152,3 +156,41 @@ def run_interp(
         max_workers=workers, initializer=_init_worker, initargs=(config,)
     ) as pool:
         return list(pool.map(run_job, jobs, chunksize=POOL_CHUNK))
+
+
+def _verdict_diff(layer: str, a: Verdict | None, b: Verdict | None) -> list[str]:
+    if a is None or b is None:
+        return [] if a is b else [layer]
+    return [f"{layer}.{f}" for f in VERDICT_FIELDS if a.get(f) != b.get(f)]  # type: ignore[misc]
+
+
+def _field_value(outcome: Outcome, field: str) -> Any:
+    layer, _, key = field.partition(".")
+    verdict = outcome[0] if layer == LAYER_L2 else outcome[1]
+    if verdict is None:
+        return None
+    return verdict.get(key) if key else verdict  # type: ignore[misc]
+
+
+def compare_outcomes(
+    jobs: Sequence[Job], left: Sequence[Outcome], right: Sequence[Outcome]
+) -> list[Mapping[str, Any]]:
+    """One row per job whose two engines disagree, naming the differing fields.
+
+    A field is ``<l2|raw>.<verdict key>``; a bare ``raw`` means only one engine produced a
+    raw verdict. Rows keep job order and carry the differing values as ``left``/``right``.
+    """
+    rows: list[Mapping[str, Any]] = []
+    for job, (l2a, rawa), (l2b, rawb) in zip(jobs, left, right, strict=True):
+        fields = _verdict_diff(LAYER_L2, l2a, l2b) + _verdict_diff(LAYER_RAW, rawa, rawb)
+        if fields:
+            rows.append(
+                {
+                    "path": job.path,
+                    "block": job.block,
+                    "fields": fields,
+                    "left": {f: _field_value((l2a, rawa), f) for f in fields},
+                    "right": {f: _field_value((l2b, rawb), f) for f in fields},
+                }
+            )
+    return rows

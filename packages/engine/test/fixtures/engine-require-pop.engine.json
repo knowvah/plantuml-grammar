@@ -1,0 +1,632 @@
+{
+  "context_table": [
+    [
+      {
+        "action": "",
+        "command": "Page",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Any",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 1,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "Close",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Inner",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": true,
+        "start": 3,
+        "target": "body",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Item",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Word",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Open",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 5,
+        "target": "body",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "Close",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Bad",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": true,
+        "require_pop": false,
+        "start": 6,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Item",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Zero",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": true,
+        "require_pop": false,
+        "start": 7,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Any",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 1,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Page",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 7,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Zero",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": true,
+        "require_pop": false,
+        "start": 7,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Zero",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": true,
+        "require_pop": false,
+        "start": 7,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Page",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Any",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 1,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "P",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 8,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Word",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Open",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": true,
+        "start": 5,
+        "target": "body",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Word",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Open",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": true,
+        "start": 5,
+        "target": "body",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Plain",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 9,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Word",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Open",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": true,
+        "start": 5,
+        "target": "body",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Nope",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 10,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Word",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Open",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": true,
+        "start": 5,
+        "target": "body",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "set",
+        "command": "Sw",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 11,
+        "target": "other",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "Close",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ]
+  ],
+  "engine_format": 1,
+  "model_order": [
+    "rj-base",
+    "rj-body",
+    "rj-catch",
+    "rj-first",
+    "rj-later",
+    "rj-reject",
+    "rj-top",
+    "rp-bottom",
+    "rp-fallback",
+    "rp-nope",
+    "rp-open",
+    "rp-plain",
+    "rp-set"
+  ],
+  "models": {
+    "rj-base": {
+      "contexts": {
+        "body": 1,
+        "main": 0
+      },
+      "diagram": null,
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "shared",
+      "start_map": {}
+    },
+    "rj-body": {
+      "contexts": {
+        "body": 3,
+        "main": 2
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rj-catch": {
+      "contexts": {
+        "body": 1,
+        "main": 0
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rj-first": {
+      "contexts": {
+        "body": 1,
+        "main": 4
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rj-later": {
+      "contexts": {
+        "body": 1,
+        "main": 5
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rj-reject": {
+      "contexts": {
+        "body": 1,
+        "main": 6
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rj-top": {
+      "contexts": {
+        "body": 1,
+        "main": 6
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [
+        "rj-base"
+      ],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rp-bottom": {
+      "contexts": {
+        "body": 1,
+        "main": 7
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rp-fallback": {
+      "contexts": {
+        "body": 1,
+        "main": 8
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rp-nope": {
+      "contexts": {
+        "body": 1,
+        "main": 9
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rp-open": {
+      "contexts": {
+        "body": 1,
+        "main": 10
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rp-plain": {
+      "contexts": {
+        "body": 1,
+        "main": 2
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "rp-set": {
+      "contexts": {
+        "body": 11,
+        "main": 10,
+        "other": 12
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    }
+  },
+  "patterns": [
+    {
+      "flags": "u",
+      "source": "^(?:(?:page\\x20[0-9]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[^\\n\\r\\x85\\u2028\\u2029]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:\\}))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:inner\\x20\\{))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[0-9A-Z_a-z]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:open\\x20\\{))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:bad))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:page\\x200))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:p))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:open[^\\n\\r\\x85\\u2028\\u2029]*))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:zzz))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:sw))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    }
+  ],
+  "pin": "toy",
+  "tops": {}
+}

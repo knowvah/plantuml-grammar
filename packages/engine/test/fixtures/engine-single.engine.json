@@ -1,0 +1,206 @@
+{
+  "context_table": [
+    [
+      {
+        "action": "",
+        "command": "CommandOnly",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "CommandOnly",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 1,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "CommandOnly",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "CommandOnly",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 3,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "CommandOnly",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "push",
+        "command": "CommandOnly",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 1,
+        "target": "ghost",
+        "untrimmed": false
+      }
+    ]
+  ],
+  "engine_format": 1,
+  "model_order": [
+    "s-title",
+    "s-x",
+    "s-paren",
+    "s-set",
+    "s-ref",
+    "s-ghost",
+    "s-only"
+  ],
+  "models": {
+    "s-ghost": {
+      "contexts": {
+        "main": 5
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "s-only": {
+      "contexts": {
+        "main": 1
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "s-paren": {
+      "contexts": {
+        "main": 2
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "s-ref": {
+      "contexts": {
+        "main": 4
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "s-set": {
+      "contexts": {
+        "main": 3
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "s-title": {
+      "contexts": {
+        "main": 0
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "s-x": {
+      "contexts": {
+        "main": 1
+      },
+      "diagram": "SEQUENCE",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    }
+  },
+  "patterns": [
+    {
+      "flags": "u",
+      "source": "^(?:(?:title\\x20([^\\n\\r\\x85\\u2028\\u2029]*)))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:x))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:())(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "unsupported": "nested classes and && are not supported"
+    },
+    {
+      "unsupported": "unresolved Part ['ref']"
+    }
+  ],
+  "pin": "toy",
+  "tops": {}
+}

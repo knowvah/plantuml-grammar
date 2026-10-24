@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "ACTIVITY",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "ACTIVITY",
+      "path": "sub/repro2.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "vega",
+  "family": "activity3",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 3,
+    "diagram_mismatch": 0,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 3,
+    "raw_fr": 1,
+    "timeout": 0
+  }
+}

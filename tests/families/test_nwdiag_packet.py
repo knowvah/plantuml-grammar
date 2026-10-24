@@ -28,11 +28,13 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import regex
 
 from tools.interp import accepts
 from tools.interp.compile import compile_part
 from tools.interp.source import split_blocks
 from tools.model import Model, ResolvedModel, ResolvedModels
+from tools.model.java_regex import to_python
 from tools.model.load import load_dir
 from tools.model.resolve import resolve, top_models
 
@@ -329,6 +331,79 @@ def test_every_range_and_clean_attribute_zero_is_detected(zero_patterns: tuple[A
     clean += [f"* A [{a}]" for a in ATTRS if "\x0b" not in a and not a.endswith("=")]
     missed = [line for line in clean if width(line) == 0 and zero.fullmatch(line) is None]
     assert missed == []
+
+
+# --- conditional-free rewrite (T3) ----------------------------------------------------
+
+# The conditional-group form of the two patterns before T3 (PK_ZERO_FIELD with "@" standing
+# for the group-name prefix, and the tail PK_NONZERO_FIELD adds behind its negative lookahead).
+OLD_ZERO_FIELD_TEMPLATE = (
+    "[ \\t]*(?:(?=[0-9]{1,7}-[0-9]{1,7}(?![0-9]))0*(?:(?P<@p>[1-9][0-9]*))?("
+    "?:(?P<@d1>1)|(?P<@d2>2)|(?P<@d3>3)|(?P<@d4>4)|(?P<@d5>5)|(?P<@d6>6)|(?"
+    "P<@d7>7)|(?P<@d8>8)|(?P<@d9>9))(?:(?P<@k6>0{6})|(?P<@k5>0{5})|(?P<@k4>"
+    "0{4})|(?P<@k3>0{3})|(?P<@k2>0{2})|(?P<@k1>0{1})|)-0*(?(@p)(?P=@p))(?(@"
+    "d1)(?(@p)0|0?)|(?(@d2)1|(?(@d3)2|(?(@d4)3|(?(@d5)4|(?(@d6)5|(?(@d7)6|("
+    "?(@d8)7|(?(@d9)8|)))))))))(?(@k6)9{6}|(?(@k5)9{5}|(?(@k4)9{4}|(?(@k3)9"
+    "{3}|(?(@k2)9{2}|(?(@k1)9{1}|)))))):?[ \\t]+[^\ue100]*|(?:[0-9]{1,7}:?|\\*)[ \\"
+    't]+[^\\[\ue100]*\\[[ \\t,]*(?:(?:[A-Za-z0-9_]+[ \\t]*=[ \\t]*(?:"[^"\ue100]*"|[^\\s,"\ue100'
+    "][^\\s,\ue100]*)|[A-Za-z0-9_]+(?![A-Za-z0-9_]|\\s*=))[ \\t,]+)*len[ \\t]*=[ \\t]"
+    '*(?:"[+-]?0+"|[+-]?0+)(?:[ \\t,]+(?:(?!len[ \\t]*=)[A-Za-z0-9_]+[ \\t]*=['
+    ' \\t]*(?:"[^"\ue100]*"|[^\\s,"\ue100][^\\s,\ue100]*)|[A-Za-z0-9_]+(?![A-Za-z0-9_]|\\s*=))'
+    ")*[ \\t,]*\\][ \\t]*)"
+)
+OLD_NONZERO_TAIL = "[\\s\xa0]*(?:\\d{1,7}:?|\\d{1,7}-\\d{1,7}:?|\\*)\\s+[^\ue100]*"
+
+EQUIV_BOUND = 1200
+EQUIV_RANDOM = 200
+EQUIV_MAX_DIGITS = 7
+
+
+def java_pattern(source: str) -> Any:
+    return regex.compile(to_python(source))
+
+
+def old_patterns() -> tuple[Any, Any]:
+    zero = OLD_ZERO_FIELD_TEMPLATE.replace("@", "pkz")
+    nonzero = "(?!(?:" + OLD_ZERO_FIELD_TEMPLATE.replace("@", "pkn") + ")$)" + OLD_NONZERO_TAIL
+    return java_pattern(zero), java_pattern(nonzero)
+
+
+def equivalence_lines() -> list[str]:
+    lines = [f"{a}-{b} x" for a in range(EQUIV_BOUND + 1) for b in range(EQUIV_BOUND + 1)]
+    rng = random.Random(3)
+    for _ in range(EQUIV_RANDOM):
+        a = rng.randint(0, 10 ** rng.randint(1, EQUIV_MAX_DIGITS) - 1)
+        b = (
+            a - 1
+            if rng.random() < 0.6
+            else rng.randint(0, 10 ** rng.randint(1, EQUIV_MAX_DIGITS) - 1)
+        )
+        zeros = "0" * rng.randint(0, 3)
+        left, right = f"{zeros}{a}", f"{'0' * rng.randint(0, 3)}{max(b, 0)}"
+        blanks, colon = " " * rng.randint(0, 2), rng.choice(["", ":"])
+        lines.append(f"{blanks}{left}-{right}{colon}\t y")
+        lines.append(f"{blanks}{left}-{right}{colon} y [len=1]")
+    return lines
+
+
+def test_zero_patterns_have_no_conditionals(models: ResolvedModels) -> None:
+    variables = models[PK_ID].variables
+    for name in ("PK_ZERO_FIELD", "PK_NONZERO_FIELD"):
+        source = variables[name]["regex"]
+        assert "(?(" not in source, name
+        assert "(?P=" in source, name
+
+
+def test_conditional_free_patterns_agree_with_the_old_ones(zero_patterns: tuple[Any, Any]) -> None:
+    old_zero, old_nonzero = old_patterns()
+    new_zero, new_nonzero = zero_patterns
+    disagreements = [
+        line
+        for line in equivalence_lines()
+        if (old_zero.fullmatch(line) is None) != (new_zero.fullmatch(line) is None)
+        or (old_nonzero.fullmatch(line) is None) != (new_nonzero.fullmatch(line) is None)
+    ]
+    assert disagreements == []
 
 
 # --- interpreter behavior -------------------------------------------------------------

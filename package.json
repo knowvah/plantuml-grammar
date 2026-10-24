@@ -5,10 +5,19 @@
   "type": "module",
   "description": "TextMate proof tests for the generated PlantUML grammar",
   "scripts": {
-    "test": "node --test \"tests/textmate/**/*.test.mjs\""
+    "test": "node --test \"tests/textmate/**/*.test.mjs\" && npm test -w packages/engine"
   },
   "devDependencies": {
     "vscode-oniguruma": "^2.0.1",
     "vscode-textmate": "^9.2.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "volta": {
+    "node": "26.9.0"
+  },
+  "engines": {
+    "node": ">=26"
   }
 }

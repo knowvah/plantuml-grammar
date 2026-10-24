@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from tools.validate import parity, parity_core, parity_io, parity_run
+from tools.validate import parity, parity_core, parity_io, parity_run, ts_engine
 from tools.validate.parity_core import KIND_FR, build_report, count_totals, target_failures
 
 from .parity_helpers import (
@@ -359,3 +359,118 @@ def test_default_list_resolves_root_and_files(tmp_path: Path, monkeypatch: pytes
     root, files = parity.default_list("vega")
     assert root == tmp_path
     assert files == [tmp_path / "sub" / "x.puml"]
+
+
+# --- engine selection and the equality report (T17) ---------------------------------------
+
+
+def _ts_deps(tmp_path: Path, ts_fn):
+    base = _deps(
+        tmp_path,
+        {"good.puml": GOOD_BLOCK, "bad.puml": BAD_BLOCK},
+        lambda j: (_AGREE, None) if j.oracle else (verdict(False), None),
+    )
+    return parity.Deps(base.list_corpus, base.oracle, base.interp, ts_fn)
+
+
+_AGREE = verdict(True, diagram="CLASS", model="toydiagram")
+
+
+def _ts_agree(jobs, _config, _workers):
+    return [(_AGREE, None) if j.oracle else (verdict(False), None) for j in jobs]
+
+
+def _ts_flip_good(jobs, config, workers):
+    flipped = {**_AGREE, "model": "other"}
+    base = _ts_agree(jobs, config, workers)
+    return [(flipped, None) if j.oracle else out for j, out in zip(jobs, base, strict=True)]
+
+
+def test_engine_ts_writes_ts_slices_and_judges_with_ts(tmp_path: Path, capsys):
+    seen = []
+
+    def ts_fn(jobs, config, workers):
+        seen.append((len(jobs), config.use_raw, workers))
+        return _ts_agree(jobs, config, workers)
+
+    deps = _ts_deps(tmp_path, ts_fn)
+    assert parity.run(_opts(tmp_path, engine="ts"), deps) == parity.EXIT_OK
+    assert seen == [(2, False, 1)]
+    assert sorted(p.stem for p in (tmp_path / "out-ts" / "vega").glob("*.json")) == [
+        "class",
+        "unclassified",
+    ]
+    assert not (tmp_path / "out" / "vega").exists()
+    captured = capsys.readouterr()
+    assert "[ts]" in captured.out and "parity: ts engine wall" in captured.err
+
+
+def test_engine_both_equal_writes_empty_equality_report(tmp_path: Path):
+    deps = _ts_deps(tmp_path, _ts_agree)
+    opts = _opts(tmp_path, engine="both", reports_dir=tmp_path / "reports")
+    assert parity.run(opts, deps) == parity.EXIT_OK
+    doc = json.loads((tmp_path / "reports" / "engine-equality-vega.json").read_text())
+    assert (doc["mismatches"], doc["rows"], doc["pin"]) == (0, [], PIN)
+    assert "Mismatches: 0" in (tmp_path / "reports" / "engine-equality-vega.md").read_text()
+    assert (tmp_path / "out" / "vega" / "class.json").exists()
+    assert (tmp_path / "out-ts" / "vega" / "class.json").exists()
+
+
+def test_engine_both_reports_exactly_the_flipped_field(tmp_path: Path):
+    deps = _ts_deps(tmp_path, _ts_flip_good)
+    opts = _opts(tmp_path, engine="both", reports_dir=tmp_path / "reports")
+    assert parity.run(opts, deps) == parity.EXIT_OK
+    doc = json.loads((tmp_path / "reports" / "engine-equality-vega.json").read_text())
+    assert doc["mismatches"] == 1
+    (row,) = doc["rows"]
+    assert (row["path"], row["block"], row["fields"]) == ("good.puml", 0, ["l2.model"])
+    assert (row["left"], row["right"]) == ({"l2.model": "toydiagram"}, {"l2.model": "other"})
+    md = (tmp_path / "reports" / "engine-equality-vega.md").read_text()
+    assert "| `good.puml#0` | l2.model | `toydiagram` | `other` |" in md
+
+
+def test_compare_outcomes_flags_raw_presence_and_values():
+    jobs = [job("a", "x", oracle=True), job("b", "y", oracle=True)]
+    left = [(verdict(True), verdict(True)), (verdict(True), None)]
+    right = [(verdict(True), verdict(False)), (verdict(True), verdict(True))]
+    rows = parity_run.compare_outcomes(jobs, left, right)
+    assert [(r["path"], r["fields"]) for r in rows] == [
+        ("a", ["raw.accepted", "raw.first_failure", "raw.status"]),
+        ("b", ["raw"]),
+    ]
+    assert rows[1]["left"] == {"raw": None}
+
+
+def test_missing_node_exits_2_with_the_ts_engine_message(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys
+):
+    monkeypatch.setattr(ts_engine.shutil, "which", lambda _n: None)
+    deps = _deps(tmp_path, {"good.puml": GOOD_BLOCK}, lambda _j: (verdict(True), None))
+    code = parity.run(_opts(tmp_path, engine="ts"), deps)
+    assert code == parity.EXIT_ENV
+    assert "node is not on PATH" in capsys.readouterr().err
+
+
+def test_merge_engine_ts_and_both_name_the_reports(tmp_path: Path):
+    out, reports = tmp_path / "parity", tmp_path / "reports"
+    ts_dir = tmp_path / "parity-ts"
+    parity_io.write_json(parity_io.slice_path(out, "vega", "class"), _slice("class"))
+    parity_io.write_json(parity_io.slice_path(ts_dir, "vega", "class"), _slice("class", blocks=4))
+    assert parity.merge(["vega"], out, reports, "ts") == parity.EXIT_OK
+    assert not (reports / "parity-vega.json").exists()
+    assert json.loads((reports / "parity-vega-ts.json").read_text())["totals"]["blocks"] == 4
+    assert parity.merge(["vega"], out, reports, "both") == parity.EXIT_OK
+    assert json.loads((reports / "parity-vega.json").read_text())["totals"]["blocks"] == 3
+    assert "# Parity: vega" in (reports / "parity-vega-ts.md").read_text()
+
+
+def test_main_accepts_engine_flag(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    captured = {}
+    monkeypatch.setattr(parity, "run", lambda opts, deps=None: captured.setdefault("o", opts) and 0)
+    assert parity.main(["--corpus", "vega", "--engine", "both"]) == 0
+    assert captured["o"].engines == ("py", "ts")
+    assert parity.Options(corpora=()).engines == ("py",)
+    merged = {}
+    monkeypatch.setattr(parity, "merge", lambda *a: merged.setdefault("a", a) and 0)
+    parity.main(["merge", "--corpus", "vega", "--engine", "ts", "--out", str(tmp_path)])
+    assert merged["a"][3] == "ts"

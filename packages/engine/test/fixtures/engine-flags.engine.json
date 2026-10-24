@@ -1,0 +1,673 @@
+{
+  "context_table": [
+    [
+      {
+        "action": "",
+        "command": "Sep",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Bad",
+        "gives": "real_task",
+        "kind": "single",
+        "needs": "",
+        "reject": true,
+        "require_pop": false,
+        "start": 1,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Any",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Dash",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 3,
+        "target": "",
+        "untrimmed": true
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Sep",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Group",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 4,
+        "target": "group",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Task",
+        "gives": "real_task",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 5,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "Close",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 6,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Task",
+        "gives": "real_task",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 5,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "push",
+        "command": "Open",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": true,
+        "start": 7,
+        "target": "body",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Plain",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 8,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Any",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "pop",
+        "command": "BodyClose",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 6,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "BodyTask",
+        "gives": "real_task",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 5,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "BodySep",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Sep",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Task",
+        "gives": "real_task",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 5,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Open",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": true,
+        "start": 7,
+        "target": "body",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Plain",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 8,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Any",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Sep",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "push",
+        "command": "Open",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": true,
+        "start": 7,
+        "target": "body",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Plain",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 8,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Any",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Sep",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Other",
+        "gives": "something_else",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 9,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Plus",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 10,
+        "target": "",
+        "untrimmed": true
+      },
+      {
+        "action": "",
+        "command": "Any",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 2,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Plus",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 10,
+        "target": "",
+        "untrimmed": true
+      },
+      {
+        "action": "",
+        "command": "Dash",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 3,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Plus",
+        "gives": "",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 10,
+        "target": "",
+        "untrimmed": true
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "Sep",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 0,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "Task",
+        "gives": "real_task",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 5,
+        "target": "",
+        "untrimmed": false
+      }
+    ],
+    [
+      {
+        "action": "",
+        "command": "PreTask",
+        "gives": "real_task",
+        "kind": "single",
+        "needs": "",
+        "reject": false,
+        "require_pop": false,
+        "start": 11,
+        "target": "",
+        "untrimmed": false
+      },
+      {
+        "action": "",
+        "command": "PreSep",
+        "gives": "",
+        "kind": "single",
+        "needs": "real_task",
+        "reject": false,
+        "require_pop": false,
+        "start": 12,
+        "target": "",
+        "untrimmed": false
+      }
+    ]
+  ],
+  "engine_format": 1,
+  "model_order": [
+    "fl-bad",
+    "fl-dash-ovr",
+    "fl-group",
+    "fl-open-nosep",
+    "fl-open-task",
+    "fl-open",
+    "fl-other",
+    "fl-plus-any",
+    "fl-plus-dash",
+    "fl-plus",
+    "fl-sep-task",
+    "pre"
+  ],
+  "models": {
+    "fl-bad": {
+      "contexts": {
+        "main": 0
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-dash-ovr": {
+      "contexts": {
+        "main": 1
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-group": {
+      "contexts": {
+        "group": 3,
+        "main": 2
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-open": {
+      "contexts": {
+        "body": 5,
+        "main": 7
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-open-nosep": {
+      "contexts": {
+        "body": 5,
+        "main": 4
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-open-task": {
+      "contexts": {
+        "body": 5,
+        "main": 6
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-other": {
+      "contexts": {
+        "main": 8
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-plus": {
+      "contexts": {
+        "main": 11
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-plus-any": {
+      "contexts": {
+        "main": 9
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-plus-dash": {
+      "contexts": {
+        "main": 10
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "fl-sep-task": {
+      "contexts": {
+        "main": 12
+      },
+      "diagram": "CLASS",
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "diagram",
+      "start_map": {}
+    },
+    "pre": {
+      "contexts": {
+        "main": 13
+      },
+      "diagram": null,
+      "empty_needs_end": false,
+      "factory": null,
+      "glue_units": true,
+      "includes": [],
+      "layer": "preproc",
+      "start_map": {}
+    }
+  },
+  "patterns": [
+    {
+      "flags": "u",
+      "source": "^(?:(?:--\\x20[0-9A-Z_a-z]+\\x20--))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:bad))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:[^\\n\\r\\x85\\u2028\\u2029]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:--\\x20[0-9A-Z_a-z]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:grp\\x20\\{))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:task\\x20[0-9A-Z_a-z]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:\\}))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:open\\x20\\{))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:open[^\\n\\r\\x85\\u2028\\u2029]*))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:other))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:\\+\\+\\x20[0-9A-Z_a-z]+))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:!task))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    },
+    {
+      "flags": "u",
+      "source": "^(?:(?:!sep))(?:\\r\\n|(?<!\\r)\\n|[\\r\\x85\\u2028\\u2029])?$"
+    }
+  ],
+  "pin": "toy",
+  "tops": {}
+}

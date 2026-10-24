@@ -1,0 +1,120 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "fa",
+      "note": "link endpoint c belongs to another concurrent region (cross-line, gap/state-reused-in-other-region)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/c_ag/cagego-53-vemo516.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "STATE",
+      "path": "dbhum/d_uz/duzazu-41-telu529.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "STATE",
+      "path": "dbhum/f_ib/fibudu-53-bode309.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "fa",
+      "note": "link endpoint ChildMode1.A resolves under the current group, whose parent state does not exist (cross-line, gap/link-unknown-parent)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/f_ug/fugedo-34-fice721.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "STATE",
+      "path": "dbhum/v_ix/vixobo-14-jole910.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "fa",
+      "note": "link endpoint pUndetected belongs to a concurrent region and is used outside it (cross-line, gap/state-reused-in-other-region)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/x_ac/xacona-99-peze211.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "fa",
+      "note": "link endpoint XA13 is declared later inside a concurrent region; links run in pass TWO and cannot use it at the root (cross-line)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/z_ec/zecivu-62-pagu681.puml",
+      "status": "ok"
+    },
+    {
+      "block": 2,
+      "class": "unclassified",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "STATE",
+      "kind": "raw_fr",
+      "note": "",
+      "oracle": true,
+      "oracle_type": "STATE",
+      "path": "input/newline/state-monoline.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "pdiff",
+  "family": "state",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 318,
+    "diagram_mismatch": 0,
+    "fa": 4,
+    "fr": 0,
+    "oracle_accepted": 314,
+    "raw_fr": 4,
+    "timeout": 0
+  }
+}
