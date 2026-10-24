@@ -10,6 +10,7 @@ import pytest
 from tests.model import jre_vectors as vectors
 from tests.model.node_regex import Job, compiles_all, run_batch
 from tools.model import ResolvedModel
+from tools.model.java_regex import to_python
 from tools.model.java_regex_js import (
     DOT,
     END_ANCHOR,
@@ -24,12 +25,15 @@ from tools.model.load import load_dir
 from tools.model.resolve import resolve
 
 MODEL_DIR = Path(__file__).resolve().parents[2] / "model"
-EXCLUDED_CONSTRUCTS = ("(?>", "(?(", "(?&", "(?P=")
+EXCLUDED_CONSTRUCTS = ("(?(", "(?&")
 NUMERIC_BACKREF = re.compile(r"\\[1-9]")
 INLINE_CI = re.compile(r"\(\?-?i")
 GROUP_NAME = re.compile(r"\(\?<(\w+)>")
 MIN_MODEL_REGEXES = 900
-MAX_DEFERRED = 10
+MAX_CI_BACKREFS = 3
+MIN_ATOMIC_LEAVES = 16
+MIN_POSSESSIVE = 2
+EMULATED_GROUP = "(?<_a"
 
 
 def full(pattern: str, *, ci: bool = False) -> str:
@@ -134,12 +138,7 @@ def test_malformed_and_unknown_escapes_raise(pattern: str) -> None:
 @pytest.mark.parametrize(
     ("pattern", "message"),
     [
-        ("(?>a)", "(T5)"),
-        ("a*+", "(T5)"),
-        ("a++", "(T5)"),
-        ("(?P<n>a)(?P=n)", "(T5)"),
-        ("(?<n>a)\\k<n>", "(T5)"),
-        ("(?|a)", "(T5)"),
+        ("(?|a)", "branch reset"),
         ("(?&n)", "expand"),
         ("(?1)", "expand"),
         ("(a)?(?(1)b|c)", "conditional"),
@@ -245,12 +244,13 @@ def _translatable_model_sources() -> list[tuple[str, bool]]:
     return list(seen)
 
 
-def _translate_or_defer(source: str, ci: bool) -> str | None:
-    """The translation, or ``None`` for a possessive quantifier (T5's)."""
+def _translate_or_ci_backref(source: str, ci: bool) -> str | None:
+    """The translation, or ``None`` for a back reference under ci (D2 raises)."""
     try:
         return to_js(source, ci=ci)
     except JsRegexError as error:
-        assert "(T5)" in str(error)
+        assert "(D2)" in str(error)
+        assert ci
         return None
 
 
@@ -261,21 +261,30 @@ def test_every_model_regex_compiles_in_node() -> None:
         text
         for source, ci in sources
         for flag in (ci, not ci)
-        if (text := _translate_or_defer(source, flag)) is not None
+        if (text := _translate_or_ci_backref(source, flag)) is not None
     ]
-    assert len(translated) >= 2 * len(sources) - MAX_DEFERRED
+    assert len(translated) >= 2 * len(sources) - MAX_CI_BACKREFS
     verdicts = compiles_all(translated)
     assert [t for t, ok in zip(translated, verdicts, strict=True) if not ok] == []
     assert not [t for t in translated if INLINE_CI.search(t)]
-    assert not [t for t in translated if GROUP_NAME.search(t)]
+    for text in translated:
+        for name in GROUP_NAME.findall(text):
+            assert f"\\k<{name}>" in text
+
+
+def test_model_has_atomic_and_possessive_leaves() -> None:
+    pairs = _translatable_model_sources()
+    assert sum("(?>" in source for source, _ in pairs) == MIN_ATOMIC_LEAVES
+    possessive = [s for s, ci in pairs if "(?>" not in s and EMULATED_GROUP in to_js(s, ci=ci)]
+    assert len(possessive) == MIN_POSSESSIVE
 
 
 def _vector_source(case: vectors.Case) -> str | None:
-    """The Node source for a vector case, or ``None`` when it is outside T2's scope."""
+    """The Node source for a vector case, or ``None`` for emulation plus numbered back reference."""
     try:
         body = to_js(case.pattern, ci=case.ci)
     except JsRegexError as error:
-        assert "(T5)" in str(error)
+        assert "numbered back reference" in str(error)
         return None
     if case.mode == vectors.MODE_LINE:
         return line_pattern_js(body)
@@ -319,3 +328,82 @@ def test_vectors_match_java_reference_in_node() -> None:
         if wrong:
             mismatches.append((case, wrong[:3]))
     assert mismatches == []
+
+
+def test_atomic_group_text() -> None:
+    assert to_js("(?>a+)b") == "(?=(?<_a0>a+))\\k<_a0>b"
+    assert to_js("(?>a(?>b))") == "(?=(?<_a0>a(?=(?<_a1>b))\\k<_a1>))\\k<_a0>"
+    assert to_js("(?>a)*") == "(?=(?<_a0>a))\\k<_a0>*"
+
+
+def test_possessive_quantifier_text() -> None:
+    assert to_js("a*+b") == "(?=(?<_a0>a*))\\k<_a0>b"
+    assert to_js("xa++") == "x(?=(?<_a0>a+))\\k<_a0>"
+    assert to_js("a?+") == "(?=(?<_a0>a?))\\k<_a0>"
+    assert to_js("a{2}+") == "(?=(?<_a0>a{2}))\\k<_a0>"
+    assert to_js("a{2,}+") == "(?=(?<_a0>a{2,}))\\k<_a0>"
+    assert to_js("(?:ab)*+c") == "(?=(?<_a0>(?:ab)*))\\k<_a0>c"
+    assert to_js("[ab]{1,3}+") == "(?=(?<_a0>[ab]{1,3}))\\k<_a0>"
+    assert to_js("(?>a)*+") == "(?=(?<_a1>(?=(?<_a0>a))\\k<_a0>*))\\k<_a1>"
+
+
+def test_named_back_reference_text() -> None:
+    assert to_js("(?P<x>a)(?P=x)") == "(?<x>a)\\k<x>"
+    assert to_js("(?<x>a)\\k<x>+") == "(?<x>a)\\k<x>+"
+    assert to_js("(?P<x>a)(?P<y>b)(?P=x)") == "(?<x>a)(?:b)\\k<x>"
+    assert to_js("(?<x>a)\\k<x>(a)", ci=False) == "(?<x>a)\\k<x>(?:a)".replace("(?:a)", "(a)")
+
+
+@pytest.mark.parametrize(
+    ("pattern", "ci"),
+    [("(?P<x>a)(?P=x)", True), ("(?<x>a)\\k<x>", True), ("(?<x>a)(?i:\\k<x>)", False)],
+)
+def test_named_back_reference_under_ci_raises(pattern: str, ci: bool) -> None:
+    with pytest.raises(JsRegexError, match=r"\(D2\)"):
+        to_js(pattern, ci=ci)
+
+
+@pytest.mark.parametrize(
+    "pattern",
+    ["(?P<_a1>x)", "(?<_a>x)", "(?<_a1>x)\\k<_a1>", "(?P<x>a)(?P=_a0)"],
+)
+def test_generated_name_collision_raises(pattern: str) -> None:
+    with pytest.raises(JsRegexError, match="collides"):
+        to_js(pattern)
+
+
+def test_duplicate_referenced_name_raises() -> None:
+    with pytest.raises(JsRegexError, match="defined twice"):
+        to_js("(?P<x>a)|(?P<x>b)(?P=x)")
+
+
+@pytest.mark.parametrize("pattern", ["(a)(?>b)\\1", "(a)\\1c*+"])
+def test_emulation_with_numbered_back_reference_raises(pattern: str) -> None:
+    with pytest.raises(JsRegexError, match="numbered back reference"):
+        to_js(pattern)
+
+
+def test_atomic_and_possessive_in_node() -> None:
+    cases = [
+        ("(?>a+)a", "aaa", False),
+        ("a*+b", "aaab", True),
+        ("a*+a", "aaa", False),
+        ("a++b", "aab", True),
+        ("(?:ab)?+ab", "ab", False),
+        ("a{1,2}+a", "aa", False),
+        ("a{2,}+b", "aaab", True),
+        ("(?>a|ab)c", "abc", False),
+        ("(?:a|ab)(?>c|cd)", "abcd", False),
+        ("(?:a|ab)(?>cd|c)", "abcd", True),
+    ]
+    outcomes = run_batch([Job(full(p), [t]) for p, t, _ in cases])
+    assert [o.matches[0] for o in outcomes] == [want for *_, want in cases]
+    py = [re.fullmatch(to_python(p), t) is not None for p, t, _ in cases]
+    assert py == [want for *_, want in cases]
+
+
+def test_named_back_reference_case_sensitivity_in_node() -> None:
+    pattern = "(?P<x>a)(?P=x)"
+    out = run_batch([Job(full(pattern), ["aa", "aA"])])
+    assert out[0].matches == [True, False]
+    assert [re.fullmatch(to_python(pattern), t) is not None for t in ("aa", "aA")] == [True, False]

@@ -16,20 +16,29 @@ Under ``u`` identity escapes are strict (``\\_``, ``\\"``, ``\\ ``, and ``\\-`` 
 class are syntax errors), so output uses its own code point writer, ``cp_text_js``.
 
 Unsupported Java syntax raises ``JsRegexError``: nested classes, ``&&``, ``\\h \\v \\R``,
-``\\Q..\\E``, flags other than ``i``. Atomic groups, possessive quantifiers and named
-back references raise ``JsRegexError("... (T5)")`` for now. PCRE-only constructs
+``\\Q..\\E``, flags other than ``i``, branch reset groups. PCRE-only constructs
 (subroutine calls, conditionals) raise too: expand them before translating.
+
+JavaScript has no atomic groups or possessive quantifiers (decision D2), so ``(?>X)``
+becomes ``(?=(?<_aN>X))\\k<_aN>``: the lookahead commits to its first match and the back
+reference consumes exactly that text. ``X*+`` (and ``++ ?+ {n}+ {n,}+ {n,m}+``) is the
+atomic group of ``X*``. The generated names ``_a0``, ``_a1``, ... follow source order; a
+model group name starting with ``_a`` raises. The emulation adds capturing groups, so a
+pattern that also has a numbered back reference ``\\1`` raises (the numbers would shift).
+Named back references ``(?P=n)`` / ``\\k<n>`` become ``\\k<n>`` and the referenced group
+keeps its name; a referenced name defined twice raises (no duplicate names in ES2018).
 
 A back reference translated while case-insensitive mode is on raises ``JsRegexError``
 (decision D2): JavaScript can fold a back reference only with the ``i`` flag, which folds
 Unicode where Java folds ASCII only, and silently matching case-sensitively would be wrong.
-Named back references (T5) must follow the same rule.
+Named back references follow the same rule.
 """
 
 from __future__ import annotations
 
 import re
 from collections.abc import Iterable
+from dataclasses import dataclass
 
 from tools.model.java_regex import (
     _GROUP,
@@ -63,11 +72,12 @@ QUANTIFIER_CHARS = frozenset("*+?{")
 SURROGATES = (0xD800, 0xDFFF)
 MAX_LATIN1 = 0xFF
 MAX_BMP = 0xFFFF
-T5_NOTE = "(T5)"
+GENERATED_PREFIX = "_a"
 
 _REPEAT = re.compile(r"\{\d+(?:,\d*)?\}")
 _NUMERIC_BACKREF = re.compile(r"\\[1-9]")
-_BACKREF_NAME = re.compile(r"\\k<\w+>")
+_BACKREF_NAME = re.compile(r"\\k<(\w+)>")
+_PY_BACKREF = re.compile(r"\(\?P=(\w+)\)")
 
 
 class JsRegexError(ValueError):
@@ -163,20 +173,35 @@ def _parse_class(src: str, start: int, ci: bool) -> tuple[str, int]:
     return class_text_js(all_ranges, raws, negated), i + 1
 
 
+@dataclass(frozen=True)
+class _Frame:
+    """An open group: the case mode to restore, its first output index, its closing text."""
+
+    ci: bool
+    start: int
+    close: str = ")"
+
+
 class _Translator:
     """One pass over the source; ``ci`` is the case mode of the group being read."""
 
     def __init__(self, src: str, ci: bool) -> None:
         self.src, self.ci, self.i = src, ci, 0
         self.out: list[str] = []
-        self.saved: list[bool] = []
+        self.frames: list[_Frame] = []
         self.quantified = False
+        self.atom_start = 0
+        self.emulated = 0
+        self.defined: set[str] = set()
         self.keep_numbering = _NUMERIC_BACKREF.search(src) is not None
+        self.referenced = set(_PY_BACKREF.findall(src)) | set(_BACKREF_NAME.findall(src))
 
     def run(self) -> str:
         while self.i < len(self.src):
             char = self.src[self.i]
             was_quantified, self.quantified = self.quantified, False
+            if char not in QUANTIFIER_CHARS and char != ")":
+                self.atom_start = len(self.out)
             if char in QUANTIFIER_CHARS:
                 self.quantifier(char, was_quantified)
             elif char == "\\":
@@ -202,15 +227,34 @@ class _Translator:
                 raise JsRegexError("illegal repetition")
             self.emit(found.group(), len(found.group()))
         elif after_quantifier and char == "+":
-            raise JsRegexError(f"possessive quantifier {T5_NOTE}")
+            self.possessive()
+            return
         else:
             self.emit(char)
         self.quantified = not (after_quantifier and char == "?")
 
+    def emulated_name(self) -> str:
+        """The next generated group name; the emulation shifts group numbers, so it refuses."""
+        if self.keep_numbering:
+            raise JsRegexError(
+                "atomic group or possessive quantifier with a numbered back reference"
+            )
+        name = f"{GENERATED_PREFIX}{self.emulated}"
+        self.emulated += 1
+        return name
+
+    def possessive(self) -> None:
+        """Wrap the quantified atom just emitted as an atomic group; the ``+`` is consumed."""
+        name = self.emulated_name()
+        atom = "".join(self.out[self.atom_start :])
+        self.out[self.atom_start :] = [f"(?=(?<{name}>{atom}))\\k<{name}>"]
+        self.i += 1
+
     def plain(self, char: str) -> None:
         if char == ")":
-            self.ci = self.saved.pop() if self.saved else self.ci
-            self.emit(char)
+            frame = self.frames.pop() if self.frames else _Frame(self.ci, len(self.out))
+            self.ci, self.atom_start = frame.ci, frame.start
+            self.emit(frame.close)
         elif char == ".":
             self.emit(DOT)
         elif char == "$":
@@ -230,9 +274,7 @@ class _Translator:
         if found.group("flags") is not None:
             self.flag_group(found, length)
         elif found.group("call") is not None:
-            call = found.group()
-            note = f" {T5_NOTE}" if call.startswith("(?P=") else " (expand it first)"
-            raise JsRegexError(f"unsupported group {call}{note}")
+            self.group_call(found.group(), length)
         elif found.group("comment") is not None:
             self.i += length
         elif found.group("cond") is not None:
@@ -240,14 +282,42 @@ class _Translator:
         else:
             self.plain_group(found.group(), length)
 
-    def plain_group(self, text: str, length: int) -> None:
-        if text in ("(?>", "(?|"):
-            raise JsRegexError(f"unsupported group {text} {T5_NOTE}")
-        self.saved.append(self.ci)
-        named = text.startswith("(?P<") or (text.startswith("(?<") and text[3] not in "=!")
-        if named:
-            text = "(" if self.keep_numbering else "(?:"
+    def group_call(self, call: str, length: int) -> None:
+        """``(?P=n)`` is a named back reference; other calls are PCRE recursion."""
+        if not call.startswith("(?P="):
+            raise JsRegexError(f"unsupported group {call} (expand it first)")
+        self.named_backref(call[4:-1], length)
+
+    def named_backref(self, name: str, length: int) -> None:
+        text = f"\\k<{name}>"
+        if self.ci:
+            raise JsRegexError(f"back reference {text} under ci is unsupported (D2)")
+        if name.startswith(GENERATED_PREFIX):
+            raise JsRegexError(f"group name {name} collides with generated names")
         self.emit(text, length)
+
+    def plain_group(self, text: str, length: int) -> None:
+        if text == "(?|":
+            raise JsRegexError("branch reset groups (?| are not supported")
+        if text == "(?>":
+            name = self.emulated_name()
+            self.frames.append(_Frame(self.ci, len(self.out), f"))\\k<{name}>"))
+            self.emit(f"(?=(?<{name}>", length)
+            return
+        self.frames.append(_Frame(self.ci, len(self.out)))
+        named = text.startswith("(?P<") or (text.startswith("(?<") and text[3] not in "=!")
+        self.emit(self.named_open(text[text.index("<") + 1 : -1], text) if named else text, length)
+
+    def named_open(self, name: str, text: str) -> str:
+        """The opener for a model-named group: kept only when a back reference needs it."""
+        if name.startswith(GENERATED_PREFIX):
+            raise JsRegexError(f"group name {name} collides with generated names")
+        if name not in self.referenced:
+            return "(" if self.keep_numbering else "(?:"
+        if name in self.defined:
+            raise JsRegexError(f"group name {name} is defined twice (no duplicate names in JS)")
+        self.defined.add(name)
+        return f"(?<{name}>"
 
     def flag_group(self, found: re.Match[str], length: int) -> None:
         spec, end = found.group("flags"), found.group("flag_end")
@@ -255,7 +325,7 @@ class _Translator:
             self.ci = _apply_flags(spec, self.ci)
             self.i += length
             return
-        self.saved.append(self.ci)
+        self.frames.append(_Frame(self.ci, len(self.out)))
         self.ci = _apply_flags(spec, self.ci)
         self.emit("(?:", length)
 
@@ -285,8 +355,10 @@ class _Translator:
 
     def other_escape(self, char: str) -> None:
         src, i = self.src, self.i
-        if _BACKREF_NAME.match(src, i):
-            raise JsRegexError(f"named back reference {T5_NOTE}")
+        named = _BACKREF_NAME.match(src, i)
+        if named:
+            self.named_backref(named.group(1), named.end() - i)
+            return
         if char in "123456789":
             if self.ci:
                 raise JsRegexError(f"back reference \\{char} under ci is unsupported (D2)")
