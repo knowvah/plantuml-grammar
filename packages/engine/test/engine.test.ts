@@ -1,8 +1,8 @@
 // Ports tests/interp/test_engine.py to the TypeScript interpreter; see helpers/engine-fixtures.ts.
 import { describe, expect, it } from "vitest";
-import { Interpreter, accepts, loadEngine } from "../src/index.js";
+import { Interpreter, accepts } from "../src/index.js";
 import type { Verdict } from "../src/index.js";
-import { failureOf, load, only, readJson, uml } from "./helpers/engine-fixtures.js";
+import { failureOf, load, only, uml } from "./helpers/engine-fixtures.js";
 
 const toys = load("toys");
 
