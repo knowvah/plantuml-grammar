@@ -1,10 +1,10 @@
 ## Observation: conformance goldens and their shape
 - **Context**: T14 `tools/validate/conformance.py`
-- **Finding**: 3,370 cases: 3,068 fixture cases (1,534 blocks × raw/non-raw) and 302
-  toy cases; ok 1,697 / reject 1,673, no timeout or error under the default 10 s
-  timeout. Three fixtures (`tests/fixtures/document/forms/{no-end,start-uppercase,
+- **Finding**: `fixtures.jsonl` has 3,370 fixture cases (1,685 blocks × raw/non-raw;
+  ok 1,697 / reject 1,673) and `toy/*.jsonl` 302 more, 3,672 in all; no timeout or
+  error under the default 10 s timeout. Three fixtures (`tests/fixtures/document/forms/{no-end,start-uppercase,
   start-without-keyword}.puml`) have no `@start…@end` block for `split_blocks`, so no
-  goldens. Goldens use `ensure_ascii`, so U+E100 shows as ``. Toy JSONL lines may
+  goldens. Goldens use `ensure_ascii`, so U+E100 shows as `\ue100`. Toy JSONL lines may
   carry `start_map` (needed to pick a model); `fixture` is `toy/<name>`.
 - **Impact**: T16 reads `tests/conformance/fixtures.jsonl` and `toy/*.jsonl` and must
   honour `start_map`. Regenerate with `uv run python -m tools.validate.conformance`;
