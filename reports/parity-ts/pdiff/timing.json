@@ -1,0 +1,68 @@
+{
+  "cases": [
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "TIMING",
+      "kind": "fa",
+      "note": "message to an undeclared player: CommandTimeMessage looks PART2 up in the player table (gap/message-unknown-player)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/p_eb/pebecu-20-deci596.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "TIMING",
+      "kind": "fa",
+      "note": "constraint on an undeclared player: CommandConstraint looks PART1 up in the player table (gap/constraint-unknown-player)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/s_ez/sezuvo-55-nose464.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "TIMING",
+      "kind": "fa",
+      "note": "constraint to an undefined time label: TimeTickBuilder resolves :code in the label table, null fails (gap/constraint-unknown-label)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/t_ob/tobafo-52-libo419.puml",
+      "status": "ok"
+    },
+    {
+      "block": 0,
+      "class": "semantic",
+      "first_failure": null,
+      "interp": true,
+      "interp_diagram": "TIMING",
+      "kind": "fa",
+      "note": "time on an undeclared clock: getClockValue returns null and CommandAtTime fails (gap/at-unknown-clock)",
+      "oracle": false,
+      "oracle_type": null,
+      "path": "dbhum/v_uf/vufija-57-xoda292.puml",
+      "status": "ok"
+    }
+  ],
+  "corpus": "pdiff",
+  "family": "timing",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 156,
+    "diagram_mismatch": 0,
+    "fa": 4,
+    "fr": 0,
+    "oracle_accepted": 152,
+    "raw_fr": 0,
+    "timeout": 0
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "cases": [],
+  "corpus": "vega",
+  "family": "mindmap-wbs",
+  "pin": "97a5992201a7b1bc5d4063a81da609fe7387fede",
+  "totals": {
+    "blocks": 5,
+    "diagram_mismatch": 0,
+    "fa": 0,
+    "fr": 0,
+    "oracle_accepted": 5,
+    "raw_fr": 0,
+    "timeout": 0
+  }
+}

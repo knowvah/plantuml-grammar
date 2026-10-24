@@ -495,6 +495,7 @@ byte-identical output.
 | File | Notation | Consumers |
 |---|---|---|
 | `dist/plantuml.tmLanguage.json` | TextMate (`source.plantuml`), Oniguruma and PCRE | editors |
+| `dist/plantuml.engine.json` | engine JSON (`engine_format` 1), ES2018 JavaScript regexes | `packages/engine` (see "TypeScript engine") |
 
 Known limits, all intended and tested:
 
@@ -521,6 +522,138 @@ Known limits, all intended and tested:
   (`tests/fixtures/single-line/neg/path.puml`). Supporting the `INSECURE` profile would
   need a single-line diagram model for `PSystemPathFactory`, listed in `start_map` right
   after `PSystemRIPFactory`; the model here describes the default profile only.
+
+## TypeScript engine
+
+`packages/engine` ports the interpreter to TypeScript. It reads no YAML: it runs
+`dist/plantuml.engine.json` (`engine_format` 1), which `tools.emit.build` writes from the
+resolved model with every regex already translated to JavaScript. Python is the reference.
+The engine must equal it in `accepted`, `diagram`, `model`, `status` and `first_failure`,
+and two checks enforce that: the conformance test (`packages/engine/test/conformance.test.ts`
+against `tests/conformance/`) and the TS lane of the parity harness.
+
+The core (`src/` except `cli.ts`, `pool.ts`, `worker.ts`) is ES2022 with no Node APIs, so
+plantuml-ts can bundle it for browsers, VS Code and JetBrains JCEF; a fitness test
+(`test/browser-safe.test.ts`) enforces this. Public API: `loadEngine(json)`,
+`new Interpreter(engine, {startMap?, clock?})`, `interpreter.accepts(text, {raw?,
+timeoutMs?})` and the cached `accepts(engine, text, opts)`.
+
+### Regex translation (`tools/model/java_regex_js.py`)
+
+The target is ES2018 regex with flag `u` (Chromium 64+, Safari 16.4+, Firefox 78+, so
+JCEF 122 and every supported VS Code). Java semantics are kept as in "Regex semantics":
+
+| Java construct | JavaScript emitted |
+|---|---|
+| `ci` (case-insensitive) | explicit ASCII folding (`[cC]`); never flag `i` |
+| `(?i:…)`, `(?-i:…)`, `(?i)`, `(?-i)` | no modifier groups; they switch the translator's folding |
+| `.` | `[^\n\r\x85  ]` |
+| `\d \w \s \b` and POSIX `\p{…}` | the ASCII classes Java uses |
+| `$`, `\Z` | `(?=LT?$)`, where LT is the Java line terminator |
+| whole line `^…$` | `^(?:…)(?:\r\n\|(?<!\r)\n\|[\r\x85  ])?$` |
+| `(?>X)` (atomic) | `(?=(?<_aN>X))\k<_aN>`, names unique per pattern |
+| `X*+ X++ X?+ X{n,m}+` (possessive) | the atomic form of the greedy quantifier |
+| `(?P<n>…)`, `(?P=n)` | `(?<n>…)`, `\k<n>` |
+| named group never referenced | `(?:…)` (no duplicate group names) |
+| class escapes | only escapes legal under `u` |
+
+A fitness test over the engine JSON rejects modifier groups, duplicate group names and
+`v`-flag class syntax. Caveats:
+
+* **Atomic emulation backtracks differently.** The lookahead-plus-back-reference form
+  commits to the same first match as a true atomic group, but V8 can still spend time
+  re-entering the lookahead. The model's token and gap atomics are what keep its patterns
+  linear: without them, the style join backtracks exponentially in V8. Never drop them.
+* **Back references under `ci`** raise `JsRegexError` at build time: JS cannot fold a
+  back reference to ASCII. The model has none.
+* **`\k<n>` to a group that did not participate** matches empty in JS; Java and Python
+  fail. Every model back reference targets a group that always participates first.
+* **Numbered back references** raise `JsRegexError` in a pattern that also gets emulated
+  atomic groups, because the added groups would shift the numbers.
+
+### Recursion (`tools/model/js_subroutines.py`)
+
+JavaScript has no `(?(DEFINE)…)`/`(?&name)`. The two packet conditionals were rewritten in
+the YAML (see CHANGELOG). The other recursive patterns are inlined to a bounded depth per
+pattern (observed nesting + 2, capped at 256 KB); deeper nesting does not match in JS, a
+documented divergence that no fixture or corpus block reaches:
+
+| Pattern | Depth | Expanded size |
+|---|---|---|
+| `RX_WELL_FORMED` | 8 | 259,635 B |
+| `RX_BALANCED` | 8 | 4,125 B |
+| `RX_EMPTY` | 3 | 485 B |
+| other DEFINE patterns | `MAX_DEPTH` = 11 | |
+
+The two JSON leaves (`CO_JSON_BLOCK_BODY`, `CO_JSON_DATA_INVALID`) nest 9 deep in the
+corpora and grow about 4x per level, so no bounded expansion fits. The engine recognises
+them natively (`src/native.ts`) at any depth. A line containing one is emitted as a
+`split` (a sticky head regex, the native recognizer, a sticky tail regex), or an `any` of
+alternatives, with a depth-4 `fast` regex whose answer is final in one direction. Detection
+is keyed by the SHA-256 of each leaf's exact YAML source, so editing either leaf needs
+`native.ts`, the digest table and `tests/model/test_native_json.py` updated together. The
+engine JSON has no `unsupported` pattern; one would make every block reaching its context
+`error`.
+
+### Join early stop (`tools/model/js_prefix.py`)
+
+`scan_join` stops a multi-line join early when no extension can match, using Python
+`regex` partial matching, which JS lacks. Each join instead carries a *prefix-closure*
+regex built from the Part tree: the prefix of a sequence is `p(a) | a p(b) | …`, of an
+alternation the union of prefixes, of `X*` `X* p(X)`; a lookahead contributes `p(X)`
+(Python reports partial when text ends inside a lookahead), lookbehinds are dropped, back
+references and unanalysable leaves become `[^]*`, and a pattern over 64 KB falls back to
+`^[^]*$`. The TS scan stops only when the prefix regex rejects, so verdicts never change. A
+corpus-marked test checks that the prefix accepts every text Python's partial match accepts
+(7.0M corpus texts, 0 violations).
+
+### Timeouts
+
+`Deadline` is cooperative: it checks an injectable clock before every regex call and
+throws `BlockTimeout`, which becomes status `timeout`. A single runaway regex inside the
+library cannot be interrupted. The CLI's worker pool also kills a worker whose job runs
+past `timeout_s` + 2 s, answers `timeout` for that job and respawns. V8 compiles each regex
+on first execution: loading takes about 250 ms, but the first matches of a fresh process
+pay about 1.7 s of compile time in total.
+
+### Regenerate and run
+
+```sh
+uv run python -m tools.emit.build              # dist/plantuml.engine.json (and the TextMate grammar)
+uv run python -m tools.validate.conformance    # tests/conformance goldens; --check reports drift
+npm test -w packages/engine                    # tsc, vitest, conformance against the goldens
+uv run python -m tools.validate.parity --corpus all --workers 4 --engine both
+uv run python -m tools.validate.parity merge --corpus all --engine both
+```
+
+The CLI is `node packages/engine/dist/cli.js --engine dist/plantuml.engine.json
+[--workers N]`: one `{"id", "text", "raw", "timeout_s"}` job per stdin line, one
+`{"id", "verdict"}` line per job on stdout in input order, and JSON logs on stderr. The TS
+lane builds `packages/engine` itself when `src/` is newer than `dist/cli.js`.
+
+### TS engine troubleshooting
+
+**A translator gap.** *Detection:* `tools.emit.build` fails with `JsRegexError` or a Node
+compile error naming the pattern, the D2 fitness test fails, or the build prints an
+`unsupported` pattern. *Mitigation:* extend `tools/model/java_regex_js.py` (or
+`js_subroutines.py` for recursion) with a test against Node, or rewrite the model regex
+into a form both engines take, keeping Python parity unchanged. Never leave an
+`unsupported` pattern that a corpus block reaches.
+
+**Engine divergence after a model change.** *Detection:* `tests/conformance` drifts
+(`tools.validate.conformance --check` exits 1; regenerate when the Python change is
+intended), the conformance test in `npm test` prints a mismatch table (fixture, block,
+raw, field, python, ts), or `reports/engine-equality-<corpus>.json` has `mismatches > 0`.
+*Mitigation:* regenerate `dist/` first, since a stale engine JSON is the common cause. Then
+diagnose where TS first departs from Python (`tools/interp` is the reference) and fix the
+TS module or the JS translator, never the Python side to match.
+
+**A TS-only timeout.** *Detection:* a TS verdict has status `timeout` where Python's does
+not, in the equality report or as a `warn` "worker killed" log line from the CLI.
+*Mitigation:* find the pattern with the job's text; the usual cause is backtracking the
+atomic emulation or a large bounded expansion makes costly in V8 (`RX_WELL_FORMED` is
+465 KB of source). Tighten the model regex, or lower the pattern's depth if no corpus
+block needs it, and confirm with the TS lane.
 
 ## Regenerating after an upstream bump
 
@@ -553,6 +686,11 @@ and the three corpora; see "Troubleshooting" for the environment variables):
    `uv run python -m tools.report.semantic_gaps`. Targets (D5): FR 0 on vega and
    plantuml-ts, at most 2% on pdiff with every case classified. Classify new FR/FA cases
    in `reports/classify/<family>.yaml` (`class: bug|semantic`, `note`, `cite`).
+7. **TS engine.** `uv run python -m tools.validate.conformance` regenerates the
+   conformance goldens (review the diff: it is the Python behaviour change), `npm test`
+   checks the engine against them, and the TS lane (`--engine both` on the two parity
+   commands) must report 0 Python/TS mismatches in `reports/engine-equality-*.json`, with
+   TS FR/FA equal to Python's. See "TS engine troubleshooting".
 
 ## Troubleshooting
 
