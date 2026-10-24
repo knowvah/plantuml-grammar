@@ -8,3 +8,5 @@ reports/oracle-cache/
 __pycache__/
 .pytest_cache/
 .coverage
+packages/engine/dist/
+packages/engine/coverage/
