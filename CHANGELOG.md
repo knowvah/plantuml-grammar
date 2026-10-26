@@ -9,6 +9,21 @@ and the `Verdict` type).
 
 ## [Unreleased]
 
+### Fixed
+- The engine's first verdict in a fresh process is faster: V8 compiles a regex on first
+  use, and the 8 KB-and-larger patterns that dominated that cost now sit behind guards,
+  small regexes that every line the pattern matches also matches
+  (`tools/emit/guard.py`). A pattern is built and compiled only once a line passes its
+  guard. Median first verdict, before and after: GANTT 469 to 68 ms, CLASS 328 to 103 ms,
+  ACTIVITY 293 to 123 ms, STATE 247 to 142 ms, TIMING 464 to 235 ms, CHEN_EER 67 to 29 ms.
+  Verdicts are unchanged (conformance goldens; engine equality 0 on all three corpora).
+  The engine JSON gains an optional `guard` on patterns, still `engine_format` 1: an
+  older engine ignores it.
+
+### Added
+- `npm run bench -w packages/engine`: load, first and second verdict per diagram family
+  in fresh processes, with `--patterns` for the costliest regexes.
+
 ## [1.0.0] - 2026-10-26
 
 ### Added

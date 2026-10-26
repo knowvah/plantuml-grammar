@@ -607,14 +607,37 @@ references and unanalysable leaves become `[^]*`, and a pattern over 64 KB falls
 corpus-marked test checks that the prefix accepts every text Python's partial match accepts
 (7.0M corpus texts, 0 violations).
 
+### Guards (`tools/emit/guard.py`)
+
+V8 compiles a regex on its first execution, at a cost that grows with its size, and
+recompiles it to native code on the second. A few large patterns therefore dominate the
+time to a first verdict (#4). Every whole-line, `split` or `any` pattern of at least 8 KB
+gets a `guard` in the engine JSON when one helps: a regex of at most about 1 KB that every
+line the pattern matches also matches. The engine tests the guard first and builds,
+compiles and runs the pattern only for lines the guard passes, so a context pays for a
+large pattern only when a line could match it.
+
+A guard is built from the *head* of the Part: leading `seq` children (the last one may be
+cut further), the alternation of every `alt` branch's head, or the head of a `plus` body.
+`opt`, `star` and leaves are kept whole or not at all, a native JSON leaf never enters a
+head, and a head that matches the empty string is dropped. Start and end patterns get
+`^(?:H)`. A join prefix gets `prefix(H) | ^(?:H)`, since a prefix of a match either ends
+inside the head or contains it. Verdicts do not change. Start guards agree with Python's
+`fullmatch`; prefix guards accept everything Python's partial match accepts but reject part
+of what the widened prefix regex alone accepted, so a join scan can stop sooner.
+`tests/emit/test_guard.py` checks both on the fixtures and, marked `corpus`, the corpora.
+
+`npm run bench -w packages/engine -- --patterns` reports load, first and second verdict
+per diagram family in fresh processes, with the costliest patterns.
+
 ### Timeouts
 
 `Deadline` is cooperative: it checks an injectable clock before every regex call and
 throws `BlockTimeout`, which becomes status `timeout`. A single runaway regex inside the
 library cannot be interrupted. The CLI's worker pool also kills a worker whose job runs
 past `timeout_s` + 2 s, answers `timeout` for that job and respawns. V8 compiles each regex
-on first execution: loading takes about 250 ms, but the first matches of a fresh process
-pay about 1.7 s of compile time in total.
+on first execution, so loading (about 15 ms; nothing is compiled at load) says little about
+the first verdict; see "Guards".
 
 ### Regenerate and run
 

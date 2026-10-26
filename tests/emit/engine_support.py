@@ -184,3 +184,20 @@ def engine_file(resolved: ResolvedModels, tmp_path_factory: pytest.TempPathFacto
     path = tmp_path_factory.mktemp("engine") / "plantuml.engine.json"
     eng.write_engine(path, resolved)
     return path
+
+
+@pytest.fixture(scope="session")
+def engine_dist() -> Path:
+    npm = shutil.which("npm")
+    if npm is None:
+        pytest.skip("npm is not on PATH")
+    done = subprocess.run(  # noqa: S603 - fixed argv
+        [npm, "run", "build", "-w", "packages/engine"],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=600,
+    )
+    assert done.returncode == 0, done.stdout + done.stderr
+    return REPO / "packages" / "engine" / "dist"

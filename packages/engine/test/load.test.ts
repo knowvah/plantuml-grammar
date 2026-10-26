@@ -314,3 +314,62 @@ describe("native kinds: split and any", () => {
     expect(() => m.matcher(99)).toThrow(RangeError);
   });
 });
+
+describe("guards", () => {
+  // 5 = guarded plain, 6 = guarded split (fast 7, head 8, tail 9), 10 = guarded any
+  const withGuards = (): Record<string, any> => { // eslint-disable-line
+    const j = tiny();
+    j["patterns"].push(
+      { source: "^json [a-z]+$", flags: "u", guard: "^(?:json )" },
+      {
+        split: { head: 8, native: "json-block-body", tail: 9, fast: 7, fast_final: "accept" },
+        guard: "^(?:data: )",
+      },
+      { source: "^data: \\[\\];$", flags: "u" },
+      { source: "(?<=^(?:data: ))", flags: "uy" },
+      { source: ";$", flags: "uy" },
+      { any: [5, 6], guard: "^(?:json |data: )" },
+    );
+    return j;
+  };
+  const recording = (): { compile: (s: string, f: string) => RegExp; sources: string[] } => {
+    const sources: string[] = [];
+    return { sources, compile: (s, f) => (sources.push(s), new RegExp(s, f)) };
+  };
+
+  it("does not compile a pattern whose guard rejects the line", () => {
+    const { compile, sources } = recording();
+    const m = loadEngine(withGuards(), { compile });
+    expect(m.matcher(5).test("class A", new Deadline(10_000))).toBe(false);
+    expect(sources).toEqual(["^(?:json )"]);
+  });
+
+  it("compiles and runs the pattern once the guard passes", () => {
+    const { compile, sources } = recording();
+    const m = loadEngine(withGuards(), { compile });
+    expect(m.matcher(5).test("json abc", new Deadline(10_000))).toBe(true);
+    expect(m.matcher(5).test("json 123", new Deadline(10_000))).toBe(false);
+    expect(sources).toEqual(["^(?:json )", "^json [a-z]+$"]);
+  });
+
+  it("guards splits and anys, and leaves pattern(id) unguarded", () => {
+    const { compile, sources } = recording();
+    const m = loadEngine(withGuards(), { compile });
+    expect(m.matcher(10).test("other", new Deadline(10_000))).toBe(false);
+    expect(sources).toEqual(["^(?:json |data: )"]);
+    expect(m.matcher(6).test("data: [1,[2]];", new Deadline(10_000))).toBe(true);
+    expect(m.pattern(5).test("class A")).toBe(false);
+  });
+
+  it("rejects a guard that is not a string, or on a sticky or unsupported pattern", () => {
+    const j = withGuards();
+    j["patterns"][5]["guard"] = 3;
+    expect(pointerOf(j)).toBe("/patterns/5/guard");
+    const k = withGuards();
+    k["patterns"][8]["guard"] = "^(?:a)";
+    expect(pointerOf(k)).toBe("/patterns/8/guard");
+    const u = withGuards();
+    u["patterns"].push({ unsupported: "no", guard: "^(?:a)" });
+    expect(pointerOf(u)).toBe("/patterns/11/guard");
+  });
+});

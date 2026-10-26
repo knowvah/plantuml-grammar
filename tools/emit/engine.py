@@ -21,6 +21,7 @@ from functools import reduce
 from pathlib import Path
 from typing import Any
 
+from tools.emit.guard import GUARD_MIN_BYTES, guard_head, prefix_guard, start_guard
 from tools.interp.compile import LIST_JOINERS, QUANTIFIERS, part_key
 from tools.interp.factories import NON_COMMAND_FACTORIES
 from tools.model import Entry, Part, ResolvedModels
@@ -31,7 +32,7 @@ from tools.model.java_regex_js import (
     literal_to_js,
     to_js,
 )
-from tools.model.js_prefix import PrefixError, _number_atomics, prefix_pattern
+from tools.model.js_prefix import TOP_PATTERN, PrefixError, _number_atomics, prefix_pattern
 from tools.model.js_subroutines import (
     FAST_DEPTH,
     Unsupported,
@@ -261,18 +262,48 @@ class _Builder:
         """Pattern id of the whole-line pattern of ``part``; ``unsupported`` on a JS limit."""
         key = part_key(part)
         if key not in self._parts:
-            self._parts[key] = self._guarded(lambda: self._build(part))
+            ident = self._guarded(lambda: self._build(part))
+            self._add_guard(ident, part, lambda _head, js: start_guard(js))
+            self._parts[key] = ident
         return self._parts[key]
 
     def prefix_id(self, part: Part, command: str) -> int:
         key = part_key(part)
         if key not in self._prefixes:
-            self._prefixes[key] = self._guarded(
+            ident = self._guarded(
                 lambda: self.patterns.add(
                     {"source": prefix_pattern(part, command), "flags": PATTERN_FLAGS}
                 )
             )
+            self._add_guard(ident, part, lambda head, js: self._prefix_guard(head, js, command))
+            self._prefixes[key] = ident
         return self._prefixes[key]
+
+    def _add_guard(self, ident: int, part: Part, make: Callable[[Part, str], str | None]) -> None:
+        """Put a guard (``tools.emit.guard``) on a large pattern that has none yet."""
+        item = self.patterns.items[ident]
+        if "unsupported" in item or "guard" in item or self._bytes(item) < GUARD_MIN_BYTES:
+            return
+        head = guard_head(part, lambda p: _raw_js(p, self._memo), _is_native)
+        if head is None:
+            return
+        guard = make(head, _number_atomics(_raw_js(head, self._memo)))
+        if guard is not None:
+            item["guard"] = guard
+
+    def _prefix_guard(self, head: Part, head_js: str, command: str) -> str | None:
+        head_prefix = prefix_pattern(head, command)
+        return None if head_prefix == TOP_PATTERN else prefix_guard(head_prefix, head_js)
+
+    def _bytes(self, item: dict[str, Any]) -> int:
+        """UTF-8 size of a pattern's regex sources, members included."""
+        if "source" in item:
+            return len(str(item["source"]).encode(ENCODING))
+        if "any" in item:
+            return sum(self._bytes(self.patterns.items[i]) for i in item["any"])
+        split = item["split"]
+        parts = [split["head"], split["tail"]] + ([] if split["fast"] is None else [split["fast"]])
+        return sum(self._bytes(self.patterns.items[i]) for i in parts)
 
     def _guarded(self, make: Callable[[], int]) -> int:
         try:
