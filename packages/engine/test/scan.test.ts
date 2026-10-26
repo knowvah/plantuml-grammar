@@ -1,8 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { Deadline } from "../src/deadline.js";
+import { BlockTimeout, Deadline } from "../src/deadline.js";
 import { JOINER, scanBracket, scanJoin, scanMultiline, unitEnd } from "../src/scan.js";
 import type { Join } from "../src/scan.js";
 import { RegexMatcher } from "../src/matcher.js";
+import type { Matcher } from "../src/matcher.js";
 import { lines } from "./helpers/engine.js";
 
 const UNCAPPED = 100_000;
@@ -95,6 +96,20 @@ describe("scanJoin", () => {
     const spy = vi.spyOn(deadline, "test");
     expect(scanJoin(join({ prefix: null }), body, 0, deadline)).toBeNull();
     expect(spy).toHaveBeenCalledTimes(3);
+  });
+  it("keeps scanning when the prefix test overflows the stack", () => {
+    const test = vi.fn<Matcher["test"]>(() => {
+      throw new RangeError("Maximum call stack size exceeded");
+    });
+    const body = lines("<style>", "a", "b", "</style>", "after");
+    expect(scanJoin(join({ prefix: { test } }), body, 0, new Deadline(BUDGET_MS))).toBe(4);
+    // Longer joined text only overflows deeper, so the prefix is not tried again.
+    expect(test).toHaveBeenCalledTimes(1);
+  });
+  it("still propagates other errors from the prefix test", () => {
+    const deadline = new Deadline(BUDGET_MS);
+    const prefix = { test: () => { throw new BlockTimeout(); } };
+    expect(() => scanJoin(join({ prefix }), lines("<style>", "a"), 0, deadline)).toThrow(BlockTimeout);
   });
   it("glues embedded groups only with glueUnits", () => {
     const body = lines("<style>", "{{", "a", "</style>", "tail");

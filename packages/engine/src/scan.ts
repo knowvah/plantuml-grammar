@@ -98,6 +98,22 @@ export function scanBracket(body: readonly Line[], i: number, glue = true): numb
   return null;
 }
 
+/**
+ * Whether `prefix` rules out every extension of `text`; null when it cannot tell.
+ *
+ * V8 throws `RangeError` when a regex runs out of backtracking stack, where Python's
+ * `regex` partial match still answers. The prefix only cuts the scan short, so not
+ * knowing means keep scanning: the full `start` test still decides every k.
+ */
+function prefixRejects(prefix: Matcher, text: string, deadline: Deadline): boolean | null {
+  try {
+    return !prefix.test(text, deadline);
+  } catch (error) {
+    if (error instanceof RangeError) return null;
+    throw error;
+  }
+}
+
 /** Index after a `join` command starting at `i`, or null (dropped). */
 export function scanJoin(
   join: Join,
@@ -105,6 +121,7 @@ export function scanJoin(
   i: number,
   deadline: Deadline,
 ): number | null {
+  let prefix = join.prefix;
   let j = i;
   for (let n = 0; n <= join.maxLines; n += 1) {
     if (j >= body.length) return null;
@@ -114,8 +131,12 @@ export function scanJoin(
       .map((line) => line.trimmed)
       .join(JOINER);
     if (join.start.test(joined, deadline)) return j;
+    if (prefix === null) continue;
     // No extension of joined + JOINER can match, so no larger k can: stop early.
-    if (join.prefix !== null && !join.prefix.test(joined + JOINER, deadline)) return null;
+    const rejects = prefixRejects(prefix, joined + JOINER, deadline);
+    if (rejects === true) return null;
+    // Longer joined text only overflows deeper: stop trying the prefix.
+    if (rejects === null) prefix = null;
   }
   return null;
 }
