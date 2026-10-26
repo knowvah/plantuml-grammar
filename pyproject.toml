@@ -16,6 +16,7 @@ dev = [
     "pcre2>=0.7.1",
     "pytest>=8.3",
     "pytest-cov>=6.0",
+    "pytest-xdist>=3.8.0",
     "ruff>=0.8",
 ]
 
@@ -24,6 +25,10 @@ package = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Four workers (what ubuntu-latest has): each loads the model once (tests/helpers/models.py),
+# so more workers gain little (12: 61 s, 4: 50 s). `loadfile` keeps a module's tests on one
+# worker, so module fixtures run once. `-n 0` runs serially.
+addopts = "-n 4 --dist loadfile"
 markers = [
     "corpus: needs the PlantUML jar and corpora (run in family tasks)",
 ]

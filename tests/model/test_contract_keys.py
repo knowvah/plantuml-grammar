@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.helpers.models import repo_models
 from tools.config import ENV_VARS, PIN_SHA
 from tools.model import ModelLoadError
 from tools.model.load import check_pattern, load_dir
@@ -183,7 +184,7 @@ def test_also_citations_resolve_at_pin() -> None:
     import os
 
     src = Path(os.environ.get(ENV_VARS["src"], Path.home() / "git/plantuml"))
-    for owner, cite in collect_also(load_dir(MODEL_DIR)):
+    for owner, cite in collect_also(repo_models()):
         path, _, lines = cite.rpartition(":")
         last = int(lines.split("-")[-1])
         shown = subprocess.run(  # noqa: S603

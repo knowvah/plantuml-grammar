@@ -17,6 +17,7 @@ from pathlib import Path
 import pytest
 import regex
 
+from tests.helpers.models import repo_resolved
 from tests.model.node_regex import Job, run_batch
 from tests.model.prefix_sweep import JoinSpec, Sweep, _ChainRecorder, sweep_parallel, sweep_paths
 from tools.interp.compile import compile_part, part_key
@@ -26,8 +27,6 @@ from tools.model import Part, ResolvedModels
 from tools.model.java_regex import JavaRegexError
 from tools.model.java_regex_js import line_pattern_js
 from tools.model.js_prefix import MAX_PATTERN_BYTES, TOP_PATTERN, PrefixError, prefix_pattern
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
 from tools.validate.corpus import enumerate_corpora
 
 REPO = Path(__file__).resolve().parents[2]
@@ -234,7 +233,7 @@ def test_size_limit_is_64_kib() -> None:
 
 @pytest.fixture(scope="module")
 def models() -> ResolvedModels:
-    return resolve(load_dir(REPO / "model"))
+    return repo_resolved()
 
 
 def _spec(part: Part, max_lines: int, glue: bool, commands: set[str]) -> JoinSpec:

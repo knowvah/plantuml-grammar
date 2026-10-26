@@ -30,11 +30,11 @@ from typing import Any
 
 import pytest
 
+from tests.helpers.models import repo_models
 from tools.interp import accepts
 from tools.interp.compile import compile_part
 from tools.interp.source import split_blocks
 from tools.model import Model, ResolvedModel, ResolvedModels
-from tools.model.load import load_dir
 from tools.model.resolve import resolve, top_models
 
 REPO = Path(__file__).resolve().parents[2]
@@ -105,7 +105,7 @@ def with_probes(raw: dict[str, Model]) -> dict[str, Model]:
 
 @pytest.fixture(scope="module")
 def raw_models() -> dict[str, Model]:
-    return load_dir(MODEL_DIR)
+    return repo_models()
 
 
 @pytest.fixture(scope="module")

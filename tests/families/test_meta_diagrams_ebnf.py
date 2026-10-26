@@ -20,11 +20,10 @@ from pathlib import Path
 import pytest
 import regex
 
+from tests.helpers.models import repo_resolved
 from tools.interp import accepts
 from tools.interp.source import split_blocks
 from tools.model import ResolvedModels
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
 
 REPO = Path(__file__).resolve().parents[2]
 NUL = "\0"
@@ -217,7 +216,7 @@ def starts_multiline(line: str) -> bool:
 
 @pytest.fixture(scope="module")
 def models() -> ResolvedModels:
-    return resolve(load_dir(REPO / "model"))
+    return repo_resolved()
 
 
 def body(rng: random.Random, size: int) -> str:

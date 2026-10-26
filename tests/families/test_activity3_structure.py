@@ -21,12 +21,11 @@ from typing import Any
 
 import pytest
 
+from tests.helpers.models import repo_models, repo_resolved
 from tools.interp import accepts
 from tools.interp.compile import compile_part
 from tools.interp.source import split_blocks
 from tools.model import Model, ResolvedModel, ResolvedModels
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
 
 REPO = Path(__file__).resolve().parents[2]
 FIXTURES = REPO / "tests" / "fixtures" / "activity3" / "structure"
@@ -123,17 +122,17 @@ GUARDED_OUT = {
 
 @pytest.fixture(scope="module")
 def raw_models() -> dict[str, Model]:
-    return load_dir(REPO / "model")
+    return repo_models()
 
 
 @pytest.fixture(scope="module")
 def act(raw_models: dict[str, Model]) -> ResolvedModel:
-    return resolve(raw_models)[ACTIVITY3_ID]
+    return repo_resolved()[ACTIVITY3_ID]
 
 
 @pytest.fixture(scope="module")
 def models(raw_models: dict[str, Model]) -> ResolvedModels:
-    return resolve(raw_models)
+    return repo_resolved()
 
 
 def commands(entries: list[dict[str, Any]]) -> list[str]:

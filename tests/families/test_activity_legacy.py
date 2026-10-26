@@ -24,11 +24,11 @@ from typing import Any
 
 import pytest
 
+from tests.helpers.models import repo_models, repo_resolved
 from tools.interp import accepts
 from tools.interp.source import split_blocks
 from tools.model import Model, ResolvedModels
-from tools.model.load import load_dir
-from tools.model.resolve import resolve, top_models
+from tools.model.resolve import top_models
 
 REPO = Path(__file__).resolve().parents[2]
 MODEL_DIR = REPO / "model"
@@ -92,12 +92,12 @@ FRESH_HEADS = [
 
 @cache
 def raw_models() -> dict[str, Model]:
-    return load_dir(MODEL_DIR)
+    return repo_models()
 
 
 @cache
 def models() -> ResolvedModels:
-    return resolve(raw_models())
+    return repo_resolved()
 
 
 def entries(context: str) -> list[dict[str, Any]]:

@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.helpers.models import repo_resolved
 from tools.interp import accepts
 from tools.interp.source import read_line, split_block
 from tools.model import ResolvedModels
@@ -243,7 +244,7 @@ def test_untrimmed_matching_agrees_with_the_jar(tmp_path: Path) -> None:
         path.write_bytes(text.encode("utf-8"))
         paths.append(path)
     jar = oracle_verdicts(paths)
-    models = resolve(load_dir(MODEL_DIR))
+    models = repo_resolved()
     for path, (name, text, expected) in zip(paths, JAR_CASES, strict=True):
         assert jar[str(path)][0]["accepted"] is expected, name
         assert accepts(models, text)["accepted"] is expected, name
