@@ -36,7 +36,9 @@ export interface WireResult {
 /** Messages a worker posts to the pool. */
 export type WorkerMessage =
   | { kind: "ready"; load_ms: number; patterns: number }
-  | { kind: "result"; result: WireResult };
+  | { kind: "result"; result: WireResult }
+  /** Posted after each result once the job's queued immediates have run. */
+  | { kind: "idle" };
 
 /** What the pool hands each worker through `workerData`. */
 export interface WorkerConfig {
@@ -102,11 +104,18 @@ interface Active {
   timer?: NodeJS.Timeout;
 }
 
+/** A job whose result arrived; the worker gets no new job until it posts `idle`. */
+interface Settling {
+  id: string;
+  timer: NodeJS.Timeout;
+}
+
 interface Slot {
   worker: Worker;
   ready: boolean;
   dead: boolean;
   current: Active | null;
+  settling: Settling | null;
 }
 
 interface Pending {
@@ -162,7 +171,7 @@ export class Pool {
 
   private spawn(): void {
     const worker = new Worker(this.workerUrl, { workerData: this.config });
-    const slot: Slot = { worker, ready: false, dead: false, current: null };
+    const slot: Slot = { worker, ready: false, dead: false, current: null, settling: null };
     worker.on("message", (msg: WorkerMessage) => this.onMessage(slot, msg));
     worker.on("error", (err: unknown) => this.onFailure(slot, err instanceof Error ? err : new Error(String(err))));
     worker.on("exit", (code) => this.onFailure(slot, new Error(`worker exited with code ${code}`)));
@@ -179,7 +188,7 @@ export class Pool {
     for (const slot of this.slots) {
       const next = this.queue[0];
       if (next === undefined) return;
-      if (slot.current === null && !slot.dead) {
+      if (slot.current === null && slot.settling === null && !slot.dead) {
         this.queue.shift();
         slot.current = { job: next.job, resolve: next.resolve };
         slot.worker.postMessage(next.job);
@@ -202,14 +211,35 @@ export class Pool {
       this.log("info", "worker started", { load_ms: msg.load_ms, patterns: msg.patterns });
       this.settleStart({ patterns: msg.patterns, loadMs: msg.load_ms });
       this.arm(slot);
-      return;
+    } else if (msg.kind === "result") {
+      this.onResult(slot, msg.result);
+    } else {
+      clearTimeout(slot.settling?.timer);
+      slot.settling = null;
+      this.pump();
     }
+  }
+
+  /**
+   * Resolves the running job but holds the next one until the worker posts `idle`, so a
+   * crash the finished job leaves behind is not charged to its successor (#6).
+   */
+  private onResult(slot: Slot, result: WireResult): void {
     const active = slot.current;
     if (active === null) return;
     clearTimeout(active.timer);
     slot.current = null;
-    active.resolve(msg.result);
-    this.pump();
+    const timer = setTimeout(() => this.stall(slot), this.graceMs);
+    slot.settling = { id: active.job.id, timer };
+    active.resolve(result);
+  }
+
+  /** The worker never went idle after a result: replace it; no job is charged. */
+  private stall(slot: Slot): void {
+    if (slot.dead || slot.settling === null) return;
+    this.log("warn", "worker did not go idle after a result", { id: slot.settling.id, grace_ms: this.graceMs });
+    slot.settling = null;
+    this.replace(slot);
   }
 
   private kill(slot: Slot): void {
@@ -228,7 +258,10 @@ export class Pool {
   private onFailure(slot: Slot, err: Error): void {
     if (slot.dead) return;
     const active = slot.current;
-    this.log("error", "worker crashed", { id: active?.job.id, error: err.message, stack: err.stack });
+    // A crash while settling comes from the job that already has its verdict.
+    const settled = active === null && slot.settling !== null;
+    const id = active?.job.id ?? slot.settling?.id;
+    this.log("error", "worker crashed", { id, after_result: settled, error: err.message, stack: err.stack });
     slot.current = null;
     if (active !== null) {
       clearTimeout(active.timer);
@@ -260,6 +293,7 @@ export class Pool {
   private async retire(slot: Slot): Promise<void> {
     slot.dead = true;
     clearTimeout(slot.current?.timer);
+    clearTimeout(slot.settling?.timer);
     try {
       await slot.worker.terminate();
     } catch (err) {

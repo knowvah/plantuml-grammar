@@ -4,7 +4,7 @@ import { accepts } from "../src/index.js";
 import { Pool, errorVerdict, jsonLogger, timeoutVerdict, toWire } from "../src/pool.js";
 import type { Logger, PoolOptions } from "../src/pool.js";
 import { handleJob, loadFromPath } from "../src/worker.js";
-import { CRASH_AFTER, EXIT, EXIT_CODE, SPIN, THROW } from "./helpers/hooks.mjs";
+import { CRASH_AFTER, EXIT, EXIT_CODE, SPIN, SPIN_AFTER, THROW } from "./helpers/hooks.mjs";
 import {
   ENGINE_FIXTURE,
   HOOKS,
@@ -169,6 +169,33 @@ describe("Pool", () => {
       const second = await pool.run(job("next", OK_TEXT));
       expect(second.verdict).toEqual(expected(OK_TEXT));
       expect(logs.entries.some((e) => e.msg === "worker crashed")).toBe(true);
+    } finally {
+      await pool.close();
+    }
+  }, TEST_TIMEOUT_MS);
+
+  it("does not charge a crash after a result to the next queued job", async () => {
+    const { pool, logs } = makePool(1, { hookModule: HOOKS });
+    try {
+      await pool.started;
+      const [late, next] = await Promise.all([pool.run(job("late", CRASH_AFTER)), pool.run(job("next", OK_TEXT))]);
+      expect(late).toEqual({ id: "late", verdict: expected(CRASH_AFTER) });
+      expect(next).toEqual({ id: "next", verdict: expected(OK_TEXT) });
+      expect(logs.entries.find((e) => e.msg === "worker crashed")).toMatchObject({ id: "late", after_result: true });
+    } finally {
+      await pool.close();
+    }
+  }, TEST_TIMEOUT_MS);
+
+  it("replaces a worker that never goes idle after a result, charging no job", async () => {
+    const { pool, logs } = makePool(1, { hookModule: HOOKS, killGraceMs: 100 });
+    try {
+      await pool.started;
+      const [stuck, next] = await Promise.all([pool.run(job("stuck", SPIN_AFTER)), pool.run(job("next", OK_TEXT))]);
+      expect(stuck).toEqual({ id: "stuck", verdict: expected(SPIN_AFTER) });
+      expect(next).toEqual({ id: "next", verdict: expected(OK_TEXT) });
+      const warns = logs.entries.filter((e) => e.level === "warn");
+      expect(warns).toEqual([expect.objectContaining({ msg: "worker did not go idle after a result", id: "stuck", grace_ms: 100 })]);
     } finally {
       await pool.close();
     }

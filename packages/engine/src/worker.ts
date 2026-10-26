@@ -54,9 +54,12 @@ async function startWorker(config: WorkerConfig): Promise<void> {
   const t0 = performance.now();
   const { engine, patterns } = loadFromPath(config.engine);
   const hook = await loadHook(config.hook);
+  const idle: WorkerMessage = { kind: "idle" };
   port.on("message", (job: WireJob) => {
     const msg: WorkerMessage = { kind: "result", result: handleJob(engine, job, hook) };
     port.postMessage(msg);
+    // Immediates the job queued run first, so a crash they cause lands before `idle`.
+    setImmediate(() => port.postMessage(idle));
   });
   const ready: WorkerMessage = { kind: "ready", load_ms: Math.round(performance.now() - t0), patterns };
   port.postMessage(ready);
