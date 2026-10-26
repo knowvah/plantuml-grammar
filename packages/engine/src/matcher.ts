@@ -52,6 +52,30 @@ export class AnyMatcher implements Matcher {
   }
 }
 
+/**
+ * A pattern behind a guard: a small regex that every match of the pattern also matches
+ * (tools/emit/guard.py). A line the guard rejects is rejected without building, compiling
+ * or running the pattern; `build` runs on the first line the guard passes.
+ */
+export class GuardedMatcher implements Matcher {
+  readonly #guard: RegExp;
+  readonly #build: () => Matcher;
+  #inner: Matcher | null = null;
+
+  constructor(guard: RegExp, build: () => Matcher) {
+    this.#guard = guard;
+    this.#build = build;
+  }
+
+  test(text: string, deadline: Deadline): boolean {
+    if (!deadline.test(this.#guard, text)) {
+      return false;
+    }
+    this.#inner ??= this.#build();
+    return this.#inner.test(text, deadline);
+  }
+}
+
 export interface SplitParts {
   /** Sticky `(?<=^(?:HEAD))`, tested at `lastIndex = i`. */
   readonly head: RegExp;

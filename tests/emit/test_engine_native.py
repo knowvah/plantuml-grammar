@@ -83,11 +83,13 @@ def test_baseline_scanner_finds_what_it_should(source, expected):
 
 def test_engine_patterns_stay_in_the_es2018_baseline(built):
     findings = [
-        (i, f)
+        (i, key, f)
         for i, p in enumerate(built["patterns"])
-        if "source" in p
-        for f in scan_pattern(p["source"])
+        for key in ("source", "guard")
+        if key in p
+        for f in scan_pattern(p[key])
     ]
+    assert any("guard" in p for p in built["patterns"])
     assert findings == []
 
 
@@ -126,7 +128,7 @@ def test_alt_of_native_and_plain_alternatives():
 def test_single_native_alternative_is_a_bare_split():
     data = eng.build_engine(synthetic([entry({"seq": [lit("x"), rx(BLOCK)]})]), PIN)
     start = data["context_table"][0][0]["start"]
-    assert set(data["patterns"][start]) == {"split"}
+    assert set(data["patterns"][start]) - {"guard"} == {"split"}
     assert data["patterns"][split_of(data, start)["tail"]]["source"].startswith("(?:(?:))")
 
 

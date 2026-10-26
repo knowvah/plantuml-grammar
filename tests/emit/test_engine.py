@@ -106,7 +106,8 @@ def test_every_entry_maps_to_the_line_pattern_of_its_parts(resolved, built):
         pattern = built["patterns"][pid]
         if "source" in pattern:
             expected = line_pattern_js(eng.part_to_js(source["parts"]))
-            assert pattern == {"source": expected, "flags": "u"}
+            assert (pattern["source"], pattern["flags"]) == (expected, "u")
+            assert set(pattern) <= {"source", "flags", "guard"}
 
 
 def test_end_join_and_action_fields(resolved, built):

@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { BlockTimeout, Deadline } from "../src/deadline.js";
-import { NATIVE_KINDS, AnyMatcher, RegexMatcher, SplitMatcher } from "../src/matcher.js";
+import {
+  NATIVE_KINDS,
+  AnyMatcher,
+  GuardedMatcher,
+  RegexMatcher,
+  SplitMatcher,
+} from "../src/matcher.js";
 import type { NativeEnds, SplitParts } from "../src/matcher.js";
 import { jsonBlockBodyEnds } from "../src/native.js";
 import type { PatternJson } from "../src/types.js";
@@ -41,6 +47,43 @@ describe("RegexMatcher and AnyMatcher", () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(any.test("z", fresh())).toBe(false);
     expect(new AnyMatcher([]).test("a", fresh())).toBe(false);
+  });
+});
+
+describe("GuardedMatcher", () => {
+  const guarded = (inner: RegexMatcher): GuardedMatcher =>
+    new GuardedMatcher(new RegExp("^(?:json )", "u"), () => inner);
+
+  it("rejects without testing the pattern when the guard fails", () => {
+    const inner = whole("^json [a-z]+$");
+    const spy = vi.spyOn(inner, "test");
+    expect(guarded(inner).test("class A", fresh())).toBe(false);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it("returns the pattern's answer when the guard passes", () => {
+    const inner = whole("^json [a-z]+$");
+    const spy = vi.spyOn(inner, "test");
+    expect(guarded(inner).test("json abc", fresh())).toBe(true);
+    expect(guarded(inner).test("json 123", fresh())).toBe(false);
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
+  it("builds the pattern once, on the first line the guard passes", () => {
+    const build = vi.fn(() => whole("^json [a-z]+$"));
+    const matcher = new GuardedMatcher(new RegExp("^(?:json )", "u"), build);
+    matcher.test("class A", fresh());
+    expect(build).not.toHaveBeenCalled();
+    matcher.test("json a", fresh());
+    matcher.test("json b", fresh());
+    expect(build).toHaveBeenCalledTimes(1);
+  });
+
+  it("tests the guard through the deadline", () => {
+    const deadline = fresh();
+    const spy = vi.spyOn(deadline, "test");
+    guarded(whole("^json [a-z]+$")).test("class A", deadline);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
 

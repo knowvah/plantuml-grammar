@@ -40,12 +40,14 @@ export interface SplitJson {
 /**
  * A compiled-regex pattern (`flags` "u", or "uy" for a split head/tail), a marker for one
  * the JS translator cannot express, a C1a `split`, or an `any` union of pattern ids.
+ * A whole-line, split or any pattern may carry a `guard`: a regex source (flags "u") that
+ * every line the pattern matches also matches.
  */
 export type PatternJson =
-  | { source: string; flags: string }
+  | { source: string; flags: string; guard?: string }
   | { unsupported: string }
-  | { split: SplitJson }
-  | { any: number[] };
+  | { split: SplitJson; guard?: string }
+  | { any: number[]; guard?: string };
 
 export interface EntryJson {
   command: string;

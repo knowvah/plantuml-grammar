@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import re
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
@@ -14,7 +13,6 @@ import pytest
 from tests.emit.engine_support import (
     JSON_COMMANDS,
     PIN,
-    REPO,
     Verdicts,
     block_texts,
     corpus_texts,
@@ -94,23 +92,6 @@ def json_entries(resolved, built) -> dict[str, tuple[Part, int]]:
             )
     assert set(found) == set(JSON_COMMANDS)
     return found
-
-
-@pytest.fixture(scope="module")
-def engine_dist() -> Path:
-    npm = shutil.which("npm")
-    if npm is None:
-        pytest.skip("npm is not on PATH")
-    done = subprocess.run(  # noqa: S603 - fixed argv
-        [npm, "run", "build", "-w", "packages/engine"],
-        cwd=REPO,
-        capture_output=True,
-        text=True,
-        check=False,
-        timeout=600,
-    )
-    assert done.returncode == 0, done.stdout + done.stderr
-    return REPO / "packages" / "engine" / "dist"
 
 
 def compare(

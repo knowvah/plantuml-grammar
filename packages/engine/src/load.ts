@@ -1,7 +1,15 @@
 // Loads and validates the engine JSON (contract C1, plans/ts-engine/contracts.md#c1).
 // Mirrors the lazy compile-once memoization in tools/interp/rules.py:92-104 and
 // tools/interp/compile.py:56-67.
-import { AnyMatcher, FAST_ACCEPT, FAST_REJECT, NATIVE_KINDS, RegexMatcher, SplitMatcher } from "./matcher.js";
+import {
+  AnyMatcher,
+  FAST_ACCEPT,
+  FAST_REJECT,
+  GuardedMatcher,
+  NATIVE_KINDS,
+  RegexMatcher,
+  SplitMatcher,
+} from "./matcher.js";
 import type { Matcher, SplitParts } from "./matcher.js";
 import { ENGINE_FORMAT } from "./types.js";
 import type { EngineJson, EngineModelJson, EntryJson, PatternJson, SplitJson } from "./types.js";
@@ -114,6 +122,14 @@ export class EngineModel {
 
   #buildMatcher(id: number): Matcher {
     const p = this.#patternAt(id);
+    if (!("guard" in p) || p.guard === undefined) {
+      return this.#buildUnguarded(id, p);
+    }
+    const guard = this.#compileSource(id, p.guard, PATTERN_FLAGS);
+    return new GuardedMatcher(guard, () => this.#buildUnguarded(id, p));
+  }
+
+  #buildUnguarded(id: number, p: PatternJson): Matcher {
     if ("split" in p) {
       return new SplitMatcher(this.#splitParts(p.split));
     }
@@ -145,8 +161,12 @@ export class EngineModel {
     if (!("source" in p)) {
       throw new ModelError(`pattern ${id} is not a plain regex`);
     }
+    return this.#compileSource(id, p.source, p.flags);
+  }
+
+  #compileSource(id: number, source: string, flags: string): RegExp {
     try {
-      return this.#compile(p.source, p.flags);
+      return this.#compile(source, flags);
     } catch (cause) {
       throw new ModelError(`pattern ${id} failed to compile`, { cause });
     }
@@ -211,6 +231,7 @@ function requireIndex(v: unknown, pointer: string, length: number): void {
 
 function validatePattern(p: unknown, pointer: string, count: number): void {
   const rec = requireRecord(p, pointer);
+  validateGuard(rec, pointer);
   if ("unsupported" in rec) {
     if (typeof rec["unsupported"] !== "string") {
       fail(`${pointer}/unsupported`, "expected a string");
@@ -223,6 +244,19 @@ function validatePattern(p: unknown, pointer: string, count: number): void {
     );
   } else {
     validateSource(rec, pointer);
+  }
+}
+
+/** A guard is a regex source on a whole-line, split or any pattern. */
+function validateGuard(rec: Record<string, unknown>, pointer: string): void {
+  if (!("guard" in rec)) {
+    return;
+  }
+  if (typeof rec["guard"] !== "string") {
+    fail(`${pointer}/guard`, "expected a string");
+  }
+  if ("unsupported" in rec || rec["flags"] === STICKY_FLAGS) {
+    fail(`${pointer}/guard`, "a guard needs a whole-line, split or any pattern");
   }
 }
 

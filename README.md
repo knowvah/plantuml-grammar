@@ -152,10 +152,11 @@ TS lane: the same jobs judged by the TypeScript engine (`--engine both`):
 | pdiff | 5834 | 0 | 0 | 47 |
 
 The engine also matches all 3,672 conformance goldens (3,370 fixture cases, 302 toy cases),
-in a suite of 455 vitest tests. `dist/plantuml.engine.json` is 4.4 MB (148 KB gzip; 787
-patterns, 247 contexts, none unsupported). Cold load, JSON parse plus `new RegExp` of the
-659 patterns of the diagram models' `main` contexts, takes 248 ms; V8 compiles each regex
-on its first execution, which adds about 1.7 s spread over the first matches. Judge wall
+in a suite of 467 vitest tests. `dist/plantuml.engine.json` is 4.4 MB (149 KB gzip; 787
+patterns, 247 contexts, none unsupported). Loading it takes about 15 ms; V8 compiles each
+regex on its first execution, and large patterns sit behind small guards, so the first
+verdict in a fresh process takes under 45 ms for most diagram families, 100-240 ms for the
+UML ones and about 1 s for `@startregex` (`npm run bench -w packages/engine`). Judge wall
 time per corpus with 4 workers, Python vs TS: vega 14.0 s vs 1.8 s, plantuml-ts 19.5 s vs
 4.7 s, pdiff 21.9 s vs 10.6 s.
 

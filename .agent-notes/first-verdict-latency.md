@@ -29,3 +29,22 @@
   Browsers cannot set V8 flags, so tier-up cost only shrinks with the patterns.
 - **Confidence**: High for the attribution (per-regex timing, V8 flag A/B); timings vary
   +-10% between runs and by machine.
+
+## Observation: guards cut first-verdict latency; join prefixes are wider than Python
+- **Context**: Fix 1 of #4 (`tools/emit/guard.py`), 2026-10-26, same machine and bench.
+- **Finding**: 39 patterns of >= 8 KB get a guard (<= ~3 KB; prefix guards are the
+  largest); engine JSON +21 KB raw, +0.8 KB gzip. Median first verdict before -> after (ms):
+  GANTT 469 -> 68, CLASS 328 -> 103, ACTIVITY 293 -> 123, DESCRIPTION 297 -> 122,
+  STATE 247 -> 142, TIMING 464 -> 235, HELP 423 -> 225, CHEN_EER 67 -> 29; REGEX unchanged
+  (~1.05 s, RX_WELL_FORMED runs on every line, so no guard helps). Engine equality stayed
+  0 mismatches on all three corpora; conformance goldens unchanged. Eleven large patterns
+  get no guard (no head within 1 KB, or a head that matches the empty string; not
+  inspected one by one), e.g. PacketZeroWidthRow's 30 KB join prefix, CreoleLine 14 KB.
+  Comparing guarded with unguarded matchers is the wrong oracle for join prefixes: the
+  unguarded prefix regex (`js_prefix`) widens `X+ rest` to `X* (p(X) | rest)` on purpose
+  (`tools/model/js_prefix.py:386`), so it accepts e.g. `jsonDiagram {` + U+E100 for the
+  JSON block join although Python's partial match rejects it; the guard rejects it too.
+  The check is "accepts everything Python's partial match accepts".
+- **Impact**: Remaining first-verdict cost in TIMING/HELP is many mid-size (<10 KB)
+  patterns, not one large one. REGEX needs fix 2 (native RX_WELL_FORMED).
+- **Confidence**: High (bench medians of 5; corpus-wide guard check; parity run)
