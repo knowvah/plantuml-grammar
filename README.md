@@ -116,7 +116,8 @@ uv run python -m tools.extract.build
 ```
 
 Without the jar and corpora, run `uv run pytest -m "not corpus"` for the tests that need no
-external input.
+external input. pytest runs on four workers (`pytest-xdist`, set in `pyproject.toml`); the
+model is loaded once per worker (`tests/helpers/models.py`). Pass `-n 0` for a serial run.
 
 CI (`.github/workflows/ci.yml`) runs everything that needs no jar on each pull request and
 push to `main`: ruff, pyright on `tools/emit`, `tools/report` and `tools/validate`,

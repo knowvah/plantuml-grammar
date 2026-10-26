@@ -27,9 +27,6 @@ MODIFIER = re.compile(r"\(\?(?:[imsx]+-?[imsx]*|-[imsx]+)[:)]")
 GROUP_NAME = re.compile(r"\(\?<([A-Za-z_]\w*)>")
 
 
-pytest_plugins = ["tests.emit.engine_support"]
-
-
 def scan_pattern(source: str) -> Iterator[str]:
     """Yield a finding per modifier group, duplicate group name or v-mode class syntax."""
     names: set[str] = set()

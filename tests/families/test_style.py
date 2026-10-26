@@ -28,13 +28,13 @@ import pytest
 import regex
 import yaml
 
+from tests.helpers.models import repo_models, repo_resolved
 from tools.config import PIN_SHA, ConfigError, require
 from tools.config import resolve as resolve_config
 from tools.interp import accepts
 from tools.interp.compile import compile_part
 from tools.interp.source import split_blocks
 from tools.model import Model, ResolvedModels
-from tools.model.load import load_dir
 from tools.model.resolve import resolve, top_models
 from tools.validate.corpus import enumerate_corpora
 from tools.validate.oracle import oracle_verdicts
@@ -74,7 +74,7 @@ VEGA = "vega"
 
 @cache
 def raw_models() -> dict[str, Model]:
-    return load_dir(MODEL_DIR)
+    return repo_models()
 
 
 def wrap_with_style(models: dict[str, Model]) -> dict[str, Model]:
@@ -285,7 +285,7 @@ def test_unterminated_block_is_rejected_without_timeout() -> None:
 def test_without_style_the_generated_models_accept_bad_bodies() -> None:
     only_generated = {"uml": [GENERATED_BASE]}
     bad = block("<style>", "{", "</style>", "class Foo")
-    assert accepts(resolve(raw_models()), bad, start_map=only_generated)["accepted"] is True
+    assert accepts(repo_resolved(), bad, start_map=only_generated)["accepted"] is True
 
 
 # ---------------------------------------------------------------- corpus (jar)

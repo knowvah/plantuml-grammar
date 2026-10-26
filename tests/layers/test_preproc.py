@@ -21,12 +21,11 @@ from typing import Any
 
 import pytest
 
+from tests.helpers.models import repo_models, repo_resolved
 from tools.config import PIN_SHA, require
 from tools.interp import accepts
 from tools.interp.source import split_blocks
 from tools.model import Model, Part, ResolvedModel, ResolvedModels
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
 
 REPO = Path(__file__).resolve().parents[2]
 MODEL_DIR = REPO / "model"
@@ -82,12 +81,12 @@ CASE_INSENSITIVE_RULES = {
 
 @pytest.fixture(scope="module")
 def raw_models() -> dict[str, Model]:
-    return load_dir(MODEL_DIR)
+    return repo_models()
 
 
 @pytest.fixture(scope="module")
 def models() -> ResolvedModels:
-    return resolve(load_dir(MODEL_DIR))
+    return repo_resolved()
 
 
 def rel(path: Path) -> str:

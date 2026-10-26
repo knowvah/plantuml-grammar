@@ -11,8 +11,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.helpers.models import repo_resolved
 from tools.emit import keywords, textmate
-from tools.emit.build import MODEL_DIR
 from tools.model.load import load_dir
 from tools.model.resolve import resolve
 
@@ -27,7 +27,7 @@ def toy_resolved():
 
 @pytest.fixture(scope="module")
 def real_resolved():
-    return resolve(load_dir(MODEL_DIR))
+    return repo_resolved()
 
 
 # --- keywords ------------------------------------------------------------------------

@@ -52,9 +52,6 @@ ENTRY_REQUIRED = {
 ENTRY_OPTIONAL = {"end", "join"}
 
 
-pytest_plugins = ["tests.emit.engine_support"]
-
-
 # --- shape ---------------------------------------------------------------------------------
 
 

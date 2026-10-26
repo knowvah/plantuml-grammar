@@ -12,12 +12,12 @@ from typing import Any
 
 import pytest
 
+from tests.helpers.engine_build import build_engine_once
+from tests.helpers.models import repo_resolved
 from tests.model.test_native_json import BASES, nested
 from tools.emit import engine as eng
 from tools.interp.source import split_block, split_blocks
 from tools.model import Entry, Part, ResolvedModel, ResolvedModels
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
 
 REPO = Path(__file__).resolve().parents[2]
 PIN = "0123456789abcdef"
@@ -171,7 +171,7 @@ def entry(parts: Part, **extra: Any) -> Entry:
 
 @pytest.fixture(scope="session")
 def resolved() -> ResolvedModels:
-    return resolve(load_dir(REPO / "model"))
+    return repo_resolved()
 
 
 @pytest.fixture(scope="session")
@@ -188,16 +188,6 @@ def engine_file(resolved: ResolvedModels, tmp_path_factory: pytest.TempPathFacto
 
 @pytest.fixture(scope="session")
 def engine_dist() -> Path:
-    npm = shutil.which("npm")
-    if npm is None:
+    if shutil.which("npm") is None:
         pytest.skip("npm is not on PATH")
-    done = subprocess.run(  # noqa: S603 - fixed argv
-        [npm, "run", "build", "-w", "packages/engine"],
-        cwd=REPO,
-        capture_output=True,
-        text=True,
-        check=False,
-        timeout=600,
-    )
-    assert done.returncode == 0, done.stdout + done.stderr
-    return REPO / "packages" / "engine" / "dist"
+    return build_engine_once()

@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 import regex
 
+from tests.helpers.models import repo_resolved
 from tests.model import jre_vectors as vectors
 from tools.model import ResolvedModel
 from tools.model.java_regex import (
@@ -25,8 +26,6 @@ from tools.model.java_regex_sets import (
     merge,
     ranges_text,
 )
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
 
 MODEL_DIR = Path(__file__).resolve().parents[2] / "model"
 NON_ASCII = {
@@ -272,7 +271,7 @@ def test_vector_generation_is_deterministic() -> None:
 
 
 def test_every_model_regex_translates_and_compiles() -> None:
-    resolved = resolve(load_dir(MODEL_DIR))
+    resolved = repo_resolved()
     count = 0
     for model in resolved.values():
         for part in _leaves(model):

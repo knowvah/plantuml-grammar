@@ -31,8 +31,6 @@ from tools.model import Part, ResolvedModels
 from tools.model.js_prefix import prefix_pattern
 from tools.validate.corpus import enumerate_corpora
 
-pytest_plugins = ["tests.emit.engine_support"]
-
 BIG = rx("(?:" + "|".join(f"w{i:05d}" for i in range(GUARD_MIN_BYTES // 6)) + ")")
 NATIVE_LEAF = "(?(DEFINE)(?<x>a))(?&x)"
 MAX_JOINED_LINES = 3

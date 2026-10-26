@@ -25,12 +25,12 @@ from typing import Any
 
 import pytest
 
+from tests.helpers.models import repo_models, repo_resolved
 from tools.interp import accepts
 from tools.interp.compile import compile_part
 from tools.interp.source import split_blocks, trin
 from tools.model import Model, ResolvedModel, ResolvedModels
-from tools.model.load import load_dir
-from tools.model.resolve import resolve, top_models
+from tools.model.resolve import top_models
 
 REPO = Path(__file__).resolve().parents[2]
 MODEL_DIR = REPO / "model"
@@ -63,12 +63,12 @@ TIMEOUT_S = 2.0
 
 @pytest.fixture(scope="module")
 def raw_models() -> dict[str, Model]:
-    return load_dir(MODEL_DIR)
+    return repo_models()
 
 
 @pytest.fixture(scope="module")
 def models(raw_models: dict[str, Model]) -> ResolvedModels:
-    return resolve(raw_models)
+    return repo_resolved()
 
 
 @pytest.fixture(scope="module")

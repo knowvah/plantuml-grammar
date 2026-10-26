@@ -22,6 +22,8 @@ from tools.validate import conformance as conf
 VERDICT_KEYS = {"accepted", "diagram", "first_failure", "model", "status"}
 TIMEOUT_STATUS = "timeout"
 
+XDIST_WORKER = "PYTEST_XDIST_WORKER"
+
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
@@ -29,7 +31,10 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 @pytest.fixture(scope="module")
 def regenerated() -> tuple[dict[str, str], list[dict[str, Any]]]:
-    return conf.generate(os.cpu_count() or 1)
+    # A pytest-xdist worker is multi-threaded, and forking one may deadlock (Python 3.12+
+    # warns), so judge in this process there; it costs about 8 s more than forking.
+    jobs = 1 if XDIST_WORKER in os.environ else os.cpu_count() or 1
+    return conf.generate(jobs)
 
 
 @pytest.fixture
@@ -216,7 +221,9 @@ def test_fixture_records_log_a_raised_timeout(
     assert "timeout raised to 60.0s: t.puml block 0 raw=False" in capsys.readouterr().err
 
 
+@pytest.mark.filterwarnings("ignore:This process .* is multi-threaded:DeprecationWarning")
 def test_serial_and_parallel_workers_agree(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Forks on purpose; on an xdist worker Python warns that the process is threaded."""
     toy = resolve(load_dir(TOY_YAML))
     names = conf.fixture_paths()[:6]
     monkeypatch.setattr(conf, "fixture_paths", lambda: names)

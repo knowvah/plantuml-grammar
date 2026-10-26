@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
+from tests.helpers.engine_build import build_engine_once
+from tests.helpers.models import repo_resolved
 from tools.validate import ts_engine
 from tools.validate.parity_run import RunConfig, error_verdict, judge
 from tools.validate.ts_engine import Request, TsEngineError
@@ -168,7 +168,7 @@ def test_real_cli_agrees_with_python_on_three_jobs():
         job("good2", "@startuml\nA -> B : hi\n@enduml", oracle=True, otype="SEQUENCE"),
     ]
     config = RunConfig(ts_engine.REPO_ROOT / "model", 30.0, True)
-    models = resolve(load_dir(config.model_dir))
-    expected = [judge(models, j, config) for j in jobs]
+    expected = [judge(repo_resolved(), j, config) for j in jobs]
     assert [e[0]["accepted"] for e in expected] == [True, False, True]
+    build_engine_once()  # run_ts would build too; this one is safe across xdist workers
     assert ts_engine.run_ts(jobs, config, 2) == expected

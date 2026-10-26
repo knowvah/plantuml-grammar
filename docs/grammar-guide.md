@@ -645,6 +645,7 @@ the first verdict; see "Guards".
 uv run python -m tools.emit.build              # dist/plantuml.engine.json (and the TextMate grammar)
 uv run python -m tools.validate.conformance    # tests/conformance goldens; --check reports drift
 npm test -w packages/engine                    # tsc, vitest, conformance against the goldens
+uv run pytest -m "not corpus"                  # 4 xdist workers; -n 0 for serial
 uv run python -m tools.validate.parity --corpus all --workers 4 --engine both
 uv run python -m tools.validate.parity merge --corpus all --engine both
 ```

@@ -13,6 +13,7 @@ from typing import Any
 import pcre2
 import pytest
 
+from tests.helpers.models import repo_resolved
 from tools.emit import textmate
 from tools.emit import textmate_regex as tmr
 from tools.model import ResolvedModel
@@ -281,7 +282,7 @@ def test_regexes_walker_collects_nested_keys() -> None:
 @pytest.mark.corpus
 @pytest.mark.skipif(not any(GENERATED.glob("*.yaml")), reason="model/generated is empty")
 def test_generated_models_emit_pcre_compilable_regexes() -> None:
-    found = all_regexes(textmate.emit_textmate(resolve(load_dir(ROOT / "model"))))
+    found = all_regexes(textmate.emit_textmate(repo_resolved()))
     assert found
     for regex in found:
         pcre2.compile(regex)
@@ -355,7 +356,7 @@ PROBES = ["", "   ", "class Foo", "  note left of A : text", 'rule = "a" ; (* c 
 def test_real_model_has_no_rule_that_matches_the_empty_string() -> None:
     import regex
 
-    grammar = textmate.emit_textmate(resolve(load_dir(ROOT / "model")))
+    grammar = textmate.emit_textmate(repo_resolved())
     patterns: list[str] = []
 
     def walk(node: Any) -> None:

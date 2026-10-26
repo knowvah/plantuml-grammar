@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.helpers.models import repo_resolved
 from tests.model import jre_vectors as vectors
 from tests.model.node_regex import Job, compiles_all, run_batch
 from tools.model import ResolvedModel
@@ -21,8 +22,6 @@ from tools.model.java_regex_js import (
     literal_to_js,
     to_js,
 )
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
 
 MODEL_DIR = Path(__file__).resolve().parents[2] / "model"
 EXCLUDED_CONSTRUCTS = ("(?(", "(?&")
@@ -236,7 +235,7 @@ def _leaves(model: ResolvedModel) -> list[dict[str, object]]:
 
 def _translatable_model_sources() -> list[tuple[str, bool]]:
     seen: dict[tuple[str, bool], None] = {}
-    for model in resolve(load_dir(MODEL_DIR)).values():
+    for model in repo_resolved().values():
         for part in _leaves(model):
             source = str(part["regex"])
             if not any(marker in source for marker in EXCLUDED_CONSTRUCTS):

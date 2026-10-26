@@ -33,9 +33,6 @@ from tools.validate.corpus import enumerate_corpora
 # --- budget (D7) ---------------------------------------------------------------------------
 
 
-pytest_plugins = ["tests.emit.engine_support"]
-
-
 def test_engine_file_size_and_cold_load_are_within_budget(engine_file):
     probe = eng.probe_engine(engine_file)
     assert engine_file.stat().st_size <= eng.MAX_BYTES

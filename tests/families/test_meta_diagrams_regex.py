@@ -19,12 +19,11 @@ from pathlib import Path
 
 import pytest
 
+from tests.helpers.models import repo_resolved
 from tools.interp import accepts
 from tools.interp.compile import compile_part
 from tools.interp.source import split_blocks
 from tools.model import ResolvedModel, ResolvedModels
-from tools.model.load import load_dir
-from tools.model.resolve import resolve
 
 REPO = Path(__file__).resolve().parents[2]
 MODEL_ID = "meta-diagrams-regex"
@@ -348,7 +347,7 @@ def needs_more_tiles(lines: list[str]) -> bool:
 
 @pytest.fixture(scope="module")
 def models() -> ResolvedModels:
-    return resolve(load_dir(REPO / "model"))
+    return repo_resolved()
 
 
 @pytest.fixture(scope="module")
