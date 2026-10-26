@@ -54,6 +54,7 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
     "test": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && vitest run --coverage",
+    "bench": "node bench/first-verdict.mjs",
     "prepack": "rm -rf dist && npm run build && cp ../../LICENSE ../../dist/plantuml.tmLanguage.json ../../dist/plantuml.engine.json .",
     "postpack": "rm -f LICENSE plantuml.tmLanguage.json plantuml.engine.json"
   },

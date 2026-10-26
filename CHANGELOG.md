@@ -9,6 +9,10 @@ and the `Verdict` type).
 
 ## [Unreleased]
 
+### Added
+- `npm run bench -w packages/engine`: load, first and second verdict per diagram family
+  in fresh processes, with `--patterns` for the costliest regexes.
+
 ## [1.0.0] - 2026-10-26
 
 ### Added
