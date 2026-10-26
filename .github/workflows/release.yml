@@ -1,0 +1,84 @@
+# semantic-release on every push to main, as in knowvah/dot-engine: when the commits since
+# the last `v*` tag include a releasable one (`fix:`, `feat:`, `!`), it publishes
+# @knowvah/plantuml-grammar to npm through OIDC trusted publishing (no NPM_TOKEN,
+# provenance automatic), pushes the tag and creates the GitHub Release. Nothing is
+# committed back to main. The npm trusted publisher is pinned to this file name and the
+# `release` environment: keep both. See PUBLISHING.md.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  # Re-runs a release whose push run failed to start; a run with nothing to release is a no-op.
+  workflow_dispatch: {}
+
+concurrency: release-${{ github.ref }}
+
+env:
+  PYTHON_VERSION: "3.13"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: release
+    permissions:
+      contents: write # push the tag and create the GitHub Release
+      issues: write # semantic-release comments on released issues
+      pull-requests: write # and on released pull requests
+      id-token: write # OIDC trusted publishing and provenance
+      packages: write # mirror the release to GitHub Packages
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # semantic-release reads the full history and tags
+          persist-credentials: false
+      # npm test runs the Python emitter through `uv run`, and dist/ is rebuilt below.
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      # Node 26 ships npm >= 11.5.1, which trusted publishing needs.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: package.json
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: uv sync --frozen
+      - run: npm ci
+      # The package ships dist/ as committed; publish only what the model reproduces.
+      - name: dist matches the model
+        run: |
+          uv run python -m tools.emit.build
+          git diff --exit-code -- dist/
+      - run: npm test
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Mirror the release to GitHub Packages, as dot-engine and dot-plugins do: a consumer
+      # that needs the private @knowvah/theme maps the @knowvah scope there, and can then
+      # use an ordinary version range for this package too. npm stays primary and is
+      # published first, with provenance; GitHub Packages supports neither OIDC nor
+      # provenance, so GITHUB_TOKEN authenticates. @semantic-release/npm writes the new
+      # version into the working copy only, so 0.0.0-development means nothing was cut.
+      - name: Mirror to GitHub Packages
+        env:
+          GH_PACKAGES_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          name="$(node -p "require('./packages/engine/package.json').name")"
+          version="$(node -p "require('./packages/engine/package.json').version")"
+          if [ "$version" = "0.0.0-development" ]; then
+            echo "No release was cut; nothing to mirror."
+            exit 0
+          fi
+          registry=https://npm.pkg.github.com
+          npm config set //npm.pkg.github.com/:_authToken "$GH_PACKAGES_TOKEN"
+          if npm view --registry "$registry" "$name@$version" version >/dev/null 2>&1; then
+            echo "$name@$version already on GitHub Packages, skipping"
+            exit 0
+          fi
+          npm pack -w packages/engine --pack-destination "$RUNNER_TEMP"
+          tgz="$RUNNER_TEMP/knowvah-plantuml-grammar-$version.tgz"
+          echo "==> mirroring $tgz"
+          npm publish "$tgz" --registry "$registry" --access public

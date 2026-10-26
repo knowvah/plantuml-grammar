@@ -3,11 +3,12 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "description": "TextMate proof tests for the generated PlantUML grammar",
+  "description": "Workspace root: the TextMate proof, the package test and the release tooling",
   "scripts": {
-    "test": "node --test \"tests/textmate/**/*.test.mjs\" && npm test -w packages/engine"
+    "test": "node --test \"tests/textmate/**/*.test.mjs\" \"tests/package/*.test.mjs\" && npm test -w packages/engine"
   },
   "devDependencies": {
+    "semantic-release": "^25.0.8",
     "vscode-oniguruma": "^2.0.1",
     "vscode-textmate": "^9.2.0"
   },

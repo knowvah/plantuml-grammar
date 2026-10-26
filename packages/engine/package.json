@@ -1,19 +1,61 @@
 {
-  "name": "@knowvah/plantuml-engine",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@knowvah/plantuml-grammar",
+  "version": "0.0.0-development",
+  "description": "PlantUML syntax as data: a TextMate grammar and a browser-safe TypeScript engine that judges PlantUML blocks the way the PlantUML jar does.",
+  "keywords": [
+    "plantuml",
+    "textmate",
+    "grammar",
+    "syntax-highlighting",
+    "parser",
+    "uml",
+    "diagram",
+    "browser"
+  ],
   "license": "MIT",
+  "author": "Scott Seely",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knowvah/plantuml-grammar.git",
+    "directory": "packages/engine"
+  },
+  "homepage": "https://github.com/knowvah/plantuml-grammar#readme",
+  "bugs": {
+    "url": "https://github.com/knowvah/plantuml-grammar/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./plantuml.tmLanguage.json": "./plantuml.tmLanguage.json",
+    "./plantuml.engine.json": "./plantuml.engine.json",
+    "./package.json": "./package.json"
   },
+  "files": [
+    "dist",
+    "!dist/cli.*",
+    "!dist/pool.*",
+    "!dist/worker.*",
+    "src",
+    "!src/cli.ts",
+    "!src/pool.ts",
+    "!src/worker.ts",
+    "plantuml.tmLanguage.json",
+    "plantuml.engine.json"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
-    "test": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && vitest run --coverage"
+    "test": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json && vitest run --coverage",
+    "prepack": "rm -rf dist && npm run build && cp ../../LICENSE ../../dist/plantuml.tmLanguage.json ../../dist/plantuml.engine.json .",
+    "postpack": "rm -f LICENSE plantuml.tmLanguage.json plantuml.engine.json"
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
