@@ -21,9 +21,8 @@ and the `Verdict` type).
 - The parity harness (`tools/validate`): every `@start...@end` block of the vega,
   plantuml-ts and pdiff corpora through the PlantUML jar and the interpreter, with every
   false accept or reject classified (`reports/classify/`).
-- The TypeScript engine (`packages/engine`, `@knowvah/plantuml-engine`, private): a port of
-  the interpreter with a browser-safe core (ES2022, no Node APIs) and the public API
-  `loadEngine`, `Interpreter` and `accepts`. Its verdicts equal the Python interpreter's in
+- The TypeScript engine (`packages/engine`): a port of the interpreter with a browser-safe
+  core (ES2022, no Node APIs) and the public API `loadEngine`, `Interpreter` and `accepts`. Its verdicts equal the Python interpreter's in
   `accepted`, `diagram`, `model`, `status` and `first_failure` on all 3,672 conformance
   goldens (`tests/conformance`, recorded by `tools.validate.conformance`) and on every block
   of the three corpora (0 mismatches).
@@ -35,6 +34,10 @@ and the `Verdict` type).
   (`node packages/engine/dist/cli.js --engine <path>`), and `--engine py|ts|both` in the
   parity harness, with TS reports (`reports/parity-*-ts.*`) and a Python/TS equality
   report (`reports/engine-equality-*`).
+- The npm package `@knowvah/plantuml-grammar` (the `packages/engine` workspace): the
+  TextMate grammar, the engine model and the engine's browser-safe core, published by
+  semantic-release with npm trusted publishing and mirrored to GitHub Packages
+  ([PUBLISHING.md](PUBLISHING.md)).
 
 ### Changed
 - The nwdiag packet field regexes (`PK_ZERO_FIELD`, `PK_NONZERO_FIELD`) are rewritten

@@ -25,13 +25,25 @@ Correctness is measured against the real PlantUML jar: every `@start...@end` blo
 corpora is run through the jar and through the interpreter, and every disagreement is
 classified.
 
-**Engine.** `packages/engine` (`@knowvah/plantuml-engine`, private) is a TypeScript port of
-the interpreter. It runs the model from `dist/plantuml.engine.json` (`engine_format` 1),
-where every regex is already translated from Java to ES2018 JavaScript (flag `u`, no
-modifiers), so it runs in browsers, VS Code and JetBrains JCEF 122+. Its verdicts equal the
+**Engine.** `packages/engine` is a TypeScript port of the interpreter. It runs the model
+from `dist/plantuml.engine.json` (`engine_format` 1), where every regex is already
+translated from Java to ES2018 JavaScript (flag `u`, no modifiers), so it runs in browsers,
+VS Code and JetBrains JCEF 122+. Its verdicts equal the
 Python interpreter's on every conformance golden and every corpus block (accepted, diagram,
 model, status and first failure). The core has no Node dependency; a JSONL CLI with a
 killable worker pool serves the parity harness.
+
+## Install
+The grammar and the engine are published together as
+[`@knowvah/plantuml-grammar`](packages/engine/README.md):
+
+```sh
+npm install @knowvah/plantuml-grammar
+```
+
+It exports the engine API and the files `plantuml.tmLanguage.json` and
+`plantuml.engine.json`. Releases are cut from Conventional Commits on `main`; see
+[PUBLISHING.md](PUBLISHING.md).
 
 ## Layout
 | Path | Content |
@@ -40,7 +52,7 @@ killable worker pool serves the parity harness.
 | `model/generated/` | Models generated from the upstream sources. Never edit by hand. |
 | `extracted/` | Raw command regex trees dumped from the jar by the Java extractor. |
 | `dist/` | Generated artifacts, committed and reproducible from `model/`: the TextMate grammar and `plantuml.engine.json`, the engine model with JavaScript regexes. |
-| `packages/engine/` | The TypeScript engine (npm workspace): browser-safe core (`src/`), JSONL CLI and worker pool (`cli.ts`, `pool.ts`, `worker.ts`), vitest suite. |
+| `packages/engine/` | The TypeScript engine and the npm package `@knowvah/plantuml-grammar` (npm workspace): browser-safe core (`src/`), JSONL CLI and worker pool (`cli.ts`, `pool.ts`, `worker.ts`), vitest suite. |
 | `tools/` | Python tooling: `extract`, `translate`, `model` (loader), `interp`, `emit`, `validate`, `report`; Java harness in `tools/extract` and `tools/oracle`. |
 | `reports/` | Parity reports per corpus (`parity-*.json`, `.md`, slices in `parity/`), the TS lane (`parity-*-ts.*`, slices in `parity-ts/`), Python/TS equality (`engine-equality-*`) and classifications (`classify/`). |
 | `docs/` | [Grammar guide](docs/grammar-guide.md), [command coverage](docs/coverage.md), [semantic gaps](docs/semantic-gaps.md). |
@@ -110,7 +122,8 @@ CI (`.github/workflows/ci.yml`) runs everything that needs no jar on each pull r
 push to `main`: ruff, pyright on `tools/emit`, `tools/report` and `tools/validate`,
 `load --check`, a rebuild of `dist/` that must match the committed files,
 `pytest -m "not corpus"` and `npm test`. The corpus tests, `tools.extract.build` and parity
-still run locally.
+still run locally. `release.yml` publishes the npm package from `main`
+([PUBLISHING.md](PUBLISHING.md)).
 
 ## Status
 Command coverage (`docs/coverage.md`): 1,245 extracted commands: 1,228 modeled, 2 partial
