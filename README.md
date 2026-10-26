@@ -106,6 +106,12 @@ uv run python -m tools.extract.build
 Without the jar and corpora, run `uv run pytest -m "not corpus"` for the tests that need no
 external input.
 
+CI (`.github/workflows/ci.yml`) runs everything that needs no jar on each pull request and
+push to `main`: ruff, pyright on `tools/emit`, `tools/report` and `tools/validate`,
+`load --check`, a rebuild of `dist/` that must match the committed files,
+`pytest -m "not corpus"` and `npm test`. The corpus tests, `tools.extract.build` and parity
+still run locally.
+
 ## Status
 Command coverage (`docs/coverage.md`): 1,245 extracted commands: 1,228 modeled, 2 partial
 (the opaque `@startyaml` and `@starthcl` bodies), 15 excluded with a reason, 0 missing. Egg
