@@ -68,3 +68,35 @@
   `python_original`. The remaining first-verdict cost (TIMING/HELP ~230 ms) is many
   mid-size patterns; `(?i:)` modifiers are the next lever.
 - **Confidence**: High (4,000 random + edge inputs, fixture lines, corpus lines, parity)
+
+## Observation: `(?i:)` modifiers do not shorten the first verdict; the remaining cost is factory try-order
+- **Context**: Fix 3 candidate of #4, measured 2026-10-27 on 1.0.2 (Node 26.9.0, same
+  machine and bench). A compile hook rewrote every `[aA]` letter pair in the engine's
+  patterns to `(?i:...)` runs (a lone pair before a quantifier becomes `(?i:a)+`), end to
+  end inside `accepts`, 5 fresh processes per mode; plus fresh-process micro A/B of the
+  top three patterns of TIMING and HELP.
+- **Finding**: medians orig -> rewritten (ms): TIMING 233 -> 225, HELP 218 -> 221,
+  STATE 141 -> 141, DESCRIPTION 123 -> 122, ACTIVITY 120 -> 121, CLASS 101 -> 100,
+  GANTT 63 -> 66, CHEN_EER 29 -> 35, CREOLE 24 -> 19: all within run-to-run noise, with
+  0 compile fallbacks and every verdict unchanged. The pairs are 672 KB of the 2.04 MB of
+  pattern source (167,848 pairs); the rewrite removes 10-33% of the bytes a family compiles
+  (TIMING 347 -> 303 KB) and shrinks the engine JSON 3.84 -> 3.49 MB raw, 118 -> 110 KB
+  gzip, but V8's compile cost tracks the automaton, not the source bytes: the top
+  patterns cost the same with 0 pair bytes (6,121 B, 8.8 ms, no letters) as with 5,200
+  (9,589 B, 6.9 ms). Where TIMING's 232 ms goes: 302 patterns compiled (ctor 43 ms, first
+  calls 157 ms, later calls 25 ms); 3 patterns >= 5 ms (24 ms), 36 at 1-5 ms (68 ms), 72 at
+  0.3-1 ms (49 ms), 191 under 0.3 ms (16 ms). By model, a `@startuml` TIMING block pays
+  for the factories tried before it: class 37 ms (24 patterns), sequence 24 ms (47),
+  activity3 14 ms (46), activity-legacy 29 ms (20), description 26 ms (16), state 10 ms
+  (11), timing itself 10 ms (11); CLASS compiles 162 patterns for 100 ms. One single-line
+  command, `single-line-dedication`, costs 16 ms alone (6,121 B, `new RegExp` 7 ms + first
+  test 9 ms: `(?=[\x00-\u{10ffff}]{26})` and an astral-aware length lookahead under `u`),
+  tried on every `@startuml` block.
+- **Impact**: `(?i:)` emission is not worth a PR for #4 (size-only win, 8 KB gzip). The
+  remaining levers are the number of patterns a UML block compiles before its factory
+  (dispatch order / cheaper rejection of the factories tried first) and a few single
+  expensive patterns (dedication 16 ms, the 9,459 B `@version` class pattern 9 ms, the
+  9,589 B 7 ms one); tier-up (`second` 15-40 ms) is V8's and not reducible in browsers.
+  Scripts: scratchpad `ci-ab.mjs`, `ci-dump.mjs`, `by-model.mjs` (not committed).
+- **Confidence**: High for the null result (end-to-end and per-pattern A/B agree, 5 runs);
+  Medium for the per-model split (a pattern shared by several models is attributed to all).
