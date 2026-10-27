@@ -9,6 +9,21 @@ and the `Verdict` type).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-27
+
+### Fixed
+- The `@startregex` well-formed line (`RX_WELL_FORMED`) is parsed natively in the engine
+  (`packages/engine/src/native-regex.ts`), like the two recursive JSON leaves, instead of
+  by a 465 KB regex unrolled to eight levels of nesting. The median first verdict for the
+  REGEX family drops from 1,070 ms to 11 ms, the engine JSON from 4.4 MB to 3.8 MB
+  (118 KB gzip), and nesting depth is no longer bounded, which removes a divergence from
+  the Python interpreter. The parser agrees with the Python `regex` match of the leaf on
+  4,000 generated lines, the generator pieces and their pairs, 90 hand-written edge
+  cases and every regex line of the fixtures and corpora (0 disagreements); conformance
+  goldens and corpus parity are unchanged.
+
+## [1.0.1] - 2026-10-26
+
 ### Fixed
 - The engine's first verdict in a fresh process is faster: V8 compiles a regex on first
   use, and the 8 KB-and-larger patterns that dominated that cost now sit behind guards,
@@ -62,5 +77,7 @@ and the `Verdict` type).
   without regex conditionals, which JavaScript lacks, as an exact enumeration over the
   bounded field digits. Interpreter verdicts and parity are unchanged.
 
-[Unreleased]: https://github.com/knowvah/plantuml-grammar/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/knowvah/plantuml-grammar/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/knowvah/plantuml-grammar/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/knowvah/plantuml-grammar/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/knowvah/plantuml-grammar/releases/tag/v1.0.0
