@@ -495,7 +495,7 @@ byte-identical output.
 | File | Notation | Consumers |
 |---|---|---|
 | `dist/plantuml.tmLanguage.json` | TextMate (`source.plantuml`), Oniguruma and PCRE | editors |
-| `dist/plantuml.engine.json` | engine JSON (`engine_format` 1), ES2018 JavaScript regexes | `packages/engine` (see "TypeScript engine") |
+| `dist/plantuml.engine.json` | engine JSON (`engine_format` 1), JavaScript regexes (flag `u`) | `packages/engine` (see "TypeScript engine") |
 
 Known limits, all intended and tested:
 
@@ -540,8 +540,12 @@ timeoutMs?})` and the cached `accepts(engine, text, opts)`.
 
 ### Regex translation (`tools/model/java_regex_js.py`)
 
-The target is ES2018 regex with flag `u` (Chromium 64+, Safari 16.4+, Firefox 78+, so
-JCEF 122 and every supported VS Code). Java semantics are kept as in "Regex semantics":
+The output is JavaScript regex with flag `u` and uses only ES2018 syntax. The runtime
+floor is current browsers and JetBrains IDEs from 2026.2 (Chromium 144), which also
+accept ES2025 regex (modifier groups, duplicate group names, flag `v`); the translator
+does not use them because rewriting the folded letters to `(?i:…)` groups was measured to
+leave the first verdict unchanged (see CHANGELOG), not because a target forbids them.
+Java semantics are kept as in "Regex semantics":
 
 | Java construct | JavaScript emitted |
 |---|---|
@@ -557,8 +561,7 @@ JCEF 122 and every supported VS Code). Java semantics are kept as in "Regex sema
 | named group never referenced | `(?:…)` (no duplicate group names) |
 | class escapes | only escapes legal under `u` |
 
-A fitness test over the engine JSON rejects modifier groups, duplicate group names and
-`v`-flag class syntax. Caveats:
+Caveats:
 
 * **Atomic emulation backtracks differently.** The lookahead-plus-back-reference form
   commits to the same first match as a true atomic group, but V8 can still spend time
@@ -662,8 +665,7 @@ lane builds `packages/engine` itself when `src/` is newer than `dist/cli.js`.
 ### TS engine troubleshooting
 
 **A translator gap.** *Detection:* `tools.emit.build` fails with `JsRegexError` or a Node
-compile error naming the pattern, the D2 fitness test fails, or the build prints an
-`unsupported` pattern. *Mitigation:* extend `tools/model/java_regex_js.py` (or
+compile error naming the pattern, or the build prints an `unsupported` pattern. *Mitigation:* extend `tools/model/java_regex_js.py` (or
 `js_subroutines.py` for recursion) with a test against Node, or rewrite the model regex
 into a form both engines take, keeping Python parity unchanged. Never leave an
 `unsupported` pattern that a corpus block reaches.

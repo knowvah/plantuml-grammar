@@ -27,8 +27,8 @@ classified.
 
 **Engine.** `packages/engine` is a TypeScript port of the interpreter. It runs the model
 from `dist/plantuml.engine.json` (`engine_format` 1), where every regex is already
-translated from Java to ES2018 JavaScript (flag `u`, no modifiers), so it runs in browsers,
-VS Code and JetBrains JCEF 122+. Its verdicts equal the
+translated from Java to JavaScript (flag `u`), so it runs in current browsers, VS Code
+and JetBrains IDEs from 2026.2 (Chromium 144). Its verdicts equal the
 Python interpreter's on every conformance golden and every corpus block (accepted, diagram,
 model, status and first failure). The core has no Node dependency; a JSONL CLI with a
 killable worker pool serves the parity harness.

@@ -1,9 +1,7 @@
-"""Engine patterns: the D2 ES2018 baseline scanner and the D3a native JSON splits."""
+"""Engine patterns: the D3a native JSON splits."""
 
 from __future__ import annotations
 
-import re
-from collections.abc import Iterator
 from typing import Any
 
 import pytest
@@ -20,75 +18,6 @@ from tests.emit.engine_support import (
 from tests.model.test_js_subroutines import JSON_BLOCK, model_pattern
 from tools.emit import engine as eng
 from tools.model.java_regex_js import LINE_TERMINATOR, line_pattern_js
-
-# --- D2 baseline ---------------------------------------------------------------------------
-
-MODIFIER = re.compile(r"\(\?(?:[imsx]+-?[imsx]*|-[imsx]+)[:)]")
-GROUP_NAME = re.compile(r"\(\?<([A-Za-z_]\w*)>")
-
-
-def scan_pattern(source: str) -> Iterator[str]:
-    """Yield a finding per modifier group, duplicate group name or v-mode class syntax."""
-    names: set[str] = set()
-    i, in_class, n = 0, False, len(source)
-    while i < n:
-        char = source[i]
-        if char == "\\":
-            if in_class and source.startswith("\\q{", i):
-                yield "\\q{"
-            i += 2
-            continue
-        if in_class:
-            if source.startswith(("--", "&&"), i):
-                yield source[i : i + 2]
-            in_class = char != "]"
-        elif char == "[":
-            in_class = True
-        elif char == "(":
-            yield from group_findings(source, i, names)
-        i += 1
-
-
-def group_findings(source: str, at: int, names: set[str]) -> Iterator[str]:
-    if MODIFIER.match(source, at):
-        yield "modifier"
-    named = GROUP_NAME.match(source, at)
-    if named:
-        if named.group(1) in names:
-            yield f"duplicate group {named.group(1)}"
-        names.add(named.group(1))
-
-
-@pytest.mark.parametrize(
-    ("source", "expected"),
-    [
-        ("(?i:a)", ["modifier"]),
-        ("(?-i)a", ["modifier"]),
-        ("(?m)(?s:a)", ["modifier", "modifier"]),
-        ("(?<a>x)(?<a>y)", ["duplicate group a"]),
-        ("[a--b]", ["--"]),
-        ("[a&&b]", ["&&"]),
-        ("[\\q{ab}]", ["\\q{"]),
-        ("\\(?i:a)", []),
-        ("[(?i:]x(?<a>1)(?:2)", []),
-        ("a--b(?=x)(?<=y)", []),
-    ],
-)
-def test_baseline_scanner_finds_what_it_should(source, expected):
-    assert list(scan_pattern(source)) == expected
-
-
-def test_engine_patterns_stay_in_the_es2018_baseline(built):
-    findings = [
-        (i, key, f)
-        for i, p in enumerate(built["patterns"])
-        for key in ("source", "guard")
-        if key in p
-        for f in scan_pattern(p[key])
-    ]
-    assert any("guard" in p for p in built["patterns"])
-    assert findings == []
-
 
 # --- native JSON splits (D3a) --------------------------------------------------------------
 

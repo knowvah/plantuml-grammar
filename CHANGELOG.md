@@ -9,6 +9,14 @@ and the `Verdict` type).
 
 ## [Unreleased]
 
+### Changed
+- The engine's stated runtime floor is current browsers and JetBrains IDEs from 2026.2
+  (Chromium 144) instead of "JCEF 122", and the test that confined the engine JSON to
+  ES2018 regex syntax is retired. The emitted regexes are unchanged (flag `u`, ASCII case
+  folding spelled out as `[aA]`): rewriting those letters to `(?i:…)` groups was measured
+  to leave the first verdict unchanged (TIMING 233 to 225 ms, HELP 218 to 221 ms, within
+  run-to-run noise) while saving 8 KB of gzip, so the engine does not use them.
+
 ## [1.0.2] - 2026-10-27
 
 ### Fixed

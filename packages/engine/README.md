@@ -6,7 +6,7 @@ PlantUML syntax as data, generated from the command model in
   highlighters (VS Code, Shiki, vscode-textmate). Oniguruma and PCRE compatible.
 - A TypeScript engine that judges whether a `@start...@end` block is valid PlantUML the
   way the PlantUML jar does, with the model it runs (`plantuml.engine.json`). Its core has
-  no Node dependency: it runs in browsers, VS Code and JetBrains JCEF 122+.
+  no Node dependency: it runs in current browsers, VS Code and JetBrains IDEs from 2026.2.
 
 Both are built from the same model at the same commit, so one version covers both.
 
