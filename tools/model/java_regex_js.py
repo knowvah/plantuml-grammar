@@ -3,8 +3,9 @@
 The JavaScript twin of ``tools.model.java_regex``: the same Java semantics (see that
 module's docstring: ASCII ``\\d \\w \\s \\b`` and POSIX classes, ``.`` refusing line
 terminators, ``$`` / ``\\Z`` accepting one final terminator, ASCII-only case folding),
-but the output is meant for ``new RegExp(source, "u")`` at the ES2018 level, because the
-engine is embedded in browsers, VS Code and JetBrains JCEF (Chromium 122). So:
+but the output is meant for ``new RegExp(source, "u")`` and uses only ES2018 syntax (the
+runtime floor, current browsers and JetBrains 2026.2, would also take ES2025 regex, but
+modifier groups were measured not to shorten the first verdict; see CHANGELOG). So:
 
 * no regex modifiers: ``(?i)``, ``(?i:...)`` and ``(?-i:...)`` change the case mode of the
   translation, and letters are folded explicitly (``[aA]``); scoped forms become ``(?:``;
@@ -26,7 +27,7 @@ atomic group of ``X*``. The generated names ``_a0``, ``_a1``, ... follow source 
 model group name starting with ``_a`` raises. The emulation adds capturing groups, so a
 pattern that also has a numbered back reference ``\\1`` raises (the numbers would shift).
 Named back references ``(?P=n)`` / ``\\k<n>`` become ``\\k<n>`` and the referenced group
-keeps its name; a referenced name defined twice raises (no duplicate names in ES2018).
+keeps its name; a referenced name defined twice raises (no duplicate names are emitted).
 
 A back reference translated while case-insensitive mode is on raises ``JsRegexError``
 (decision D2): JavaScript can fold a back reference only with the ``i`` flag, which folds
@@ -85,7 +86,7 @@ class JsRegexError(ValueError):
 
 
 def cp_text_js(cp: int, *, in_class: bool = False) -> str:
-    """One code point as ES2018 ``u``-mode regex text.
+    """One code point as ``u``-mode regex text.
 
     ASCII alphanumerics stay literal; a backslash goes only before ``^ $ \\ . * + ? ( ) [ ]
     { } | /`` (and ``-`` inside a class, where ``\\-`` is legal and outside it is not).
@@ -383,7 +384,7 @@ class _Translator:
 
 
 def to_js(pattern: str, *, ci: bool = False) -> str:
-    """JavaScript source (flag ``u``, ES2018) with the semantics Java gives ``pattern``.
+    """JavaScript source (flag ``u``) with the semantics Java gives ``pattern``.
 
     ``ci`` is ``Pattern.CASE_INSENSITIVE`` (ASCII folding) for the whole pattern; inline
     ``(?i:...)`` / ``(?-i:...)`` groups switch it locally. Raises ``JsRegexError`` for Java
