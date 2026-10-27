@@ -218,6 +218,10 @@ describe("matcher(id) from engine JSON", () => {
   });
 
   it("uses the registered native leaves", () => {
-    expect(Object.keys(NATIVE_KINDS)).toEqual(["json-block-body", "json-data-invalid"]);
+    expect(Object.keys(NATIVE_KINDS)).toEqual([
+      "json-block-body",
+      "json-data-invalid",
+      "regex-well-formed",
+    ]);
   });
 });

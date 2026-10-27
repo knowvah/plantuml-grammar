@@ -71,6 +71,7 @@ FAST_DEPTH = 4
 MAX_EXPANDED_BYTES = 256 * 1024
 JSON_BLOCK_BODY_KIND = "json-block-body"
 JSON_DATA_INVALID_KIND = "json-data-invalid"
+REGEX_WELL_FORMED_KIND = "regex-well-formed"
 # SHA-256 of the Java source of each DEFINE pattern in the model YAML -> (depth, kind).
 _DIGEST_BLOCK = "6f5ea8273a28641d680f7f65b616d254b148f24be86395684e7f8bebd79e5bb1"
 _DIGEST_INVALID = "656b964e213e29a04d3d4676c28dd1547585460baf9fafa8ae70bc76b8c210bd"
@@ -84,10 +85,23 @@ PATTERN_DEPTHS = {
     _DIGEST_EMPTY: 3,
     _DIGEST_BALANCED: 8,
 }
-_NATIVE_KINDS = {_DIGEST_BLOCK: JSON_BLOCK_BODY_KIND, _DIGEST_INVALID: JSON_DATA_INVALID_KIND}
+_NATIVE_KINDS = {
+    _DIGEST_BLOCK: JSON_BLOCK_BODY_KIND,
+    _DIGEST_INVALID: JSON_DATA_INVALID_KIND,
+    _DIGEST_WELL_FORMED: REGEX_WELL_FORMED_KIND,
+}
 _FAST_FINAL: dict[str, Literal["accept", "reject"]] = {
     JSON_BLOCK_BODY_KIND: "accept",
     JSON_DATA_INVALID_KIND: "reject",
+    REGEX_WELL_FORMED_KIND: "accept",
+}
+# Depth of the bounded ``fast`` regex of each native kind; ``None`` means no fast regex, the
+# recognizer alone decides (a regex line parses in microseconds, so a fast regex would only
+# add its compile time to the first verdict).
+FAST_DEPTHS: dict[str, int | None] = {
+    JSON_BLOCK_BODY_KIND: FAST_DEPTH,
+    JSON_DATA_INVALID_KIND: FAST_DEPTH,
+    REGEX_WELL_FORMED_KIND: None,
 }
 NEVER_MATCHES = "(?:(?!))"
 DEFINE_OPEN = "(?(DEFINE)"
@@ -257,7 +271,7 @@ def depth_for(pattern: str) -> int:
 
 
 def native_kind(pattern: str) -> str | None:
-    """``"json-block-body"`` / ``"json-data-invalid"`` for the two JSON leaves, else ``None``."""
+    """The native recognizer kind of a JSON or regex-diagram leaf, else ``None``."""
     return _NATIVE_KINDS.get(_digest(pattern))
 
 
@@ -269,8 +283,20 @@ def fast_final(pattern: str) -> Literal["accept", "reject"]:
     """
     kind = native_kind(pattern)
     if kind is None:
-        raise ValueError("pattern is not a native JSON leaf")
+        raise ValueError("pattern is not a native leaf")
     return _FAST_FINAL[kind]
+
+
+def fast_depth(pattern: str) -> int | None:
+    """Depth of the ``fast`` regex of a native leaf, or ``None`` for no fast regex.
+
+    Raises:
+        ValueError: ``pattern`` is not a native leaf.
+    """
+    kind = native_kind(pattern)
+    if kind is None:
+        raise ValueError("pattern is not a native leaf")
+    return FAST_DEPTHS[kind]
 
 
 def expand_subroutines(pattern: str, max_depth: int | None = None) -> str:
@@ -282,8 +308,7 @@ def expand_subroutines(pattern: str, max_depth: int | None = None) -> str:
             call never matches. ``None`` means ``depth_for(pattern)``.
 
     Raises:
-        Unsupported: malformed or unsupported DEFINE use, or a result over
-            ``MAX_EXPANDED_BYTES``.
+        Unsupported: malformed or unsupported DEFINE use, or a result over ``MAX_EXPANDED_BYTES``.
     """
     parts = _split_define(pattern)
     if parts is None:

@@ -166,3 +166,21 @@ def test_real_json_commands_are_splits(resolved, built):
         "CommandCreateJsonBlock": {"any"},
         "CommandCreateJsonSingleLineError": {"split"},
     }
+
+
+def test_regex_well_formed_is_a_split_without_a_fast_regex(resolved, built):
+    found = []
+    for mid, name, index, source in engine_entries(resolved, built):
+        if source["command"] == "RegexLineWellFormed":
+            out = built["context_table"][built["models"][mid]["contexts"][name]][index]
+            pattern = built["patterns"][out["start"]]
+            assert set(pattern) - {"guard"} == {"split"}
+            found.append(pattern["split"])
+    assert len(found) == 1
+    split = found[0]
+    assert (split["native"], split["fast"], split["fast_final"]) == (
+        "regex-well-formed",
+        None,
+        "accept",
+    )
+    assert len(built["patterns"][split["head"]]["source"]) < 200

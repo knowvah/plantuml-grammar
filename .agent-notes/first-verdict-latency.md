@@ -48,3 +48,23 @@
 - **Impact**: Remaining first-verdict cost in TIMING/HELP is many mid-size (<10 KB)
   patterns, not one large one. REGEX needs fix 2 (native RX_WELL_FORMED).
 - **Confidence**: High (bench medians of 5; corpus-wide guard check; parity run)
+
+## Observation: RX_WELL_FORMED as a native parser; the regex is deterministic
+- **Context**: Fix 2 of #4 (`packages/engine/src/native-regex.ts`), 2026-10-26.
+- **Finding**: Every repetition in the RX_* DEFINE grammar is possessive (`*+`, `++`) and
+  every alternation is decided by its first character (`\` `[` `(` ... ), so a greedy
+  recursive-descent parse with no backtracking equals the Python `regex` fullmatch; the
+  only greedy-but-backtrackable piece, the class body `(?:[^\]\\\x00]|\\.)+`, cannot
+  consume `]` so backtracking never changes the end. Two Python-side details matter:
+  `to_python` turns `\Z` into "optional one line terminator, then end", so `[ab\n` is
+  well formed and so is `[ab\r\nx` (the class body matches terminators); and `.` is
+  `[^\n\r\x85  ]`, so `\` + NUL is an escape. A first recursive version
+  overflowed the stack at ~5,000 nested groups; the parser keeps an explicit stack of
+  "where this group's alternation ends if the next atom fails". Result: REGEX first verdict
+  1,070 ms -> 11 ms; engine JSON 4.38 MB -> 3.84 MB (149 -> 118 KB gzip). A native kind
+  may now have no `fast` regex (`js_subroutines.FAST_DEPTHS`, `fast_depth`).
+- **Impact**: Adding a native leaf: digest in `_NATIVE_KINDS`, `_FAST_FINAL`,
+  `FAST_DEPTHS`; `NATIVE_KINDS` in matcher.ts; a differential test against
+  `python_original`. The remaining first-verdict cost (TIMING/HELP ~230 ms) is many
+  mid-size patterns; `(?i:)` modifiers are the next lever.
+- **Confidence**: High (4,000 random + edge inputs, fixture lines, corpus lines, parity)

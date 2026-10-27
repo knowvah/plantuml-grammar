@@ -34,9 +34,9 @@ from tools.model.java_regex_js import (
 )
 from tools.model.js_prefix import TOP_PATTERN, PrefixError, _number_atomics, prefix_pattern
 from tools.model.js_subroutines import (
-    FAST_DEPTH,
     Unsupported,
     expand_subroutines,
+    fast_depth,
     fast_final,
     native_kind,
 )
@@ -117,7 +117,9 @@ def _leaf_js(part: Part) -> str:
     ci = bool(part.get("ci"))
     if "regex" in part:
         source = str(part["regex"])
-        depth = FAST_DEPTH if native_kind(source) is not None else None
+        depth = fast_depth(source) if native_kind(source) is not None else None
+        if native_kind(source) is not None and depth is None:
+            raise EngineBuildError("a native leaf without a fast regex has no JavaScript form")
         return to_js(expand_subroutines(source, depth), ci=ci)
     if "literal" in part:
         return literal_to_js(str(part["literal"]), ci=ci)
@@ -244,7 +246,7 @@ class _Builder:
             "head": self.patterns.add({"source": head, "flags": STICKY_FLAGS}),
             "tail": self.patterns.add({"source": tail, "flags": STICKY_FLAGS}),
             "native": kind,
-            "fast": self._plain(parts),
+            "fast": None if fast_depth(str(leaf["regex"])) is None else self._plain(parts),
             "fast_final": fast_final(str(leaf["regex"])),
         }
         return self.patterns.add({"split": split})
