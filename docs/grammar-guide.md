@@ -580,19 +580,23 @@ documented divergence that no fixture or corpus block reaches:
 
 | Pattern | Depth | Expanded size |
 |---|---|---|
-| `RX_WELL_FORMED` | 8 | 259,635 B |
 | `RX_BALANCED` | 8 | 4,125 B |
 | `RX_EMPTY` | 3 | 485 B |
 | other DEFINE patterns | `MAX_DEPTH` = 11 | |
 
-The two JSON leaves (`CO_JSON_BLOCK_BODY`, `CO_JSON_DATA_INVALID`) nest 9 deep in the
-corpora and grow about 4x per level, so no bounded expansion fits. The engine recognises
-them natively (`src/native.ts`) at any depth. A line containing one is emitted as a
-`split` (a sticky head regex, the native recognizer, a sticky tail regex), or an `any` of
-alternatives, with a depth-4 `fast` regex whose answer is final in one direction. Detection
-is keyed by the SHA-256 of each leaf's exact YAML source, so editing either leaf needs
-`native.ts`, the digest table and `tests/model/test_native_json.py` updated together. The
-engine JSON has no `unsupported` pattern; one would make every block reaching its context
+Three leaves are recognised natively instead, at any depth. The two JSON leaves
+(`CO_JSON_BLOCK_BODY`, `CO_JSON_DATA_INVALID`) nest 9 deep in the corpora and grow about
+4x per level, so no bounded expansion fits (`src/native.ts`). `RX_WELL_FORMED`, the
+well-formed `@startregex` line, expanded to a 465 KB regex at depth 8 that cost about a
+second to compile on first use, so `src/native-regex.ts` parses it: the grammar's
+repetitions are possessive and its alternations decided by one character, so a greedy
+parse without backtracking equals the Python `regex` match (`tests/model/test_native_regex.py`).
+A line containing a native leaf is emitted as a `split` (a sticky head regex, the native
+recognizer, a sticky tail regex), or an `any` of alternatives; the JSON splits carry a
+depth-4 `fast` regex whose answer is final in one direction, the regex split none.
+Detection is keyed by the SHA-256 of each leaf's exact YAML source, so editing a leaf
+needs its recognizer, the digest table and its test module updated together. The engine
+JSON has no `unsupported` pattern; one would make every block reaching its context
 `error`.
 
 ### Join early stop (`tools/model/js_prefix.py`)

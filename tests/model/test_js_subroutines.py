@@ -22,6 +22,7 @@ from tools.model.js_subroutines import (
     Unsupported,
     depth_for,
     expand_subroutines,
+    fast_depth,
     fast_final,
     native_kind,
 )
@@ -228,9 +229,15 @@ def test_depth_table_keys_match_the_yaml_sources():
 def test_native_kind_and_fast_final():
     assert native_kind(model_pattern(JSON_BLOCK)) == "json-block-body"
     assert native_kind(model_pattern(JSON_INVALID)) == "json-data-invalid"
-    assert [native_kind(model_pattern(n)) for n in RX_PATTERNS] == [None] * 3
+    assert native_kind(model_pattern(WELL_FORMED)) == "regex-well-formed"
+    assert [native_kind(model_pattern(n)) for n in (EMPTY, BALANCED)] == [None, None]
     assert fast_final(model_pattern(JSON_BLOCK)) == "accept"
     assert fast_final(model_pattern(JSON_INVALID)) == "reject"
+    assert fast_final(model_pattern(WELL_FORMED)) == "accept"
+    assert fast_depth(model_pattern(JSON_BLOCK)) == FAST_DEPTH
+    assert fast_depth(model_pattern(WELL_FORMED)) is None
+    with pytest.raises(ValueError, match="not a native"):
+        fast_depth(model_pattern(EMPTY))
     with pytest.raises(ValueError, match="not a native"):
         fast_final(model_pattern(EMPTY))
 

@@ -4,6 +4,7 @@
 // split reproduces `HEAD leaf TAIL` matched against the whole line.
 import type { Deadline } from "./deadline.js";
 import { jsonBlockBodyEnds, jsonDataInvalidEnds } from "./native.js";
+import { regexWellFormedEnds } from "./native-regex.js";
 
 /** Tests a whole line against one engine pattern. */
 export interface Matcher {
@@ -15,6 +16,7 @@ export type NativeEnds = (s: string, i: number) => number[];
 
 export const NATIVE_JSON_BLOCK_BODY = "json-block-body";
 export const NATIVE_JSON_DATA_INVALID = "json-data-invalid";
+export const NATIVE_REGEX_WELL_FORMED = "regex-well-formed";
 export const FAST_ACCEPT = "accept";
 export const FAST_REJECT = "reject";
 
@@ -22,6 +24,7 @@ export const FAST_REJECT = "reject";
 export const NATIVE_KINDS: Readonly<Record<string, NativeEnds>> = {
   [NATIVE_JSON_BLOCK_BODY]: jsonBlockBodyEnds,
   [NATIVE_JSON_DATA_INVALID]: jsonDataInvalidEnds,
+  [NATIVE_REGEX_WELL_FORMED]: regexWellFormedEnds,
 };
 
 export type FastFinal = typeof FAST_ACCEPT | typeof FAST_REJECT;
